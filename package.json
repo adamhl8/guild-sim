@@ -1,6 +1,6 @@
 {
   "name": "guild-sim",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Self-hosted web app where WoW raiders paste their SimC export to have Raidbots droptimizers run and uploaded to their wowaudit wishlists",
   "keywords": [

@@ -1,3 +1,9 @@
+## [0.2.1](https://github.com/adamhl8/guild-sim/compare/0.2.0..0.2.1) - 2026-08-17
+
+### 🐛 Bug Fixes
+
+- gem selection ([8a70e6d](https://github.com/adamhl8/guild-sim/commit/8a70e6d389185241dc0278ae6f1d1162622abec7) by @adamhl8)
+
 ## [0.2.0](https://github.com/adamhl8/guild-sim/compare/0.1.3..0.2.0) - 2026-08-17
 
 ### 🚀 Features
