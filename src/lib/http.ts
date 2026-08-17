@@ -1,4 +1,5 @@
-import { sleep } from "bun"
+import { setTimeout as sleep } from "node:timers/promises"
+
 import type { CtxError, Result } from "ts-explicit-errors"
 import { attempt, err, isErr } from "ts-explicit-errors"
 

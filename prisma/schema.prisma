@@ -20,7 +20,7 @@ model User {
   emailVerified Boolean  @default(false)
   image         String?
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  updatedAt     DateTime @updatedAt
 
   sessions Session[]
   accounts Account[]
@@ -50,6 +50,8 @@ model Session {
 
 model Account {
   id                    String    @id
+  /// Added in Better Auth 1.7: accounts are keyed on (issuer, accountId), not providerId alone.
+  issuer                String
   accountId             String
   providerId            String
   userId                String
@@ -64,6 +66,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
   @@index([userId])
   @@map("account")
 }
@@ -74,7 +77,7 @@ model Verification {
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
   @@index([identifier])
   @@map("verification")

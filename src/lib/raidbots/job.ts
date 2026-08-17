@@ -1,4 +1,5 @@
-import { sleep } from "bun"
+import { setTimeout as sleep } from "node:timers/promises"
+
 import type { Result } from "ts-explicit-errors"
 import { err, isErr } from "ts-explicit-errors"
 
