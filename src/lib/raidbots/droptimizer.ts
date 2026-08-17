@@ -18,7 +18,10 @@ export interface SubmitInput {
   sim: SimOptions
   /** Top bonus id of the track this difficulty drops. wowaudit rejects a report simmed at any other. */
   upgradeLevel: number
-  /** Preferred gem, as an **item** id. Raidbots writes it straight into SimC's `gem_id=`. */
+  /**
+   * Preferred gem, as an **item** id. Fills a socket a drop has but the equipped item does not. Optional only for
+   * submissions stored before the picker existed; every new paste carries one.
+   */
   gemItemId?: number | undefined
   clientVersion: { frontendJsHash: string; gameDataVersion: string }
 }
@@ -60,18 +63,19 @@ export const buildPayload = (input: SubmitInput): Record<string, unknown> => {
       upgradeLevel: input.upgradeLevel,
       // Required by wowaudit ("Upgrade All Equipped Gear to the Same Level").
       upgradeEquipped: true,
-      // Same trap as powerInfusion below: wowaudit rejects a report whose items carry vault sockets, and
-      // an omitted field is not echoed back for it to check.
-      addSocket: false,
       classId: character.classId,
       specId: character.specId,
       lootSpecId: character.lootSpecId,
       faction: character.faction,
       // The one default worth overriding: omitting this drops catalyst conversions from the item list.
       includeConversions: true,
-      // Only sent when chosen. Raidbots passes the value through verbatim, so an enchant id here fails
-      // every profileset with "No gem data for id".
-      ...(input.gemItemId === undefined ? {} : { gem: input.gemItemId }),
+      // `gem` is Add Vault Socket, not the preferred gem: a value here sims every eligible item as if it
+      // had a socket, which wowaudit rejects. Explicitly null rather than omitted, since an omitted field
+      // still carries the character's equipped gems onto drops and wowaudit counts those too.
+      gem: null,
+      // The preferred gem, used only where a drop has a socket the equipped item lacks. Stringified to
+      // match what the site sends.
+      ...(input.gemItemId === undefined ? {} : { craftedGem: String(input.gemItemId) }),
     },
     // Required by wowaudit, which rejects a report where it cannot see this explicitly disabled. Raidbots does not
     // echo the field back when it is omitted, so leaving it to the default fails upload even though the sim is right.

@@ -90,21 +90,20 @@ describe("buildPayload", () => {
     expect(build()).toMatchObject({ powerInfusion: false })
   })
 
-  // Raidbots passes this straight into SimC's `gem_id=`, so a stray null would be decoded as a gem and
-  // fail the sim. Absent must mean absent.
-  it("omits the gem entirely unless one was chosen", () => {
-    expect(build()["droptimizer"]).not.toHaveProperty("gem")
-    expect(JSON.stringify(build())).not.toContain('"gem"')
+  // `gem` is Add Vault Socket. The site sends null when the box is unchecked and the gem id when it is
+  // checked, so a preferred gem placed here would sim every eligible item with an added socket.
+  it("keeps the vault socket off by sending a null gem", () => {
+    expect(build({ gemItemId: 240_908 })["droptimizer"]).toMatchObject({ gem: null })
+    expect(build()["droptimizer"]).toMatchObject({ gem: null })
   })
 
-  it("sends the chosen gem as an item id", () => {
-    expect(build({ gemItemId: 240_908 })["droptimizer"]).toMatchObject({ gem: 240_908 })
+  // Only pastes stored before the picker existed, and an absent preference is not a vault socket.
+  it("omits craftedGem when the submission has no gem", () => {
+    expect(build()["droptimizer"]).not.toHaveProperty("craftedGem")
   })
 
-  // Omission is the failure mode, not a wrong value: wowaudit rejects the report when it cannot see the
-  // vault socket explicitly disabled, exactly as with powerInfusion.
-  it("disables the vault socket explicitly", () => {
-    expect(build()["droptimizer"]).toMatchObject({ addSocket: false })
+  it("sends the preferred gem as craftedGem, not gem", () => {
+    expect(build({ gemItemId: 240_908 })["droptimizer"]).toMatchObject({ craftedGem: "240908" })
   })
 
   it("leaves buffs and consumables to the server defaults", () => {
