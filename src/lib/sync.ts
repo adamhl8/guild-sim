@@ -1,0 +1,117 @@
+import type { Result } from "ts-explicit-errors"
+import { err, isErr } from "ts-explicit-errors"
+
+import { env } from "#env.ts"
+import { prisma } from "#lib/db.ts"
+import type { Instance } from "#lib/raidbots/static-data.ts"
+import { staticData } from "#lib/raidbots/static-data.ts"
+import { seasonNumberForInstance } from "#lib/raidbots/upgrade-track.ts"
+import { updateSettings } from "#lib/settings.ts"
+import { getCharacters } from "#lib/wowaudit/characters.ts"
+import { createWowauditClient } from "#lib/wowaudit/client.ts"
+import { getSeason } from "#lib/wowaudit/period.ts"
+import { getTeam } from "#lib/wowaudit/team.ts"
+
+interface Metadata {
+  wowBuild?: string
+}
+
+const syncRoster = async (): Promise<Result<number>> => {
+  const client = createWowauditClient(env.WOWAUDIT_API_KEY)
+
+  const team = await getTeam(client)
+  if (isErr(team)) return err("could not read the wowaudit team", team)
+
+  const roster = await getCharacters(client)
+  if (isErr(roster)) return err("could not read the wowaudit roster", roster)
+
+  const syncedAt = new Date()
+  for (const character of roster) {
+    await prisma.rosterCharacter.upsert({
+      where: { id: character.id },
+      update: {
+        name: character.name,
+        realm: character.realm,
+        class: character.class,
+        role: character.role,
+        rank: character.rank,
+        blizzardId: character.blizzardId,
+        syncedAt,
+      },
+      create: {
+        id: character.id,
+        name: character.name,
+        realm: character.realm,
+        class: character.class,
+        role: character.role,
+        rank: character.rank,
+        blizzardId: character.blizzardId,
+        syncedAt,
+      },
+    })
+  }
+
+  // Anyone no longer tracked in wowaudit loses their claims along with the row.
+  await prisma.rosterCharacter.deleteMany({ where: { syncedAt: { lt: syncedAt } } })
+  await updateSettings({ region: team.region })
+
+  return roster.length
+}
+
+const syncSources = async (): Promise<Result<number>> => {
+  const instances = await staticData<Instance[]>("instances")
+  if (isErr(instances)) return instances
+
+  const raids = instances.filter((instance) => instance.type === "raid")
+  const syncedAt = new Date()
+
+  for (const raid of raids) {
+    const seasonNumber = seasonNumberForInstance(instances, raid.id)
+    const data = {
+      name: raid.name,
+      type: raid.type,
+      seasonNumber: seasonNumber ?? null,
+      syncedAt,
+    }
+    await prisma.source.upsert({
+      where: { raidbotsId: raid.id },
+      update: data,
+      create: { raidbotsId: raid.id, ...data },
+    })
+  }
+
+  await prisma.source.deleteMany({ where: { syncedAt: { lt: syncedAt } } })
+
+  // wowaudit's current raids pin which season the aggregate source should resolve to. Raidbots can be a
+  // season ahead, so this is derived from wowaudit rather than from whatever Raidbots calls active.
+  const client = createWowauditClient(env.WOWAUDIT_API_KEY)
+  const season = await getSeason(client)
+  if (!isErr(season)) {
+    const [first] = season.instances
+    const seasonNumber = first ? seasonNumberForInstance(instances, first.raidbotsId) : undefined
+    if (seasonNumber !== undefined) await updateSettings({ currentSeasonNumber: seasonNumber })
+  }
+
+  return raids.length
+}
+
+const syncBuild = async (): Promise<Result> => {
+  const metadata = await staticData<Metadata>("metadata")
+  if (isErr(metadata)) return metadata
+  if (metadata.wowBuild) await updateSettings({ liveWowBuild: metadata.wowBuild })
+  return undefined
+}
+
+/** Refreshes everything the UI and the staleness gate read, so neither needs a redeploy to stay current. */
+export const runSync = async (): Promise<void> => {
+  const roster = await syncRoster()
+  if (isErr(roster)) console.error(`sync: roster failed -> ${roster.messageChain}`)
+  else console.info(`sync: ${String(roster)} roster characters`)
+
+  const sources = await syncSources()
+  if (isErr(sources)) console.error(`sync: sources failed -> ${sources.messageChain}`)
+  else console.info(`sync: ${String(sources)} raid sources`)
+
+  const build = await syncBuild()
+  if (isErr(build)) console.error(`sync: wow build failed -> ${build.messageChain}`)
+}

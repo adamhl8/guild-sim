@@ -1,0 +1,108 @@
+---
+import { actions } from "astro:actions"
+
+import JobStatus from "#components/JobStatus.astro"
+import Base from "#layouts/Base.astro"
+import { prisma } from "#lib/db.ts"
+import { getSettings } from "#lib/settings.ts"
+
+const { characters } = Astro.locals
+
+const result = Astro.getActionResult(actions.submitSimc)
+const settings = await getSettings()
+
+const submissions = await prisma.submission.findMany({
+  where: { characterId: { in: characters.map((character) => character.id) } },
+  include: { jobs: { orderBy: { queuedAt: "desc" } }, character: true },
+  orderBy: { createdAt: "desc" },
+  take: 20,
+})
+
+// Latest paste per character, so the table answers "am I covered?" rather than listing every attempt.
+const latestByCharacter = new Map<number, (typeof submissions)[number]>()
+for (const submission of submissions) if (!latestByCharacter.has(submission.characterId)) latestByCharacter.set(submission.characterId, submission)
+---
+
+<Base title="Submit">
+  <h1 class="text-2xl font-bold">Paste your /simc output</h1>
+  <p class="mt-1 text-sm opacity-80">
+    In game, type <code class="rounded bg-base-300 px-1">/simc</code>, copy everything, and paste it below.
+    Exports must be from WoW build <strong>{settings.liveWowBuild ?? "the current build"}</strong> and
+    less than <strong>{settings.maxPasteAgeDays} days</strong> old.
+  </p>
+
+  {
+    result?.error && (
+      <div class="alert alert-error mt-6">
+        <span>{result.error.message}</span>
+      </div>
+    )
+  }
+  {
+    result?.data && (
+      <div class="alert alert-success mt-6">
+        <span>
+          Queued {result.data.jobCount} sim{result.data.jobCount === 1 ? "" : "s"} for {result.data.characterName}.
+        </span>
+      </div>
+    )
+  }
+
+  <form method="POST" action={actions.submitSimc} class="mt-6">
+    <fieldset class="fieldset">
+      <textarea
+        name="simc"
+        class="textarea textarea-bordered h-64 w-full font-mono text-xs"
+        placeholder="warlock=&quot;Isaaclock&quot;&#10;level=90&#10;..."
+        required></textarea>
+      <button class="btn btn-primary mt-4 w-full sm:w-auto" type="submit">Submit</button>
+    </fieldset>
+  </form>
+
+  <h2 class="mt-10 text-xl font-semibold">Your characters</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Character</th>
+          <th>Rank</th>
+          <th>Last paste</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          characters.map((character) => {
+            const submission = latestByCharacter.get(character.id)
+            return (
+              <tr>
+                <td class="font-medium">
+                  {character.name}-{character.realm}
+                </td>
+                <td class="opacity-70">{character.rank}</td>
+                <td class="opacity-70">
+                  {submission ? submission.createdAt.toISOString().slice(0, 16).replace("T", " ") : "never"}
+                </td>
+                <td>
+                  {character.unsupportedSpec ? (
+                    <span class="badge badge-ghost" title="SimC does not model healing throughput">
+                      {character.unsupportedSpec} cannot be simmed
+                    </span>
+                  ) : submission ? (
+                    <div class="flex flex-wrap gap-1">
+                      {submission.jobs.map((job) => (
+                        <JobStatus status={job.status} label={job.difficulty} error={job.error} />
+                      ))}
+                    </div>
+                  ) : (
+                    <span class="badge badge-ghost">no paste yet</span>
+                  )}
+                </td>
+              </tr>
+            )
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+</Base>

@@ -1,0 +1,44 @@
+---
+import "#global.css"
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+const { user, isAdmin, characters } = Astro.locals
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title} · guild-sim</title>
+  </head>
+  <body class="min-h-screen bg-base-200">
+    <div class="navbar bg-base-100 shadow-sm">
+      <div class="mx-auto flex w-full max-w-5xl items-center gap-2 px-4">
+        <a href={user ? "/submit" : "/"} class="btn btn-ghost text-lg font-semibold">guild-sim</a>
+        <div class="flex-1"></div>
+        {
+          user && (
+            <>
+              {characters.length > 0 && <a href="/submit" class="btn btn-ghost btn-sm">Submit</a>}
+              {isAdmin && <a href="/admin" class="btn btn-ghost btn-sm">Admin</a>}
+              <span class="hidden text-sm opacity-70 sm:inline">{user.name}</span>
+              <form method="POST" action="/api/auth/sign-out">
+                <button class="btn btn-ghost btn-sm" type="submit">Sign out</button>
+              </form>
+            </>
+          )
+        }
+      </div>
+    </div>
+
+    <main class="mx-auto w-full max-w-5xl px-4 py-8">
+      <slot />
+    </main>
+  </body>
+</html>

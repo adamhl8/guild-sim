@@ -1,0 +1,8 @@
+{
+  "extends": "@adamhl8/configs/tsconfig",
+  "include": ["**/*", "./.astro/types.d.ts"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "types": ["bun"]
+  }
+}

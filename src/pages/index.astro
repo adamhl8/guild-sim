@@ -1,0 +1,42 @@
+---
+import Base from "#layouts/Base.astro"
+
+if (Astro.locals.user) return Astro.redirect("/submit")
+---
+
+<Base title="Sign in">
+  <div class="hero min-h-[60vh]">
+    <div class="hero-content text-center">
+      <div class="max-w-md">
+        <h1 class="text-4xl font-bold">Keep your wishlist current</h1>
+        <p class="py-6 opacity-80">
+          Paste your <code class="rounded bg-base-300 px-1">/simc</code> output and we run the droptimizer
+          and upload it to wowaudit for you. Sign in with the Battle.net account that owns your raiding character.
+        </p>
+        <button id="signin" class="btn btn-primary btn-lg" type="button">Sign in with Battle.net</button>
+        <p id="signin-error" class="mt-4 hidden text-sm text-error"></p>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { authClient } from "#lib/auth-client.ts"
+
+  const button = document.querySelector<HTMLButtonElement>("#signin")
+  const error = document.querySelector<HTMLParagraphElement>("#signin-error")
+
+  button?.addEventListener("click", async () => {
+    button.disabled = true
+    const { error: signInError } = await authClient.signIn.social({
+      provider: "battlenet",
+      callbackURL: "/submit",
+      errorCallbackURL: "/?error=1",
+    })
+    if (signInError && error) {
+      error.textContent = signInError.message ?? "sign in failed"
+      error.classList.remove("hidden")
+      button.disabled = false
+    }
+  })
+</script>

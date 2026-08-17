@@ -1,0 +1,24 @@
+---
+import Base from "#layouts/Base.astro"
+
+const { user, characters } = Astro.locals
+if (!user) return Astro.redirect("/")
+if (characters.length > 0) return Astro.redirect("/submit")
+---
+
+<Base title="Not on the roster">
+  <div class="mx-auto max-w-xl">
+    <div class="alert alert-warning">
+      <div>
+        <h1 class="text-lg font-semibold">You are not on the roster</h1>
+        <p class="mt-1 text-sm">
+          You signed in as <strong>{user.name}</strong>, but none of the characters on that Battle.net
+          account are tracked in wowaudit.
+        </p>
+      </div>
+    </div>
+    <p class="mt-6 text-sm opacity-80">
+      If you have just been added, ask an officer to re-sync the roster, then sign out and back in.
+    </p>
+  </div>
+</Base>
