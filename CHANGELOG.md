@@ -1,3 +1,9 @@
+## [0.1.2](https://github.com/adamhl8/guild-sim/compare/0.1.1..0.1.2) - 2026-08-17
+
+### 🐛 Bug Fixes
+
+- auth schema ([85455df](https://github.com/adamhl8/guild-sim/commit/85455df5461b7413a4fdbdb53a85012a1fdc2d66) by @adamhl8)
+
 ## [0.1.1](https://github.com/adamhl8/guild-sim/compare/0.1.0..0.1.1) - 2026-08-17
 
 ### 🐛 Bug Fixes
