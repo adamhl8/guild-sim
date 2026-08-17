@@ -1,3 +1,9 @@
+## [0.2.4](https://github.com/adamhl8/guild-sim/compare/0.2.3..0.2.4) - 2026-08-17
+
+### 🐛 Bug Fixes
+
+- realm names ([737fd09](https://github.com/adamhl8/guild-sim/commit/737fd096525f6da9f91b9c7fc4920842150e414b) by @adamhl8)
+
 ## [0.2.3](https://github.com/adamhl8/guild-sim/compare/0.2.2..0.2.3) - 2026-08-17
 
 ### 🐛 Bug Fixes
