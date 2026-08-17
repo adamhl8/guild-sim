@@ -1,3 +1,9 @@
+## [0.2.2](https://github.com/adamhl8/guild-sim/compare/0.2.1..0.2.2) - 2026-08-17
+
+### 🐛 Bug Fixes
+
+- fix upgrades ([a6b48c7](https://github.com/adamhl8/guild-sim/commit/a6b48c74b3db80386df27f61bd10d59df00a0986) by @adamhl8)
+
 ## [0.2.1](https://github.com/adamhl8/guild-sim/compare/0.2.0..0.2.1) - 2026-08-17
 
 ### 🐛 Bug Fixes
