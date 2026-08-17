@@ -1,0 +1,14 @@
+name: guild-sim-local
+
+services:
+  guild-sim:
+    build: .
+    ports:
+      - 4321:8080
+    volumes:
+      - ./data/:/app/db/
+    env_file: .env
+    environment:
+      DATABASE_URL: file:db/local.db
+      PUBLIC_SITE_URL: http://localhost:4321
+    stop_grace_period: 30s

@@ -56,21 +56,31 @@ Create a `.env` (it is gitignored):
 
 ```sh
 PUBLIC_SITE_URL=https://your-host
-BETTER_AUTH_SECRETS=1:$(openssl rand -base64 32)
+BETTER_AUTH_SECRETS=1:...        # openssl rand -base64 32
 BNET_CLIENT_ID=...
 BNET_CLIENT_SECRET=...
 WOWAUDIT_API_KEY=...
 RAIDBOTS_EMAIL=...
 RAIDBOTS_PASSWORD="..."
+TRUSTED_PROXIES=10.0.0.0/24      # optional, see below
 ```
+
+All of them are required in production; the app exits at boot naming any that are missing. In
+development they all have working defaults, so `just dev` runs with an empty `.env`.
 
 > **Escape any `$` in your Raidbots password as `\$`.** Bun's `.env` parser expands `$NAME` even inside
 > single quotes, so an unescaped `$` silently truncates the password and Raidbots answers
-> `401 invalid_credentials` with no hint that the value was mangled.
+> `401 invalid_credentials` with no hint that the value was mangled. Docker Compose understands the same
+> escape, so one `.env` works for both.
 
 `BETTER_AUTH_SECRETS` is a comma-separated list of `version:secret` pairs, newest first. It is versioned
 from the start because the stored Battle.net tokens are encrypted with it: rotating a bare secret would
 orphan every one of them. To rotate, prepend a new pair and keep the old one for decryption.
+
+`TRUSTED_PROXIES` lists the proxy hops in front of the app, as IPs or CIDRs. Without it Better Auth
+accepts only a single-hop `X-Forwarded-For` and rate limiting degrades to one bucket shared by everyone.
+Limits then apply more strictly than intended rather than not at all, so it is a fidelity setting, not a
+security one.
 
 ```sh
 just db-migrate   # create the database
@@ -95,20 +105,29 @@ Claims are re-resolved on every sign-in, so a roster change needs no interventio
 
 One process, one container: the Astro server, the queue worker and the daily sync all share it.
 
-```sh
-docker run -d \
-  --name=guild-sim \
-  --env-file .env \
-  -e DATABASE_URL=file:db/prod.db \
-  -p 8080:8080 \
-  -v ./data/:/app/db/ \
-  --restart unless-stopped \
-  ghcr.io/adamhl8/guild-sim:latest
+```yaml
+services:
+  guild-sim:
+    image: ghcr.io/adamhl8/guild-sim
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/:/app/db/
+    env_file: .env
+    environment:
+      DATABASE_URL: file:db/prod.db
+    # An already-submitted sim is polled to completion rather than abandoned, so the default 10s
+    # would kill it mid-flight.
+    stop_grace_period: 5m
 ```
 
-Migrations run at container start. The SQLite file lives on the mounted volume. `SIGTERM` stops the
-server, interrupts any rate-limit wait and lets the in-flight job finish, so give `docker stop` a
-generous timeout if a sim is running.
+**Use Compose rather than `docker run --env-file`.** Only Compose strips quotes and resolves `\$` in
+`.env`, so `RAIDBOTS_PASSWORD` reaches the app as the real password; `docker run` passes the quotes and
+backslash through verbatim and login fails.
+
+The volume is not optional: without it every restart loses the roster, the queue and every stored
+paste. Migrations run at container start, so a new image applies its own schema changes.
 
 Behind Caddy, nothing extra is needed in the Caddyfile:
 
@@ -220,13 +239,20 @@ a non-empty result set before anything is uploaded.
 ## Development
 
 ```sh
-just dev          # dev server
-just lint         # oxlint, oxfmt, knip, tests
-just build        # lint + astro build
-just db-migrate   # create a migration
-just db-studio    # browse the database
-just release      # tag a release and publish the image
+just dev              # dev server on 4321
+just lint             # oxlint, oxfmt, knip, tests
+just build            # lint + astro build
+just docker-run       # build and run the container locally on 4321
+just docker-down      # stop it and drop its database
+just db-migrate       # create a migration, then regenerate the client
+just db-auth-schema   # sync Better Auth's models into the schema after upgrading it
+just db-studio        # browse the database
+just release          # tag a release and publish the image
 ```
+
+The Prisma client is generated into `src/generated/` and committed, because the image runs the
+TypeScript sources directly. A schema change without a regenerate ships a client that does not know its
+own columns, so `just db-migrate` always does both.
 
 Tests are `bun test`: pure-function units for the staleness rules, quota maths, roster matching and
 payload shape, plus integration tests that run the submit flow against a throwaway SQLite database with

@@ -30,8 +30,20 @@ db-generate:
 db-auth-schema:
     npx -y auth@rc generate --config src/lib/auth.ts --yes
 
+# Migrate, then regenerate. The client is committed and shipped in the image, so a schema change
+# without a regenerate produces a client that does not know its own columns.
 db-migrate:
     bun prisma migrate dev
+    bun prisma generate
 
 db-studio:
     bun prisma studio
+
+# Build and run the container locally on http://localhost:4321
+docker-run:
+    docker compose -f compose.local.yaml up --build
+
+# Stop the local container and drop its database
+docker-down:
+    docker compose -f compose.local.yaml down
+    rm -rf data/

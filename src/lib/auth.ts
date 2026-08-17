@@ -21,6 +21,10 @@ const parseSecrets = (raw: string): { version: number; value: string }[] =>
     })
     .filter((secret) => Number.isInteger(secret.version) && secret.value.length > 0)
 
+const trustedProxies = env.TRUSTED_PROXIES.split(",")
+  .map((entry) => entry.trim())
+  .filter(Boolean)
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "sqlite" }),
   baseURL: env.PUBLIC_SITE_URL,
@@ -36,6 +40,7 @@ export const auth = betterAuth({
     useSecureCookies: isProduction,
     // 1.7 stopped trusting forwarded headers by default. Required behind Caddy.
     trustedProxyHeaders: true,
+    ipAddress: trustedProxies.length > 0 ? { trustedProxies } : {},
   },
   // These are real HTTP routes: without this the browser could POST for the raw Blizzard token.
   // In-process `auth.api.getAccessToken` still works.

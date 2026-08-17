@@ -30,6 +30,11 @@ export const env = parseEnv(
     RAIDBOTS_EMAIL: requireWhen(isRuntime, "string > 0", ""),
     // Escape any `$` as `\$`: Bun's dotenv interpolates it even inside quotes.
     RAIDBOTS_PASSWORD: requireWhen(isRuntime, "string > 0", ""),
+    /**
+     * Comma-separated proxy IPs or CIDRs in front of the app, e.g. "10.8.8.0/24". Without this Better Auth only trusts
+     * a single-hop X-Forwarded-For, and rate limiting falls back to one shared bucket.
+     */
+    TRUSTED_PROXIES: "string = ''",
     PORT: "number = 4321",
   }).merge(BaseEnv),
 )
