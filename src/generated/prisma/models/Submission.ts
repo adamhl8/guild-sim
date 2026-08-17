@@ -29,11 +29,13 @@ export type AggregateSubmission = {
 export type SubmissionAvgAggregateOutputType = {
   id: number | null
   characterId: number | null
+  gemId: number | null
 }
 
 export type SubmissionSumAggregateOutputType = {
   id: number | null
   characterId: number | null
+  gemId: number | null
 }
 
 export type SubmissionMinAggregateOutputType = {
@@ -42,6 +44,8 @@ export type SubmissionMinAggregateOutputType = {
   characterId: number | null
   simcText: string | null
   spec: string | null
+  contentHash: string | null
+  gemId: number | null
   addonVersion: string | null
   wowVersion: string | null
   exportedAt: Date | null
@@ -54,6 +58,8 @@ export type SubmissionMaxAggregateOutputType = {
   characterId: number | null
   simcText: string | null
   spec: string | null
+  contentHash: string | null
+  gemId: number | null
   addonVersion: string | null
   wowVersion: string | null
   exportedAt: Date | null
@@ -66,6 +72,8 @@ export type SubmissionCountAggregateOutputType = {
   characterId: number
   simcText: number
   spec: number
+  contentHash: number
+  gemId: number
   addonVersion: number
   wowVersion: number
   exportedAt: number
@@ -77,11 +85,13 @@ export type SubmissionCountAggregateOutputType = {
 export type SubmissionAvgAggregateInputType = {
   id?: true | runtime.Types.Skip
   characterId?: true | runtime.Types.Skip
+  gemId?: true | runtime.Types.Skip
 }
 
 export type SubmissionSumAggregateInputType = {
   id?: true | runtime.Types.Skip
   characterId?: true | runtime.Types.Skip
+  gemId?: true | runtime.Types.Skip
 }
 
 export type SubmissionMinAggregateInputType = {
@@ -90,6 +100,8 @@ export type SubmissionMinAggregateInputType = {
   characterId?: true | runtime.Types.Skip
   simcText?: true | runtime.Types.Skip
   spec?: true | runtime.Types.Skip
+  contentHash?: true | runtime.Types.Skip
+  gemId?: true | runtime.Types.Skip
   addonVersion?: true | runtime.Types.Skip
   wowVersion?: true | runtime.Types.Skip
   exportedAt?: true | runtime.Types.Skip
@@ -102,6 +114,8 @@ export type SubmissionMaxAggregateInputType = {
   characterId?: true | runtime.Types.Skip
   simcText?: true | runtime.Types.Skip
   spec?: true | runtime.Types.Skip
+  contentHash?: true | runtime.Types.Skip
+  gemId?: true | runtime.Types.Skip
   addonVersion?: true | runtime.Types.Skip
   wowVersion?: true | runtime.Types.Skip
   exportedAt?: true | runtime.Types.Skip
@@ -114,6 +128,8 @@ export type SubmissionCountAggregateInputType = {
   characterId?: true | runtime.Types.Skip
   simcText?: true | runtime.Types.Skip
   spec?: true | runtime.Types.Skip
+  contentHash?: true | runtime.Types.Skip
+  gemId?: true | runtime.Types.Skip
   addonVersion?: true | runtime.Types.Skip
   wowVersion?: true | runtime.Types.Skip
   exportedAt?: true | runtime.Types.Skip
@@ -213,6 +229,8 @@ export type SubmissionGroupByOutputType = {
   characterId: number
   simcText: string
   spec: string
+  contentHash: string
+  gemId: number | null
   addonVersion: string | null
   wowVersion: string | null
   exportedAt: Date | null
@@ -248,6 +266,8 @@ export type SubmissionWhereInput = {
   characterId?: Prisma.IntFilter<"Submission"> | number | runtime.Types.Skip
   simcText?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
   spec?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  gemId?: Prisma.IntNullableFilter<"Submission"> | number | null | runtime.Types.Skip
   addonVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   wowVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   exportedAt?: Prisma.DateTimeNullableFilter<"Submission"> | Date | string | null | runtime.Types.Skip
@@ -263,6 +283,8 @@ export type SubmissionOrderByWithRelationInput = {
   characterId?: Prisma.SortOrder | runtime.Types.Skip
   simcText?: Prisma.SortOrder | runtime.Types.Skip
   spec?: Prisma.SortOrder | runtime.Types.Skip
+  contentHash?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   addonVersion?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   wowVersion?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   exportedAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
@@ -281,6 +303,8 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   characterId?: Prisma.IntFilter<"Submission"> | number | runtime.Types.Skip
   simcText?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
   spec?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  gemId?: Prisma.IntNullableFilter<"Submission"> | number | null | runtime.Types.Skip
   addonVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   wowVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   exportedAt?: Prisma.DateTimeNullableFilter<"Submission"> | Date | string | null | runtime.Types.Skip
@@ -296,6 +320,8 @@ export type SubmissionOrderByWithAggregationInput = {
   characterId?: Prisma.SortOrder | runtime.Types.Skip
   simcText?: Prisma.SortOrder | runtime.Types.Skip
   spec?: Prisma.SortOrder | runtime.Types.Skip
+  contentHash?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   addonVersion?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   wowVersion?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   exportedAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
@@ -316,6 +342,8 @@ export type SubmissionScalarWhereWithAggregatesInput = {
   characterId?: Prisma.IntWithAggregatesFilter<"Submission"> | number | runtime.Types.Skip
   simcText?: Prisma.StringWithAggregatesFilter<"Submission"> | string | runtime.Types.Skip
   spec?: Prisma.StringWithAggregatesFilter<"Submission"> | string | runtime.Types.Skip
+  contentHash?: Prisma.StringWithAggregatesFilter<"Submission"> | string | runtime.Types.Skip
+  gemId?: Prisma.IntNullableWithAggregatesFilter<"Submission"> | number | null | runtime.Types.Skip
   addonVersion?: Prisma.StringNullableWithAggregatesFilter<"Submission"> | string | null | runtime.Types.Skip
   wowVersion?: Prisma.StringNullableWithAggregatesFilter<"Submission"> | string | null | runtime.Types.Skip
   exportedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Submission"> | Date | string | null | runtime.Types.Skip
@@ -325,6 +353,8 @@ export type SubmissionScalarWhereWithAggregatesInput = {
 export type SubmissionCreateInput = {
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -340,6 +370,8 @@ export type SubmissionUncheckedCreateInput = {
   characterId: number
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -350,6 +382,8 @@ export type SubmissionUncheckedCreateInput = {
 export type SubmissionUpdateInput = {
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -365,6 +399,8 @@ export type SubmissionUncheckedUpdateInput = {
   characterId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -378,6 +414,8 @@ export type SubmissionCreateManyInput = {
   characterId: number
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -387,6 +425,8 @@ export type SubmissionCreateManyInput = {
 export type SubmissionUpdateManyMutationInput = {
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -399,6 +439,8 @@ export type SubmissionUncheckedUpdateManyInput = {
   characterId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -421,6 +463,8 @@ export type SubmissionCountOrderByAggregateInput = {
   characterId?: Prisma.SortOrder | runtime.Types.Skip
   simcText?: Prisma.SortOrder | runtime.Types.Skip
   spec?: Prisma.SortOrder | runtime.Types.Skip
+  contentHash?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrder | runtime.Types.Skip
   addonVersion?: Prisma.SortOrder | runtime.Types.Skip
   wowVersion?: Prisma.SortOrder | runtime.Types.Skip
   exportedAt?: Prisma.SortOrder | runtime.Types.Skip
@@ -430,6 +474,7 @@ export type SubmissionCountOrderByAggregateInput = {
 export type SubmissionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   characterId?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type SubmissionMaxOrderByAggregateInput = {
@@ -438,6 +483,8 @@ export type SubmissionMaxOrderByAggregateInput = {
   characterId?: Prisma.SortOrder | runtime.Types.Skip
   simcText?: Prisma.SortOrder | runtime.Types.Skip
   spec?: Prisma.SortOrder | runtime.Types.Skip
+  contentHash?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrder | runtime.Types.Skip
   addonVersion?: Prisma.SortOrder | runtime.Types.Skip
   wowVersion?: Prisma.SortOrder | runtime.Types.Skip
   exportedAt?: Prisma.SortOrder | runtime.Types.Skip
@@ -450,6 +497,8 @@ export type SubmissionMinOrderByAggregateInput = {
   characterId?: Prisma.SortOrder | runtime.Types.Skip
   simcText?: Prisma.SortOrder | runtime.Types.Skip
   spec?: Prisma.SortOrder | runtime.Types.Skip
+  contentHash?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrder | runtime.Types.Skip
   addonVersion?: Prisma.SortOrder | runtime.Types.Skip
   wowVersion?: Prisma.SortOrder | runtime.Types.Skip
   exportedAt?: Prisma.SortOrder | runtime.Types.Skip
@@ -459,6 +508,7 @@ export type SubmissionMinOrderByAggregateInput = {
 export type SubmissionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   characterId?: Prisma.SortOrder | runtime.Types.Skip
+  gemId?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type SubmissionScalarRelationFilter = {
@@ -567,6 +617,8 @@ export type SubmissionUpdateOneRequiredWithoutJobsNestedInput = {
 export type SubmissionCreateWithoutUserInput = {
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -580,6 +632,8 @@ export type SubmissionUncheckedCreateWithoutUserInput = {
   characterId: number
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -621,6 +675,8 @@ export type SubmissionScalarWhereInput = {
   characterId?: Prisma.IntFilter<"Submission"> | number | runtime.Types.Skip
   simcText?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
   spec?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFilter<"Submission"> | string | runtime.Types.Skip
+  gemId?: Prisma.IntNullableFilter<"Submission"> | number | null | runtime.Types.Skip
   addonVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   wowVersion?: Prisma.StringNullableFilter<"Submission"> | string | null | runtime.Types.Skip
   exportedAt?: Prisma.DateTimeNullableFilter<"Submission"> | Date | string | null | runtime.Types.Skip
@@ -630,6 +686,8 @@ export type SubmissionScalarWhereInput = {
 export type SubmissionCreateWithoutCharacterInput = {
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -643,6 +701,8 @@ export type SubmissionUncheckedCreateWithoutCharacterInput = {
   userId: string
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -678,6 +738,8 @@ export type SubmissionUpdateManyWithWhereWithoutCharacterInput = {
 export type SubmissionCreateWithoutJobsInput = {
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -692,6 +754,8 @@ export type SubmissionUncheckedCreateWithoutJobsInput = {
   characterId: number
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -717,6 +781,8 @@ export type SubmissionUpdateToOneWithWhereWithoutJobsInput = {
 export type SubmissionUpdateWithoutJobsInput = {
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -731,6 +797,8 @@ export type SubmissionUncheckedUpdateWithoutJobsInput = {
   characterId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -742,6 +810,8 @@ export type SubmissionCreateManyUserInput = {
   characterId: number
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -751,6 +821,8 @@ export type SubmissionCreateManyUserInput = {
 export type SubmissionUpdateWithoutUserInput = {
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -764,6 +836,8 @@ export type SubmissionUncheckedUpdateWithoutUserInput = {
   characterId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -776,6 +850,8 @@ export type SubmissionUncheckedUpdateManyWithoutUserInput = {
   characterId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -787,6 +863,8 @@ export type SubmissionCreateManyCharacterInput = {
   userId: string
   simcText: string
   spec: string
+  contentHash?: string | runtime.Types.Skip
+  gemId?: number | null | runtime.Types.Skip
   addonVersion?: string | null | runtime.Types.Skip
   wowVersion?: string | null | runtime.Types.Skip
   exportedAt?: Date | string | null | runtime.Types.Skip
@@ -796,6 +874,8 @@ export type SubmissionCreateManyCharacterInput = {
 export type SubmissionUpdateWithoutCharacterInput = {
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -809,6 +889,8 @@ export type SubmissionUncheckedUpdateWithoutCharacterInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -821,6 +903,8 @@ export type SubmissionUncheckedUpdateManyWithoutCharacterInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   simcText?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   spec?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  gemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   addonVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   wowVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   exportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
@@ -864,6 +948,8 @@ export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   characterId?: boolean | runtime.Types.Skip
   simcText?: boolean | runtime.Types.Skip
   spec?: boolean | runtime.Types.Skip
+  contentHash?: boolean | runtime.Types.Skip
+  gemId?: boolean | runtime.Types.Skip
   addonVersion?: boolean | runtime.Types.Skip
   wowVersion?: boolean | runtime.Types.Skip
   exportedAt?: boolean | runtime.Types.Skip
@@ -880,6 +966,8 @@ export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   characterId?: boolean | runtime.Types.Skip
   simcText?: boolean | runtime.Types.Skip
   spec?: boolean | runtime.Types.Skip
+  contentHash?: boolean | runtime.Types.Skip
+  gemId?: boolean | runtime.Types.Skip
   addonVersion?: boolean | runtime.Types.Skip
   wowVersion?: boolean | runtime.Types.Skip
   exportedAt?: boolean | runtime.Types.Skip
@@ -894,6 +982,8 @@ export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   characterId?: boolean | runtime.Types.Skip
   simcText?: boolean | runtime.Types.Skip
   spec?: boolean | runtime.Types.Skip
+  contentHash?: boolean | runtime.Types.Skip
+  gemId?: boolean | runtime.Types.Skip
   addonVersion?: boolean | runtime.Types.Skip
   wowVersion?: boolean | runtime.Types.Skip
   exportedAt?: boolean | runtime.Types.Skip
@@ -908,13 +998,15 @@ export type SubmissionSelectScalar = {
   characterId?: boolean | runtime.Types.Skip
   simcText?: boolean | runtime.Types.Skip
   spec?: boolean | runtime.Types.Skip
+  contentHash?: boolean | runtime.Types.Skip
+  gemId?: boolean | runtime.Types.Skip
   addonVersion?: boolean | runtime.Types.Skip
   wowVersion?: boolean | runtime.Types.Skip
   exportedAt?: boolean | runtime.Types.Skip
   createdAt?: boolean | runtime.Types.Skip
 }
 
-export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "characterId" | "simcText" | "spec" | "addonVersion" | "wowVersion" | "exportedAt" | "createdAt", ExtArgs["result"]["submission"], runtime.Types.Skip>
+export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "characterId" | "simcText" | "spec" | "contentHash" | "gemId" | "addonVersion" | "wowVersion" | "exportedAt" | "createdAt", ExtArgs["result"]["submission"], runtime.Types.Skip>
 export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs> | runtime.Types.Skip
   character?: boolean | Prisma.RosterCharacterDefaultArgs<ExtArgs> | runtime.Types.Skip
@@ -943,6 +1035,16 @@ export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     characterId: number
     simcText: string
     spec: string
+    /**
+     * SHA-256 of the raw paste. Deduping on exact bytes is what makes a refresh or a double-click free.
+     * Defaulted rather than required so the migration cannot fail against a non-empty table; a legacy
+     * empty hash never matches a real one.
+     */
+    contentHash: string
+    /**
+     * Preferred gem this paste was submitted with, so an admin requeue reproduces it faithfully.
+     */
+    gemId: number | null
     /**
      * From Raidbots' `profile.provenance.addonInfo`, used by the staleness gate.
      */
@@ -1381,6 +1483,8 @@ export interface SubmissionFieldRefs {
   readonly characterId: Prisma.FieldRef<"Submission", 'Int'>
   readonly simcText: Prisma.FieldRef<"Submission", 'String'>
   readonly spec: Prisma.FieldRef<"Submission", 'String'>
+  readonly contentHash: Prisma.FieldRef<"Submission", 'String'>
+  readonly gemId: Prisma.FieldRef<"Submission", 'Int'>
   readonly addonVersion: Prisma.FieldRef<"Submission", 'String'>
   readonly wowVersion: Prisma.FieldRef<"Submission", 'String'>
   readonly exportedAt: Prisma.FieldRef<"Submission", 'DateTime'>

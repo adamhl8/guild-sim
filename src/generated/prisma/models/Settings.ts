@@ -30,7 +30,6 @@ export type SettingsAvgAggregateOutputType = {
   id: number | null
   fightLength: number | null
   enemyCount: number | null
-  concurrency: number | null
   submitsPerHour: number | null
   pollIntervalMs: number | null
   maxPasteAgeDays: number | null
@@ -41,7 +40,6 @@ export type SettingsSumAggregateOutputType = {
   id: number | null
   fightLength: number | null
   enemyCount: number | null
-  concurrency: number | null
   submitsPerHour: number | null
   pollIntervalMs: number | null
   maxPasteAgeDays: number | null
@@ -52,7 +50,6 @@ export type SettingsMinAggregateOutputType = {
   id: number | null
   wowauditConfigurationName: string | null
   replaceManualEdits: boolean | null
-  ranks: string | null
   adminRanks: string | null
   source: string | null
   difficulties: string | null
@@ -61,7 +58,6 @@ export type SettingsMinAggregateOutputType = {
   fightStyle: string | null
   fightLength: number | null
   enemyCount: number | null
-  concurrency: number | null
   submitsPerHour: number | null
   pollIntervalMs: number | null
   buildCheck: string | null
@@ -76,7 +72,6 @@ export type SettingsMaxAggregateOutputType = {
   id: number | null
   wowauditConfigurationName: string | null
   replaceManualEdits: boolean | null
-  ranks: string | null
   adminRanks: string | null
   source: string | null
   difficulties: string | null
@@ -85,7 +80,6 @@ export type SettingsMaxAggregateOutputType = {
   fightStyle: string | null
   fightLength: number | null
   enemyCount: number | null
-  concurrency: number | null
   submitsPerHour: number | null
   pollIntervalMs: number | null
   buildCheck: string | null
@@ -100,7 +94,6 @@ export type SettingsCountAggregateOutputType = {
   id: number
   wowauditConfigurationName: number
   replaceManualEdits: number
-  ranks: number
   adminRanks: number
   source: number
   difficulties: number
@@ -109,7 +102,6 @@ export type SettingsCountAggregateOutputType = {
   fightStyle: number
   fightLength: number
   enemyCount: number
-  concurrency: number
   submitsPerHour: number
   pollIntervalMs: number
   buildCheck: number
@@ -126,7 +118,6 @@ export type SettingsAvgAggregateInputType = {
   id?: true | runtime.Types.Skip
   fightLength?: true | runtime.Types.Skip
   enemyCount?: true | runtime.Types.Skip
-  concurrency?: true | runtime.Types.Skip
   submitsPerHour?: true | runtime.Types.Skip
   pollIntervalMs?: true | runtime.Types.Skip
   maxPasteAgeDays?: true | runtime.Types.Skip
@@ -137,7 +128,6 @@ export type SettingsSumAggregateInputType = {
   id?: true | runtime.Types.Skip
   fightLength?: true | runtime.Types.Skip
   enemyCount?: true | runtime.Types.Skip
-  concurrency?: true | runtime.Types.Skip
   submitsPerHour?: true | runtime.Types.Skip
   pollIntervalMs?: true | runtime.Types.Skip
   maxPasteAgeDays?: true | runtime.Types.Skip
@@ -148,7 +138,6 @@ export type SettingsMinAggregateInputType = {
   id?: true | runtime.Types.Skip
   wowauditConfigurationName?: true | runtime.Types.Skip
   replaceManualEdits?: true | runtime.Types.Skip
-  ranks?: true | runtime.Types.Skip
   adminRanks?: true | runtime.Types.Skip
   source?: true | runtime.Types.Skip
   difficulties?: true | runtime.Types.Skip
@@ -157,7 +146,6 @@ export type SettingsMinAggregateInputType = {
   fightStyle?: true | runtime.Types.Skip
   fightLength?: true | runtime.Types.Skip
   enemyCount?: true | runtime.Types.Skip
-  concurrency?: true | runtime.Types.Skip
   submitsPerHour?: true | runtime.Types.Skip
   pollIntervalMs?: true | runtime.Types.Skip
   buildCheck?: true | runtime.Types.Skip
@@ -172,7 +160,6 @@ export type SettingsMaxAggregateInputType = {
   id?: true | runtime.Types.Skip
   wowauditConfigurationName?: true | runtime.Types.Skip
   replaceManualEdits?: true | runtime.Types.Skip
-  ranks?: true | runtime.Types.Skip
   adminRanks?: true | runtime.Types.Skip
   source?: true | runtime.Types.Skip
   difficulties?: true | runtime.Types.Skip
@@ -181,7 +168,6 @@ export type SettingsMaxAggregateInputType = {
   fightStyle?: true | runtime.Types.Skip
   fightLength?: true | runtime.Types.Skip
   enemyCount?: true | runtime.Types.Skip
-  concurrency?: true | runtime.Types.Skip
   submitsPerHour?: true | runtime.Types.Skip
   pollIntervalMs?: true | runtime.Types.Skip
   buildCheck?: true | runtime.Types.Skip
@@ -196,7 +182,6 @@ export type SettingsCountAggregateInputType = {
   id?: true | runtime.Types.Skip
   wowauditConfigurationName?: true | runtime.Types.Skip
   replaceManualEdits?: true | runtime.Types.Skip
-  ranks?: true | runtime.Types.Skip
   adminRanks?: true | runtime.Types.Skip
   source?: true | runtime.Types.Skip
   difficulties?: true | runtime.Types.Skip
@@ -205,7 +190,6 @@ export type SettingsCountAggregateInputType = {
   fightStyle?: true | runtime.Types.Skip
   fightLength?: true | runtime.Types.Skip
   enemyCount?: true | runtime.Types.Skip
-  concurrency?: true | runtime.Types.Skip
   submitsPerHour?: true | runtime.Types.Skip
   pollIntervalMs?: true | runtime.Types.Skip
   buildCheck?: true | runtime.Types.Skip
@@ -307,7 +291,6 @@ export type SettingsGroupByOutputType = {
   id: number
   wowauditConfigurationName: string
   replaceManualEdits: boolean
-  ranks: string
   adminRanks: string
   source: string
   difficulties: string
@@ -316,7 +299,6 @@ export type SettingsGroupByOutputType = {
   fightStyle: string
   fightLength: number
   enemyCount: number
-  concurrency: number
   submitsPerHour: number
   pollIntervalMs: number
   buildCheck: string
@@ -354,7 +336,6 @@ export type SettingsWhereInput = {
   id?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFilter<"Settings"> | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   source?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   difficulties?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
@@ -363,7 +344,6 @@ export type SettingsWhereInput = {
   fightStyle?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   fightLength?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
@@ -378,7 +358,6 @@ export type SettingsOrderByWithRelationInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.SortOrder | runtime.Types.Skip
   replaceManualEdits?: Prisma.SortOrder | runtime.Types.Skip
-  ranks?: Prisma.SortOrder | runtime.Types.Skip
   adminRanks?: Prisma.SortOrder | runtime.Types.Skip
   source?: Prisma.SortOrder | runtime.Types.Skip
   difficulties?: Prisma.SortOrder | runtime.Types.Skip
@@ -387,7 +366,6 @@ export type SettingsOrderByWithRelationInput = {
   fightStyle?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   buildCheck?: Prisma.SortOrder | runtime.Types.Skip
@@ -405,7 +383,6 @@ export type SettingsWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SettingsWhereInput | Prisma.SettingsWhereInput[] | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFilter<"Settings"> | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   source?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   difficulties?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
@@ -414,7 +391,6 @@ export type SettingsWhereUniqueInput = Prisma.AtLeast<{
   fightStyle?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
   fightLength?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFilter<"Settings"> | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFilter<"Settings"> | string | runtime.Types.Skip
@@ -429,7 +405,6 @@ export type SettingsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.SortOrder | runtime.Types.Skip
   replaceManualEdits?: Prisma.SortOrder | runtime.Types.Skip
-  ranks?: Prisma.SortOrder | runtime.Types.Skip
   adminRanks?: Prisma.SortOrder | runtime.Types.Skip
   source?: Prisma.SortOrder | runtime.Types.Skip
   difficulties?: Prisma.SortOrder | runtime.Types.Skip
@@ -438,7 +413,6 @@ export type SettingsOrderByWithAggregationInput = {
   fightStyle?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   buildCheck?: Prisma.SortOrder | runtime.Types.Skip
@@ -461,7 +435,6 @@ export type SettingsScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolWithAggregatesFilter<"Settings"> | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
   adminRanks?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
   source?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
   difficulties?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
@@ -470,7 +443,6 @@ export type SettingsScalarWhereWithAggregatesInput = {
   fightStyle?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
   fightLength?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
   enemyCount?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
-  concurrency?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntWithAggregatesFilter<"Settings"> | number | runtime.Types.Skip
   buildCheck?: Prisma.StringWithAggregatesFilter<"Settings"> | string | runtime.Types.Skip
@@ -485,7 +457,6 @@ export type SettingsCreateInput = {
   id?: number | runtime.Types.Skip
   wowauditConfigurationName?: string | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: string | runtime.Types.Skip
   adminRanks?: string | runtime.Types.Skip
   source?: string | runtime.Types.Skip
   difficulties?: string | runtime.Types.Skip
@@ -494,7 +465,6 @@ export type SettingsCreateInput = {
   fightStyle?: string | runtime.Types.Skip
   fightLength?: number | runtime.Types.Skip
   enemyCount?: number | runtime.Types.Skip
-  concurrency?: number | runtime.Types.Skip
   submitsPerHour?: number | runtime.Types.Skip
   pollIntervalMs?: number | runtime.Types.Skip
   buildCheck?: string | runtime.Types.Skip
@@ -509,7 +479,6 @@ export type SettingsUncheckedCreateInput = {
   id?: number | runtime.Types.Skip
   wowauditConfigurationName?: string | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: string | runtime.Types.Skip
   adminRanks?: string | runtime.Types.Skip
   source?: string | runtime.Types.Skip
   difficulties?: string | runtime.Types.Skip
@@ -518,7 +487,6 @@ export type SettingsUncheckedCreateInput = {
   fightStyle?: string | runtime.Types.Skip
   fightLength?: number | runtime.Types.Skip
   enemyCount?: number | runtime.Types.Skip
-  concurrency?: number | runtime.Types.Skip
   submitsPerHour?: number | runtime.Types.Skip
   pollIntervalMs?: number | runtime.Types.Skip
   buildCheck?: string | runtime.Types.Skip
@@ -533,7 +501,6 @@ export type SettingsUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFieldUpdateOperationsInput | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   source?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   difficulties?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -542,7 +509,6 @@ export type SettingsUpdateInput = {
   fightStyle?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   fightLength?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -557,7 +523,6 @@ export type SettingsUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFieldUpdateOperationsInput | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   source?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   difficulties?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -566,7 +531,6 @@ export type SettingsUncheckedUpdateInput = {
   fightStyle?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   fightLength?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -581,7 +545,6 @@ export type SettingsCreateManyInput = {
   id?: number | runtime.Types.Skip
   wowauditConfigurationName?: string | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: string | runtime.Types.Skip
   adminRanks?: string | runtime.Types.Skip
   source?: string | runtime.Types.Skip
   difficulties?: string | runtime.Types.Skip
@@ -590,7 +553,6 @@ export type SettingsCreateManyInput = {
   fightStyle?: string | runtime.Types.Skip
   fightLength?: number | runtime.Types.Skip
   enemyCount?: number | runtime.Types.Skip
-  concurrency?: number | runtime.Types.Skip
   submitsPerHour?: number | runtime.Types.Skip
   pollIntervalMs?: number | runtime.Types.Skip
   buildCheck?: string | runtime.Types.Skip
@@ -605,7 +567,6 @@ export type SettingsUpdateManyMutationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFieldUpdateOperationsInput | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   source?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   difficulties?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -614,7 +575,6 @@ export type SettingsUpdateManyMutationInput = {
   fightStyle?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   fightLength?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -629,7 +589,6 @@ export type SettingsUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   replaceManualEdits?: Prisma.BoolFieldUpdateOperationsInput | boolean | runtime.Types.Skip
-  ranks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   adminRanks?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   source?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   difficulties?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -638,7 +597,6 @@ export type SettingsUncheckedUpdateManyInput = {
   fightStyle?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   fightLength?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   enemyCount?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
-  concurrency?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   submitsPerHour?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   pollIntervalMs?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   buildCheck?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
@@ -653,7 +611,6 @@ export type SettingsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.SortOrder | runtime.Types.Skip
   replaceManualEdits?: Prisma.SortOrder | runtime.Types.Skip
-  ranks?: Prisma.SortOrder | runtime.Types.Skip
   adminRanks?: Prisma.SortOrder | runtime.Types.Skip
   source?: Prisma.SortOrder | runtime.Types.Skip
   difficulties?: Prisma.SortOrder | runtime.Types.Skip
@@ -662,7 +619,6 @@ export type SettingsCountOrderByAggregateInput = {
   fightStyle?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   buildCheck?: Prisma.SortOrder | runtime.Types.Skip
@@ -677,7 +633,6 @@ export type SettingsAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   maxPasteAgeDays?: Prisma.SortOrder | runtime.Types.Skip
@@ -688,7 +643,6 @@ export type SettingsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.SortOrder | runtime.Types.Skip
   replaceManualEdits?: Prisma.SortOrder | runtime.Types.Skip
-  ranks?: Prisma.SortOrder | runtime.Types.Skip
   adminRanks?: Prisma.SortOrder | runtime.Types.Skip
   source?: Prisma.SortOrder | runtime.Types.Skip
   difficulties?: Prisma.SortOrder | runtime.Types.Skip
@@ -697,7 +651,6 @@ export type SettingsMaxOrderByAggregateInput = {
   fightStyle?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   buildCheck?: Prisma.SortOrder | runtime.Types.Skip
@@ -712,7 +665,6 @@ export type SettingsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   wowauditConfigurationName?: Prisma.SortOrder | runtime.Types.Skip
   replaceManualEdits?: Prisma.SortOrder | runtime.Types.Skip
-  ranks?: Prisma.SortOrder | runtime.Types.Skip
   adminRanks?: Prisma.SortOrder | runtime.Types.Skip
   source?: Prisma.SortOrder | runtime.Types.Skip
   difficulties?: Prisma.SortOrder | runtime.Types.Skip
@@ -721,7 +673,6 @@ export type SettingsMinOrderByAggregateInput = {
   fightStyle?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   buildCheck?: Prisma.SortOrder | runtime.Types.Skip
@@ -736,7 +687,6 @@ export type SettingsSumOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
   fightLength?: Prisma.SortOrder | runtime.Types.Skip
   enemyCount?: Prisma.SortOrder | runtime.Types.Skip
-  concurrency?: Prisma.SortOrder | runtime.Types.Skip
   submitsPerHour?: Prisma.SortOrder | runtime.Types.Skip
   pollIntervalMs?: Prisma.SortOrder | runtime.Types.Skip
   maxPasteAgeDays?: Prisma.SortOrder | runtime.Types.Skip
@@ -749,7 +699,6 @@ export type SettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean | runtime.Types.Skip
   wowauditConfigurationName?: boolean | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: boolean | runtime.Types.Skip
   adminRanks?: boolean | runtime.Types.Skip
   source?: boolean | runtime.Types.Skip
   difficulties?: boolean | runtime.Types.Skip
@@ -758,7 +707,6 @@ export type SettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   fightStyle?: boolean | runtime.Types.Skip
   fightLength?: boolean | runtime.Types.Skip
   enemyCount?: boolean | runtime.Types.Skip
-  concurrency?: boolean | runtime.Types.Skip
   submitsPerHour?: boolean | runtime.Types.Skip
   pollIntervalMs?: boolean | runtime.Types.Skip
   buildCheck?: boolean | runtime.Types.Skip
@@ -773,7 +721,6 @@ export type SettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean | runtime.Types.Skip
   wowauditConfigurationName?: boolean | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: boolean | runtime.Types.Skip
   adminRanks?: boolean | runtime.Types.Skip
   source?: boolean | runtime.Types.Skip
   difficulties?: boolean | runtime.Types.Skip
@@ -782,7 +729,6 @@ export type SettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   fightStyle?: boolean | runtime.Types.Skip
   fightLength?: boolean | runtime.Types.Skip
   enemyCount?: boolean | runtime.Types.Skip
-  concurrency?: boolean | runtime.Types.Skip
   submitsPerHour?: boolean | runtime.Types.Skip
   pollIntervalMs?: boolean | runtime.Types.Skip
   buildCheck?: boolean | runtime.Types.Skip
@@ -797,7 +743,6 @@ export type SettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean | runtime.Types.Skip
   wowauditConfigurationName?: boolean | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: boolean | runtime.Types.Skip
   adminRanks?: boolean | runtime.Types.Skip
   source?: boolean | runtime.Types.Skip
   difficulties?: boolean | runtime.Types.Skip
@@ -806,7 +751,6 @@ export type SettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   fightStyle?: boolean | runtime.Types.Skip
   fightLength?: boolean | runtime.Types.Skip
   enemyCount?: boolean | runtime.Types.Skip
-  concurrency?: boolean | runtime.Types.Skip
   submitsPerHour?: boolean | runtime.Types.Skip
   pollIntervalMs?: boolean | runtime.Types.Skip
   buildCheck?: boolean | runtime.Types.Skip
@@ -821,7 +765,6 @@ export type SettingsSelectScalar = {
   id?: boolean | runtime.Types.Skip
   wowauditConfigurationName?: boolean | runtime.Types.Skip
   replaceManualEdits?: boolean | runtime.Types.Skip
-  ranks?: boolean | runtime.Types.Skip
   adminRanks?: boolean | runtime.Types.Skip
   source?: boolean | runtime.Types.Skip
   difficulties?: boolean | runtime.Types.Skip
@@ -830,7 +773,6 @@ export type SettingsSelectScalar = {
   fightStyle?: boolean | runtime.Types.Skip
   fightLength?: boolean | runtime.Types.Skip
   enemyCount?: boolean | runtime.Types.Skip
-  concurrency?: boolean | runtime.Types.Skip
   submitsPerHour?: boolean | runtime.Types.Skip
   pollIntervalMs?: boolean | runtime.Types.Skip
   buildCheck?: boolean | runtime.Types.Skip
@@ -841,7 +783,7 @@ export type SettingsSelectScalar = {
   updatedAt?: boolean | runtime.Types.Skip
 }
 
-export type SettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "wowauditConfigurationName" | "replaceManualEdits" | "ranks" | "adminRanks" | "source" | "difficulties" | "simcVersion" | "iterations" | "fightStyle" | "fightLength" | "enemyCount" | "concurrency" | "submitsPerHour" | "pollIntervalMs" | "buildCheck" | "maxPasteAgeDays" | "liveWowBuild" | "region" | "currentSeasonNumber" | "updatedAt", ExtArgs["result"]["settings"], runtime.Types.Skip>
+export type SettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "wowauditConfigurationName" | "replaceManualEdits" | "adminRanks" | "source" | "difficulties" | "simcVersion" | "iterations" | "fightStyle" | "fightLength" | "enemyCount" | "submitsPerHour" | "pollIntervalMs" | "buildCheck" | "maxPasteAgeDays" | "liveWowBuild" | "region" | "currentSeasonNumber" | "updatedAt", ExtArgs["result"]["settings"], runtime.Types.Skip>
 
 export type $SettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Settings"
@@ -851,9 +793,8 @@ export type $SettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     wowauditConfigurationName: string
     replaceManualEdits: boolean
     /**
-     * Comma-separated, matched against wowaudit ranks.
+     * Comma-separated wowaudit ranks that grant the admin dashboard.
      */
-    ranks: string
     adminRanks: string
     /**
      * A Raidbots source name, or "season" for the current season's aggregate.
@@ -868,7 +809,6 @@ export type $SettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     fightStyle: string
     fightLength: number
     enemyCount: number
-    concurrency: number
     submitsPerHour: number
     pollIntervalMs: number
     /**
@@ -1315,7 +1255,6 @@ export interface SettingsFieldRefs {
   readonly id: Prisma.FieldRef<"Settings", 'Int'>
   readonly wowauditConfigurationName: Prisma.FieldRef<"Settings", 'String'>
   readonly replaceManualEdits: Prisma.FieldRef<"Settings", 'Boolean'>
-  readonly ranks: Prisma.FieldRef<"Settings", 'String'>
   readonly adminRanks: Prisma.FieldRef<"Settings", 'String'>
   readonly source: Prisma.FieldRef<"Settings", 'String'>
   readonly difficulties: Prisma.FieldRef<"Settings", 'String'>
@@ -1324,7 +1263,6 @@ export interface SettingsFieldRefs {
   readonly fightStyle: Prisma.FieldRef<"Settings", 'String'>
   readonly fightLength: Prisma.FieldRef<"Settings", 'Int'>
   readonly enemyCount: Prisma.FieldRef<"Settings", 'Int'>
-  readonly concurrency: Prisma.FieldRef<"Settings", 'Int'>
   readonly submitsPerHour: Prisma.FieldRef<"Settings", 'Int'>
   readonly pollIntervalMs: Prisma.FieldRef<"Settings", 'Int'>
   readonly buildCheck: Prisma.FieldRef<"Settings", 'String'>

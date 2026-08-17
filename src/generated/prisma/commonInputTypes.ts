@@ -155,6 +155,17 @@ export type IntFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntFilter<$PrismaModel> | number | runtime.Types.Skip
 }
 
+export type IntNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null | runtime.Types.Skip
+  in?: number[] | null | runtime.Types.Skip
+  notIn?: number[] | null | runtime.Types.Skip
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
+  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null | runtime.Types.Skip
+}
+
 export type IntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
   in?: number[] | runtime.Types.Skip
@@ -169,17 +180,6 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedIntFilter<$PrismaModel> | runtime.Types.Skip
   _min?: Prisma.NestedIntFilter<$PrismaModel> | runtime.Types.Skip
   _max?: Prisma.NestedIntFilter<$PrismaModel> | runtime.Types.Skip
-}
-
-export type IntNullableFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null | runtime.Types.Skip
-  in?: number[] | null | runtime.Types.Skip
-  notIn?: number[] | null | runtime.Types.Skip
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel> | runtime.Types.Skip
-  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null | runtime.Types.Skip
 }
 
 export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {

@@ -410,6 +410,7 @@ export const ModelName = {
   CharacterClaim: 'CharacterClaim',
   Submission: 'Submission',
   SimJob: 'SimJob',
+  Gem: 'Gem',
   Source: 'Source',
   Settings: 'Settings',
   QuotaState: 'QuotaState'
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "rosterCharacter" | "characterClaim" | "submission" | "simJob" | "source" | "settings" | "quotaState"
+    modelProps: "user" | "session" | "account" | "verification" | "rosterCharacter" | "characterClaim" | "submission" | "simJob" | "gem" | "source" | "settings" | "quotaState"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1024,6 +1025,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Gem: {
+      payload: Prisma.$GemPayload<ExtArgs>
+      fields: Prisma.GemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        findFirst: {
+          args: Prisma.GemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        findMany: {
+          args: Prisma.GemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>[]
+        }
+        create: {
+          args: Prisma.GemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        createMany: {
+          args: Prisma.GemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>[]
+        }
+        delete: {
+          args: Prisma.GemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        update: {
+          args: Prisma.GemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        deleteMany: {
+          args: Prisma.GemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>[]
+        }
+        upsert: {
+          args: Prisma.GemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GemPayload>
+        }
+        aggregate: {
+          args: Prisma.GemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGem>
+        }
+        groupBy: {
+          args: Prisma.GemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GemCountAggregateOutputType> | number
+        }
+      }
+    }
     Source: {
       payload: Prisma.$SourcePayload<ExtArgs>
       fields: Prisma.SourceFieldRefs
@@ -1350,6 +1425,7 @@ export const RosterCharacterScalarFieldEnum = {
   rank: 'rank',
   blizzardId: 'blizzardId',
   unsupportedSpec: 'unsupportedSpec',
+  preferredGemId: 'preferredGemId',
   syncedAt: 'syncedAt'
 } as const
 
@@ -1371,6 +1447,8 @@ export const SubmissionScalarFieldEnum = {
   characterId: 'characterId',
   simcText: 'simcText',
   spec: 'spec',
+  contentHash: 'contentHash',
+  gemId: 'gemId',
   addonVersion: 'addonVersion',
   wowVersion: 'wowVersion',
   exportedAt: 'exportedAt',
@@ -1397,6 +1475,17 @@ export const SimJobScalarFieldEnum = {
 export type SimJobScalarFieldEnum = (typeof SimJobScalarFieldEnum)[keyof typeof SimJobScalarFieldEnum]
 
 
+export const GemScalarFieldEnum = {
+  itemId: 'itemId',
+  displayName: 'displayName',
+  itemName: 'itemName',
+  color: 'color',
+  syncedAt: 'syncedAt'
+} as const
+
+export type GemScalarFieldEnum = (typeof GemScalarFieldEnum)[keyof typeof GemScalarFieldEnum]
+
+
 export const SourceScalarFieldEnum = {
   raidbotsId: 'raidbotsId',
   name: 'name',
@@ -1412,7 +1501,6 @@ export const SettingsScalarFieldEnum = {
   id: 'id',
   wowauditConfigurationName: 'wowauditConfigurationName',
   replaceManualEdits: 'replaceManualEdits',
-  ranks: 'ranks',
   adminRanks: 'adminRanks',
   source: 'source',
   difficulties: 'difficulties',
@@ -1421,7 +1509,6 @@ export const SettingsScalarFieldEnum = {
   fightStyle: 'fightStyle',
   fightLength: 'fightLength',
   enemyCount: 'enemyCount',
-  concurrency: 'concurrency',
   submitsPerHour: 'submitsPerHour',
   pollIntervalMs: 'pollIntervalMs',
   buildCheck: 'buildCheck',
@@ -1659,6 +1746,7 @@ export type GlobalOmitConfig = {
   characterClaim?: Prisma.CharacterClaimOmit
   submission?: Prisma.SubmissionOmit
   simJob?: Prisma.SimJobOmit
+  gem?: Prisma.GemOmit
   source?: Prisma.SourceOmit
   settings?: Prisma.SettingsOmit
   quotaState?: Prisma.QuotaStateOmit

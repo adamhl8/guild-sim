@@ -156,6 +156,7 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
     difficulty: job.difficulty,
     sim: settings.sim,
     upgradeLevel: upgrade.bonusId,
+    gemItemId: submission.gemId ?? undefined,
     clientVersion,
   }
 

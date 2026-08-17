@@ -45,9 +45,3 @@ export const getCharacters = async (client: WowauditClient): Promise<Result<Char
       blizzardId: character.blizzard_id ?? "",
     }))
 }
-
-/** `rank` is the live guild rank string (GM/Officer/Raider/Trial), not wowaudit's documented enum. */
-export const filterByRank = (characters: Character[], ranks: string[]): Character[] => {
-  const allowed = new Set(ranks.map((rank) => rank.toLowerCase()))
-  return characters.filter((character) => allowed.has(character.rank.toLowerCase()))
-}

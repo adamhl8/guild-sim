@@ -355,14 +355,6 @@ export type SourceSumOrderByAggregateInput = {
   seasonNumber?: Prisma.SortOrder | runtime.Types.Skip
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null | runtime.Types.Skip
-  increment?: number | runtime.Types.Skip
-  decrement?: number | runtime.Types.Skip
-  multiply?: number | runtime.Types.Skip
-  divide?: number | runtime.Types.Skip
-}
-
 
 
 export type SourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{

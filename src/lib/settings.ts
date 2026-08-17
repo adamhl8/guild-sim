@@ -18,12 +18,11 @@ export interface SimOptions {
 
 export interface ResolvedSettings {
   wowaudit: { configurationName: string; replaceManualEdits: boolean }
-  ranks: string[]
   adminRanks: string[]
   source: string
   difficulties: Difficulty[]
   sim: SimOptions
-  runner: { concurrency: number; submitsPerHour: number; pollIntervalMs: number }
+  runner: { submitsPerHour: number; pollIntervalMs: number }
   buildCheck: BuildCheck
   maxPasteAgeDays: number
   liveWowBuild: string | undefined
@@ -58,7 +57,6 @@ export const getSettings = async (): Promise<ResolvedSettings> => {
       configurationName: row.wowauditConfigurationName,
       replaceManualEdits: row.replaceManualEdits,
     },
-    ranks: splitList(row.ranks),
     adminRanks: splitList(row.adminRanks),
     source: row.source,
     difficulties: splitList(row.difficulties).filter(isDifficulty),
@@ -70,7 +68,6 @@ export const getSettings = async (): Promise<ResolvedSettings> => {
       enemyCount: row.enemyCount,
     },
     runner: {
-      concurrency: row.concurrency,
       submitsPerHour: row.submitsPerHour,
       pollIntervalMs: row.pollIntervalMs,
     },

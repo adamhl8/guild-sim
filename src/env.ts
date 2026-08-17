@@ -35,6 +35,8 @@ export const env = parseEnv(
      * a single-hop X-Forwarded-For, and rate limiting falls back to one shared bucket.
      */
     TRUSTED_PROXIES: "string = ''",
+    // Read by the node adapter from process.env, not by this app. Declared so a typo like PORT=abc
+    // fails at boot instead of resolving to NaN inside the adapter.
     PORT: "number = 4321",
   }).merge(BaseEnv),
 )

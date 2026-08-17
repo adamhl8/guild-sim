@@ -28,10 +28,12 @@ export type AggregateRosterCharacter = {
 
 export type RosterCharacterAvgAggregateOutputType = {
   id: number | null
+  preferredGemId: number | null
 }
 
 export type RosterCharacterSumAggregateOutputType = {
   id: number | null
+  preferredGemId: number | null
 }
 
 export type RosterCharacterMinAggregateOutputType = {
@@ -43,6 +45,7 @@ export type RosterCharacterMinAggregateOutputType = {
   rank: string | null
   blizzardId: string | null
   unsupportedSpec: string | null
+  preferredGemId: number | null
   syncedAt: Date | null
 }
 
@@ -55,6 +58,7 @@ export type RosterCharacterMaxAggregateOutputType = {
   rank: string | null
   blizzardId: string | null
   unsupportedSpec: string | null
+  preferredGemId: number | null
   syncedAt: Date | null
 }
 
@@ -67,6 +71,7 @@ export type RosterCharacterCountAggregateOutputType = {
   rank: number
   blizzardId: number
   unsupportedSpec: number
+  preferredGemId: number
   syncedAt: number
   _all: number
 }
@@ -74,10 +79,12 @@ export type RosterCharacterCountAggregateOutputType = {
 
 export type RosterCharacterAvgAggregateInputType = {
   id?: true | runtime.Types.Skip
+  preferredGemId?: true | runtime.Types.Skip
 }
 
 export type RosterCharacterSumAggregateInputType = {
   id?: true | runtime.Types.Skip
+  preferredGemId?: true | runtime.Types.Skip
 }
 
 export type RosterCharacterMinAggregateInputType = {
@@ -89,6 +96,7 @@ export type RosterCharacterMinAggregateInputType = {
   rank?: true | runtime.Types.Skip
   blizzardId?: true | runtime.Types.Skip
   unsupportedSpec?: true | runtime.Types.Skip
+  preferredGemId?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
 }
 
@@ -101,6 +109,7 @@ export type RosterCharacterMaxAggregateInputType = {
   rank?: true | runtime.Types.Skip
   blizzardId?: true | runtime.Types.Skip
   unsupportedSpec?: true | runtime.Types.Skip
+  preferredGemId?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
 }
 
@@ -113,6 +122,7 @@ export type RosterCharacterCountAggregateInputType = {
   rank?: true | runtime.Types.Skip
   blizzardId?: true | runtime.Types.Skip
   unsupportedSpec?: true | runtime.Types.Skip
+  preferredGemId?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
   _all?: true | runtime.Types.Skip
 }
@@ -212,6 +222,7 @@ export type RosterCharacterGroupByOutputType = {
   rank: string
   blizzardId: string
   unsupportedSpec: string | null
+  preferredGemId: number | null
   syncedAt: Date
   _count: RosterCharacterCountAggregateOutputType | null
   _avg: RosterCharacterAvgAggregateOutputType | null
@@ -247,6 +258,7 @@ export type RosterCharacterWhereInput = {
   rank?: Prisma.StringFilter<"RosterCharacter"> | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFilter<"RosterCharacter"> | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.StringNullableFilter<"RosterCharacter"> | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.IntNullableFilter<"RosterCharacter"> | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFilter<"RosterCharacter"> | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimListRelationFilter | runtime.Types.Skip
   submissions?: Prisma.SubmissionListRelationFilter | runtime.Types.Skip
@@ -261,6 +273,7 @@ export type RosterCharacterOrderByWithRelationInput = {
   rank?: Prisma.SortOrder | runtime.Types.Skip
   blizzardId?: Prisma.SortOrder | runtime.Types.Skip
   unsupportedSpec?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
   claims?: Prisma.CharacterClaimOrderByRelationAggregateInput | runtime.Types.Skip
   submissions?: Prisma.SubmissionOrderByRelationAggregateInput | runtime.Types.Skip
@@ -278,6 +291,7 @@ export type RosterCharacterWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringFilter<"RosterCharacter"> | string | runtime.Types.Skip
   rank?: Prisma.StringFilter<"RosterCharacter"> | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.StringNullableFilter<"RosterCharacter"> | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.IntNullableFilter<"RosterCharacter"> | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFilter<"RosterCharacter"> | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimListRelationFilter | runtime.Types.Skip
   submissions?: Prisma.SubmissionListRelationFilter | runtime.Types.Skip
@@ -292,6 +306,7 @@ export type RosterCharacterOrderByWithAggregationInput = {
   rank?: Prisma.SortOrder | runtime.Types.Skip
   blizzardId?: Prisma.SortOrder | runtime.Types.Skip
   unsupportedSpec?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
   _count?: Prisma.RosterCharacterCountOrderByAggregateInput | runtime.Types.Skip
   _avg?: Prisma.RosterCharacterAvgOrderByAggregateInput | runtime.Types.Skip
@@ -312,6 +327,7 @@ export type RosterCharacterScalarWhereWithAggregatesInput = {
   rank?: Prisma.StringWithAggregatesFilter<"RosterCharacter"> | string | runtime.Types.Skip
   blizzardId?: Prisma.StringWithAggregatesFilter<"RosterCharacter"> | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.StringNullableWithAggregatesFilter<"RosterCharacter"> | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.IntNullableWithAggregatesFilter<"RosterCharacter"> | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeWithAggregatesFilter<"RosterCharacter"> | Date | string | runtime.Types.Skip
 }
 
@@ -324,6 +340,7 @@ export type RosterCharacterCreateInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   claims?: Prisma.CharacterClaimCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
   submissions?: Prisma.SubmissionCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
@@ -338,6 +355,7 @@ export type RosterCharacterUncheckedCreateInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   claims?: Prisma.CharacterClaimUncheckedCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
@@ -352,6 +370,7 @@ export type RosterCharacterUpdateInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
   submissions?: Prisma.SubmissionUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
@@ -366,6 +385,7 @@ export type RosterCharacterUncheckedUpdateInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimUncheckedUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
@@ -380,6 +400,7 @@ export type RosterCharacterCreateManyInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
 }
 
@@ -392,6 +413,7 @@ export type RosterCharacterUpdateManyMutationInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -404,6 +426,7 @@ export type RosterCharacterUncheckedUpdateManyInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -416,11 +439,13 @@ export type RosterCharacterCountOrderByAggregateInput = {
   rank?: Prisma.SortOrder | runtime.Types.Skip
   blizzardId?: Prisma.SortOrder | runtime.Types.Skip
   unsupportedSpec?: Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type RosterCharacterAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type RosterCharacterMaxOrderByAggregateInput = {
@@ -432,6 +457,7 @@ export type RosterCharacterMaxOrderByAggregateInput = {
   rank?: Prisma.SortOrder | runtime.Types.Skip
   blizzardId?: Prisma.SortOrder | runtime.Types.Skip
   unsupportedSpec?: Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
@@ -444,11 +470,13 @@ export type RosterCharacterMinOrderByAggregateInput = {
   rank?: Prisma.SortOrder | runtime.Types.Skip
   blizzardId?: Prisma.SortOrder | runtime.Types.Skip
   unsupportedSpec?: Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type RosterCharacterSumOrderByAggregateInput = {
   id?: Prisma.SortOrder | runtime.Types.Skip
+  preferredGemId?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type RosterCharacterScalarRelationFilter = {
@@ -458,6 +486,14 @@ export type RosterCharacterScalarRelationFilter = {
 
 export type IntFieldUpdateOperationsInput = {
   set?: number | runtime.Types.Skip
+  increment?: number | runtime.Types.Skip
+  decrement?: number | runtime.Types.Skip
+  multiply?: number | runtime.Types.Skip
+  divide?: number | runtime.Types.Skip
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null | runtime.Types.Skip
   increment?: number | runtime.Types.Skip
   decrement?: number | runtime.Types.Skip
   multiply?: number | runtime.Types.Skip
@@ -501,6 +537,7 @@ export type RosterCharacterCreateWithoutClaimsInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   submissions?: Prisma.SubmissionCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
 }
@@ -514,6 +551,7 @@ export type RosterCharacterUncheckedCreateWithoutClaimsInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
 }
@@ -543,6 +581,7 @@ export type RosterCharacterUpdateWithoutClaimsInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   submissions?: Prisma.SubmissionUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
 }
@@ -556,6 +595,7 @@ export type RosterCharacterUncheckedUpdateWithoutClaimsInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
 }
@@ -569,6 +609,7 @@ export type RosterCharacterCreateWithoutSubmissionsInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   claims?: Prisma.CharacterClaimCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
 }
@@ -582,6 +623,7 @@ export type RosterCharacterUncheckedCreateWithoutSubmissionsInput = {
   rank: string
   blizzardId: string
   unsupportedSpec?: string | null | runtime.Types.Skip
+  preferredGemId?: number | null | runtime.Types.Skip
   syncedAt: Date | string
   claims?: Prisma.CharacterClaimUncheckedCreateNestedManyWithoutCharacterInput | runtime.Types.Skip
 }
@@ -611,6 +653,7 @@ export type RosterCharacterUpdateWithoutSubmissionsInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
 }
@@ -624,6 +667,7 @@ export type RosterCharacterUncheckedUpdateWithoutSubmissionsInput = {
   rank?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   blizzardId?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   unsupportedSpec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  preferredGemId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   claims?: Prisma.CharacterClaimUncheckedUpdateManyWithoutCharacterNestedInput | runtime.Types.Skip
 }
@@ -677,6 +721,7 @@ export type RosterCharacterSelect<ExtArgs extends runtime.Types.Extensions.Inter
   rank?: boolean | runtime.Types.Skip
   blizzardId?: boolean | runtime.Types.Skip
   unsupportedSpec?: boolean | runtime.Types.Skip
+  preferredGemId?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
   claims?: boolean | Prisma.RosterCharacter$claimsArgs<ExtArgs> | runtime.Types.Skip
   submissions?: boolean | Prisma.RosterCharacter$submissionsArgs<ExtArgs> | runtime.Types.Skip
@@ -692,6 +737,7 @@ export type RosterCharacterSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   rank?: boolean | runtime.Types.Skip
   blizzardId?: boolean | runtime.Types.Skip
   unsupportedSpec?: boolean | runtime.Types.Skip
+  preferredGemId?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }, ExtArgs["result"]["rosterCharacter"]>
 
@@ -704,6 +750,7 @@ export type RosterCharacterSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   rank?: boolean | runtime.Types.Skip
   blizzardId?: boolean | runtime.Types.Skip
   unsupportedSpec?: boolean | runtime.Types.Skip
+  preferredGemId?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }, ExtArgs["result"]["rosterCharacter"]>
 
@@ -716,10 +763,11 @@ export type RosterCharacterSelectScalar = {
   rank?: boolean | runtime.Types.Skip
   blizzardId?: boolean | runtime.Types.Skip
   unsupportedSpec?: boolean | runtime.Types.Skip
+  preferredGemId?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }
 
-export type RosterCharacterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "realm" | "class" | "role" | "rank" | "blizzardId" | "unsupportedSpec" | "syncedAt", ExtArgs["result"]["rosterCharacter"], runtime.Types.Skip>
+export type RosterCharacterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "realm" | "class" | "role" | "rank" | "blizzardId" | "unsupportedSpec" | "preferredGemId" | "syncedAt", ExtArgs["result"]["rosterCharacter"], runtime.Types.Skip>
 export type RosterCharacterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claims?: boolean | Prisma.RosterCharacter$claimsArgs<ExtArgs> | runtime.Types.Skip
   submissions?: boolean | Prisma.RosterCharacter$submissionsArgs<ExtArgs> | runtime.Types.Skip
@@ -752,6 +800,11 @@ export type $RosterCharacterPayload<ExtArgs extends runtime.Types.Extensions.Int
      * A spec Raidbots refuses to sim (healers answer `unsupported_spec`). Cleared on a re-spec.
      */
     unsupportedSpec: string | null
+    /**
+     * Remembered preferred gem, so a raider picks it once. Item id, not enchant id: Raidbots passes this
+     * straight into SimC's `gem_id=`, and an enchant id fails the whole sim.
+     */
+    preferredGemId: number | null
     syncedAt: Date
   }, ExtArgs["result"]["rosterCharacter"]>
   composites: {}
@@ -1186,6 +1239,7 @@ export interface RosterCharacterFieldRefs {
   readonly rank: Prisma.FieldRef<"RosterCharacter", 'String'>
   readonly blizzardId: Prisma.FieldRef<"RosterCharacter", 'String'>
   readonly unsupportedSpec: Prisma.FieldRef<"RosterCharacter", 'String'>
+  readonly preferredGemId: Prisma.FieldRef<"RosterCharacter", 'Int'>
   readonly syncedAt: Prisma.FieldRef<"RosterCharacter", 'DateTime'>
 }
     

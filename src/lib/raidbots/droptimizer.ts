@@ -18,6 +18,8 @@ export interface SubmitInput {
   sim: SimOptions
   /** Myth 6/6 bonus id for the instance's season. wowaudit rejects reports simmed at anything else. */
   upgradeLevel: number
+  /** Preferred gem, as an **item** id. Raidbots writes it straight into SimC's `gem_id=`. */
+  gemItemId?: number | undefined
   clientVersion: { frontendJsHash: string; gameDataVersion: string }
 }
 
@@ -64,6 +66,9 @@ export const buildPayload = (input: SubmitInput): Record<string, unknown> => {
       faction: character.faction,
       // The one default worth overriding: omitting this drops catalyst conversions from the item list.
       includeConversions: true,
+      // Only sent when chosen. Raidbots passes the value through verbatim, so an enchant id here fails
+      // every profileset with "No gem data for id".
+      ...(input.gemItemId === undefined ? {} : { gem: input.gemItemId }),
     },
     // Required by wowaudit, which rejects a report where it cannot see this explicitly disabled. Raidbots does not
     // echo the field back when it is omitted, so leaving it to the default fails upload even though the sim is right.

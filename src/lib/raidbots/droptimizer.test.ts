@@ -24,7 +24,7 @@ const character: LoadedCharacter = {
   profileCacheId: "cache-1",
 }
 
-const build = (overrides: { upgradeLevel?: number } = {}) =>
+const build = (overrides: { upgradeLevel?: number; gemItemId?: number } = {}) =>
   buildPayload({
     cookie: "raidsid=x",
     simcText: SIMC_TEXT,
@@ -34,6 +34,7 @@ const build = (overrides: { upgradeLevel?: number } = {}) =>
     difficulty: "mythic",
     sim,
     upgradeLevel: overrides.upgradeLevel ?? 12_806,
+    ...(overrides.gemItemId === undefined ? {} : { gemItemId: overrides.gemItemId }),
     clientVersion: { frontendJsHash: "abc123", gameDataVersion: "def456" },
   })
 
@@ -87,6 +88,17 @@ describe("buildPayload", () => {
   // Omitting it sims correctly but uploads fail: wowaudit rejects a report where it cannot see this disabled.
   it("sends powerInfusion explicitly, which wowaudit requires", () => {
     expect(build()).toMatchObject({ powerInfusion: false })
+  })
+
+  // Raidbots passes this straight into SimC's `gem_id=`, so a stray null would be decoded as a gem and
+  // fail the sim. Absent must mean absent.
+  it("omits the gem entirely unless one was chosen", () => {
+    expect(build()["droptimizer"]).not.toHaveProperty("gem")
+    expect(JSON.stringify(build())).not.toContain('"gem"')
+  })
+
+  it("sends the chosen gem as an item id", () => {
+    expect(build({ gemItemId: 240_908 })["droptimizer"]).toMatchObject({ gem: 240_908 })
   })
 
   it("leaves buffs and consumables to the server defaults", () => {

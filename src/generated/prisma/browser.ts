@@ -59,6 +59,11 @@ export type Submission = Prisma.SubmissionModel
  */
 export type SimJob = Prisma.SimJobModel
 /**
+ * Model Gem
+ * Selectable preferred gems, refreshed daily from Raidbots' enchantment data.
+ */
+export type Gem = Prisma.GemModel
+/**
  * Model Source
  * Raidbots droptimizer sources, refreshed daily so the admin UI always offers the current list.
  */

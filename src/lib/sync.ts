@@ -3,6 +3,8 @@ import { err, isErr } from "ts-explicit-errors"
 
 import { env } from "#env.ts"
 import { prisma } from "#lib/db.ts"
+import type { EnchantmentEntry } from "#lib/gems.ts"
+import { selectableGems } from "#lib/gems.ts"
 import type { Instance } from "#lib/raidbots/static-data.ts"
 import { staticData } from "#lib/raidbots/static-data.ts"
 import { seasonNumberForInstance } from "#lib/raidbots/upgrade-track.ts"
@@ -95,6 +97,22 @@ const syncSources = async (): Promise<Result<number>> => {
   return raids.length
 }
 
+const syncGems = async (): Promise<Result<number>> => {
+  const entries = await staticData<EnchantmentEntry[]>("enchantments")
+  if (isErr(entries)) return entries
+
+  const gems = selectableGems(entries)
+  const syncedAt = new Date()
+
+  for (const gem of gems) {
+    const data = { displayName: gem.displayName, itemName: gem.itemName, color: gem.color, syncedAt }
+    await prisma.gem.upsert({ where: { itemId: gem.itemId }, update: data, create: { itemId: gem.itemId, ...data } })
+  }
+
+  await prisma.gem.deleteMany({ where: { syncedAt: { lt: syncedAt } } })
+  return gems.length
+}
+
 const syncBuild = async (): Promise<Result> => {
   const metadata = await staticData<Metadata>("metadata")
   if (isErr(metadata)) return metadata
@@ -111,6 +129,10 @@ export const runSync = async (): Promise<void> => {
   const sources = await syncSources()
   if (isErr(sources)) console.error(`sync: sources failed -> ${sources.messageChain}`)
   else console.info(`sync: ${String(sources)} raid sources`)
+
+  const gems = await syncGems()
+  if (isErr(gems)) console.error(`sync: gems failed -> ${gems.messageChain}`)
+  else console.info(`sync: ${String(gems)} selectable gems`)
 
   const build = await syncBuild()
   if (isErr(build)) console.error(`sync: wow build failed -> ${build.messageChain}`)

@@ -156,7 +156,7 @@ describe("submitPaste", () => {
     const { userId, characterId, simc } = await fixture()
 
     const result = okResult(await submitPaste(userId, simc))
-    expect(result.jobCount).toBe(2)
+    expect(result.queued).toBe(2)
 
     const jobs = await prisma.simJob.findMany({
       where: { submission: { characterId } },
@@ -226,10 +226,93 @@ describe("submitPaste", () => {
     expect(errMessage(result)).toContain("cannot sim Destruction")
   })
 
-  it("keeps every paste, so an admin can requeue without asking anyone", async () => {
+  it("stores the chosen gem and remembers it on the character", async () => {
     const { userId, characterId, simc } = await fixture()
-    await submitPaste(userId, simc)
-    await submitPaste(userId, simc)
+    okResult(await submitPaste(userId, simc, 240_908))
+
+    const submission = await prisma.submission.findFirstOrThrow({ where: { characterId } })
+    expect(submission.gemId).toBe(240_908)
+    const character = await prisma.rosterCharacter.findUniqueOrThrow({ where: { id: characterId } })
+    expect(character.preferredGemId).toBe(240_908)
+  })
+
+  // Same gear, different gem is a genuinely different sim, so it must not look like a duplicate.
+  it("treats the same paste with a different gem as new work", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc, 240_908))
+
+    const again = okResult(await submitPaste(userId, simc, 240_983))
+    expect(again.queued).toBe(2)
     expect(await prisma.submission.count({ where: { characterId } })).toBe(2)
+  })
+
+  it("still rejects the same paste with the same gem", async () => {
+    const { userId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc, 240_908))
+    expect(errMessage(await submitPaste(userId, simc, 240_908))).toContain("already submitted")
+  })
+
+  // The refresh case: the browser replays a byte-identical body, so this is what makes it free.
+  it("rejects an identical paste and queues nothing", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc))
+
+    const again = await submitPaste(userId, simc)
+    expect(errMessage(again)).toContain("already submitted")
+    expect(await prisma.simJob.count({ where: { submission: { characterId } } })).toBe(2)
+    expect(await prisma.submission.count({ where: { characterId } })).toBe(1)
+  })
+
+  it("re-runs only the pair whose job failed", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc))
+    await prisma.simJob.updateMany({
+      where: { submission: { characterId }, difficulty: "mythic" },
+      data: { status: "failed" },
+    })
+
+    const again = okResult(await submitPaste(userId, simc))
+    expect(again.queued).toBe(1)
+
+    const queued = await prisma.simJob.findMany({ where: { submission: { characterId }, status: "queued" } })
+    expect(queued.map((job) => job.difficulty).toSorted()).toEqual(["heroic", "mythic"])
+  })
+
+  // An officer adding a difficulty should not require the whole roster to paste again.
+  it("fills a difficulty added after the original paste", async () => {
+    const { userId, characterId, simc } = await fixture()
+    await prisma.settings.update({ where: { id: 1 }, data: { difficulties: "mythic" } })
+    okResult(await submitPaste(userId, simc))
+
+    await prisma.settings.update({ where: { id: 1 }, data: { difficulties: "mythic,heroic" } })
+    const again = okResult(await submitPaste(userId, simc))
+
+    expect(again.queued).toBe(1)
+    const jobs = await prisma.simJob.findMany({ where: { submission: { characterId } } })
+    expect(jobs.map((job) => job.difficulty).toSorted()).toEqual(["heroic", "mythic"])
+
+    await prisma.settings.update({ where: { id: 1 }, data: { difficulties: "mythic,heroic" } })
+  })
+
+  it("reuses the stored paste rather than writing a second copy", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc))
+    await prisma.simJob.updateMany({ where: { submission: { characterId } }, data: { status: "failed" } })
+    okResult(await submitPaste(userId, simc))
+
+    expect(await prisma.submission.count({ where: { characterId } })).toBe(1)
+  })
+
+  // Re-checked from the stored row, so an aged-out export cannot fill a newly added difficulty.
+  it("rejects a duplicate whose stored export has since aged out", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc))
+    await prisma.simJob.updateMany({ where: { submission: { characterId } }, data: { status: "failed" } })
+    await prisma.submission.updateMany({
+      where: { characterId },
+      data: { exportedAt: new Date("2026-01-01T00:00:00.000Z") },
+    })
+
+    expect(errMessage(await submitPaste(userId, simc))).toContain("days old")
   })
 })

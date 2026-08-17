@@ -4,6 +4,7 @@ import { actions } from "astro:actions"
 import JobStatus from "#components/JobStatus.astro"
 import Base from "#layouts/Base.astro"
 import { prisma } from "#lib/db.ts"
+import { groupGemsByColor, listGems } from "#lib/gems.ts"
 import { getSettings } from "#lib/settings.ts"
 
 const { characters } = Astro.locals
@@ -19,6 +20,12 @@ const submissions = await prisma.submission.findMany({
 })
 
 // Latest paste per character, so the table answers "am I covered?" rather than listing every attempt.
+const gemGroups = groupGemsByColor(await listGems())
+
+// Whatever this account picked last. With one character it is unambiguous; with alts, the most recently
+// set one is the best guess, and the raider can still change it.
+const preferredGemId = characters.map((character) => character.preferredGemId).find((id) => id !== null) ?? null
+
 const latestByCharacter = new Map<number, (typeof submissions)[number]>()
 for (const submission of submissions) if (!latestByCharacter.has(submission.characterId)) latestByCharacter.set(submission.characterId, submission)
 ---
@@ -40,22 +47,78 @@ for (const submission of submissions) if (!latestByCharacter.has(submission.char
     result?.data && (
       <div class="alert alert-success mt-6">
         <span>
-          Queued {result.data.jobCount} sim{result.data.jobCount === 1 ? "" : "s"} for {result.data.characterName}.
+          Queued {result.data.queued} sim{result.data.queued === 1 ? "" : "s"} for {result.data.characterName}.
         </span>
       </div>
     )
   }
 
-  <form method="POST" action={actions.submitSimc} class="mt-6">
+  <div id="submit-error" class="alert alert-error mt-6 hidden"><span></span></div>
+
+  <form id="submit-form" method="POST" action={actions.submitSimc} class="mt-6">
     <fieldset class="fieldset">
       <textarea
         name="simc"
         class="textarea textarea-bordered h-64 w-full font-mono text-xs"
         placeholder="warlock=&quot;Isaaclock&quot;&#10;level=90&#10;..."
         required></textarea>
+
+      {
+        gemGroups.length > 0 && (
+          <>
+            <label class="label mt-4" for="gem">Preferred gem</label>
+            <select id="gem" name="gem" class="select select-bordered w-full sm:w-auto">
+              <option value="">None</option>
+              {gemGroups.map((group) => (
+                <optgroup label={group.color}>
+                  {group.gems.map((gem) => (
+                    <option value={gem.itemId} selected={gem.itemId === preferredGemId}>
+                      {gem.displayName} - {gem.itemName}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <p class="label">
+              Used when a drop has more sockets than the item you are wearing. Remembered for next time.
+            </p>
+          </>
+        )
+      }
+
       <button class="btn btn-primary mt-4 w-full sm:w-auto" type="submit">Submit</button>
     </fieldset>
   </form>
+
+  <script>
+    import { actions } from "astro:actions"
+
+    const form = document.querySelector<HTMLFormElement>("#submit-form")
+    const errorBox = document.querySelector<HTMLDivElement>("#submit-error")
+    const errorText = errorBox?.querySelector("span")
+
+    // Intercepting keeps the POST out of history, so refreshing never re-sends. Without JS the form
+    // still posts normally, and the duplicate check makes that replay a no-op.
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault()
+      const button = form.querySelector<HTMLButtonElement>("button[type=submit]")
+      if (button) button.disabled = true
+      errorBox?.classList.add("hidden")
+
+      const { error } = await actions.submitSimc(new FormData(form))
+
+      if (error) {
+        // Left on the page with the textarea intact, so nothing has to be pasted again.
+        if (errorText) errorText.textContent = error.message
+        errorBox?.classList.remove("hidden")
+        if (button) button.disabled = false
+        return
+      }
+
+      // A GET, so the status table below reflects the new jobs and a refresh is harmless.
+      location.assign("/submit")
+    })
+  </script>
 
   <h2 class="mt-10 text-xl font-semibold">Your characters</h2>
   <div class="mt-4 overflow-x-auto">

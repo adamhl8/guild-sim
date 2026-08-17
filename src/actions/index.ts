@@ -22,11 +22,11 @@ const requireAdmin = (locals: App.Locals): void => {
 export const server = {
   submitSimc: defineAction({
     accept: "form",
-    input: z.object({ simc: z.string() }),
-    handler: async ({ simc }, context) => {
+    input: z.object({ simc: z.string(), gem: z.coerce.number().int().positive().optional() }),
+    handler: async ({ simc, gem }, context) => {
       const userId = requireUser(context.locals)
 
-      const result = await submitPaste(userId, simc)
+      const result = await submitPaste(userId, simc, gem)
       // The message is written for the raider, so it is surfaced verbatim rather than swallowed.
       if (isErr(result)) throw new ActionError({ code: "BAD_REQUEST", message: result.message })
 
@@ -38,7 +38,6 @@ export const server = {
     accept: "form",
     input: z.object({
       wowauditConfigurationName: z.string().min(1),
-      ranks: z.string(),
       adminRanks: z.string().min(1),
       source: z.string().min(1),
       difficulties: z.string().min(1),
@@ -47,7 +46,6 @@ export const server = {
       fightStyle: z.string().min(1),
       fightLength: z.coerce.number().int().positive(),
       enemyCount: z.coerce.number().int().positive(),
-      concurrency: z.coerce.number().int().min(1).max(2),
       submitsPerHour: z.coerce.number().int().positive(),
       pollIntervalMs: z.coerce.number().int().positive(),
       buildCheck: z.enum(["exact", "patch", "off"]),

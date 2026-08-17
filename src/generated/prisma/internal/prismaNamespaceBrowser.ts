@@ -59,6 +59,7 @@ export const ModelName = {
   CharacterClaim: 'CharacterClaim',
   Submission: 'Submission',
   SimJob: 'SimJob',
+  Gem: 'Gem',
   Source: 'Source',
   Settings: 'Settings',
   QuotaState: 'QuotaState'
@@ -145,6 +146,7 @@ export const RosterCharacterScalarFieldEnum = {
   rank: 'rank',
   blizzardId: 'blizzardId',
   unsupportedSpec: 'unsupportedSpec',
+  preferredGemId: 'preferredGemId',
   syncedAt: 'syncedAt'
 } as const
 
@@ -166,6 +168,8 @@ export const SubmissionScalarFieldEnum = {
   characterId: 'characterId',
   simcText: 'simcText',
   spec: 'spec',
+  contentHash: 'contentHash',
+  gemId: 'gemId',
   addonVersion: 'addonVersion',
   wowVersion: 'wowVersion',
   exportedAt: 'exportedAt',
@@ -192,6 +196,17 @@ export const SimJobScalarFieldEnum = {
 export type SimJobScalarFieldEnum = (typeof SimJobScalarFieldEnum)[keyof typeof SimJobScalarFieldEnum]
 
 
+export const GemScalarFieldEnum = {
+  itemId: 'itemId',
+  displayName: 'displayName',
+  itemName: 'itemName',
+  color: 'color',
+  syncedAt: 'syncedAt'
+} as const
+
+export type GemScalarFieldEnum = (typeof GemScalarFieldEnum)[keyof typeof GemScalarFieldEnum]
+
+
 export const SourceScalarFieldEnum = {
   raidbotsId: 'raidbotsId',
   name: 'name',
@@ -207,7 +222,6 @@ export const SettingsScalarFieldEnum = {
   id: 'id',
   wowauditConfigurationName: 'wowauditConfigurationName',
   replaceManualEdits: 'replaceManualEdits',
-  ranks: 'ranks',
   adminRanks: 'adminRanks',
   source: 'source',
   difficulties: 'difficulties',
@@ -216,7 +230,6 @@ export const SettingsScalarFieldEnum = {
   fightStyle: 'fightStyle',
   fightLength: 'fightLength',
   enemyCount: 'enemyCount',
-  concurrency: 'concurrency',
   submitsPerHour: 'submitsPerHour',
   pollIntervalMs: 'pollIntervalMs',
   buildCheck: 'buildCheck',

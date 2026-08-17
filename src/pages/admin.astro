@@ -155,11 +155,6 @@ const field = "input input-bordered w-full"
     </fieldset>
 
     <fieldset class="fieldset">
-      <legend class="fieldset-legend">Tracked ranks</legend>
-      <input class={field} name="ranks" value={settings.ranks.join(",")} />
-    </fieldset>
-
-    <fieldset class="fieldset">
       <legend class="fieldset-legend">Build check</legend>
       <select class="select select-bordered w-full" name="buildCheck">
         {BUILD_CHECKS.map((check) => (
@@ -201,11 +196,6 @@ const field = "input input-bordered w-full"
     <fieldset class="fieldset">
       <legend class="fieldset-legend">Enemy count</legend>
       <input class={field} type="number" name="enemyCount" value={settings.sim.enemyCount} min="1" required />
-    </fieldset>
-
-    <fieldset class="fieldset">
-      <legend class="fieldset-legend">Concurrency</legend>
-      <input class={field} type="number" name="concurrency" value={settings.runner.concurrency} min="1" max="2" required />
     </fieldset>
 
     <fieldset class="fieldset">
