@@ -7,6 +7,12 @@ const config = oxlintConfig({
   rules: { "unicorn/no-null": "off" },
   overrides: [
     {
+      // Ambient declaration files are legitimately scripts: adding an export would turn a global
+      // `declare module` into a module augmentation, which needs the module to already exist.
+      files: ["**/*.d.ts"],
+      rules: { "import/unambiguous": "off" },
+    },
+    {
       files: ["**/*.astro"],
       rules: { "import/unambiguous": "off", "unicorn/prefer-module": "off" },
     },
