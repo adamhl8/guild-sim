@@ -104,8 +104,8 @@ const syncGems = async (): Promise<Result<number>> => {
   const gems = selectableGems(entries)
   const syncedAt = new Date()
 
-  for (const gem of gems) {
-    const data = { displayName: gem.displayName, itemName: gem.itemName, color: gem.color, syncedAt }
+  for (const [sortIndex, gem] of gems.entries()) {
+    const data = { displayName: gem.displayName, itemName: gem.itemName, color: gem.color, sortIndex, syncedAt }
     await prisma.gem.upsert({ where: { itemId: gem.itemId }, update: data, create: { itemId: gem.itemId, ...data } })
   }
 

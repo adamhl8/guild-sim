@@ -5,12 +5,10 @@ import JobStatus from "#components/JobStatus.astro"
 import Base from "#layouts/Base.astro"
 import { prisma } from "#lib/db.ts"
 import { groupGemsByColor, listGems } from "#lib/gems.ts"
-import { getSettings } from "#lib/settings.ts"
 
 const { characters } = Astro.locals
 
 const result = Astro.getActionResult(actions.submitSimc)
-const settings = await getSettings()
 
 const submissions = await prisma.submission.findMany({
   where: { characterId: { in: characters.map((character) => character.id) } },
@@ -19,13 +17,13 @@ const submissions = await prisma.submission.findMany({
   take: 20,
 })
 
-// Latest paste per character, so the table answers "am I covered?" rather than listing every attempt.
 const gemGroups = groupGemsByColor(await listGems())
 
 // Whatever this account picked last. With one character it is unambiguous; with alts, the most recently
 // set one is the best guess, and the raider can still change it.
 const preferredGemId = characters.map((character) => character.preferredGemId).find((id) => id !== null) ?? null
 
+// Latest paste per character, so the table answers "am I covered?" rather than listing every attempt.
 const latestByCharacter = new Map<number, (typeof submissions)[number]>()
 for (const submission of submissions) if (!latestByCharacter.has(submission.characterId)) latestByCharacter.set(submission.characterId, submission)
 ---
@@ -67,8 +65,8 @@ for (const submission of submissions) if (!latestByCharacter.has(submission.char
         gemGroups.length > 0 && (
           <>
             <label class="label mt-4" for="gem">Preferred gem</label>
-            <select id="gem" name="gem" class="select select-bordered w-full sm:w-auto">
-              <option value="">None</option>
+            <select id="gem" name="gem" class="select select-bordered w-full sm:w-auto" required>
+              <option value="" disabled selected={preferredGemId === null}>Select a gem</option>
               {gemGroups.map((group) => (
                 <optgroup label={group.color}>
                   {group.gems.map((gem) => (
@@ -80,7 +78,7 @@ for (const submission of submissions) if (!latestByCharacter.has(submission.char
               ))}
             </select>
             <p class="label">
-              Used when a drop has more sockets than the item you are wearing. Remembered for next time.
+              The gem you would socket into a drop with a spare socket. Required, so the sim never leaves one empty.
             </p>
           </>
         )

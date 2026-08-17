@@ -6,13 +6,34 @@ import { prisma } from "#lib/db.ts"
 import { getSettings } from "#lib/settings.ts"
 
 const PUBLIC_PATHS = new Set(["/", "/no-roster"])
+
+/**
+ * Logged once per process. Better Auth resolves a client IP only from a single-hop `X-Forwarded-For`, or from a longer
+ * chain when every proxy hop is listed in TRUSTED_PROXIES. When it cannot, it warns and rate limits everyone into one
+ * bucket. This prints what actually arrived so the fix is not a guess.
+ */
+let loggedForwarded = false
 const UNSAFE_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"])
 const SITE_ORIGIN = new URL(env.PUBLIC_SITE_URL).origin
 
 const isPublic = (pathname: string): boolean =>
   PUBLIC_PATHS.has(pathname) || pathname.startsWith("/api/auth/") || pathname.startsWith("/_")
 
+const logForwardedOnce = (request: Request, pathname: string): void => {
+  if (loggedForwarded) return
+  loggedForwarded = true
+
+  const forwardedFor = request.headers.get("x-forwarded-for")
+  const hops = forwardedFor?.split(",").length ?? 0
+  console.info(
+    `first request: x-forwarded-for=${forwardedFor ?? "(absent)"} hops=${String(hops)} ` +
+      `proto=${request.headers.get("x-forwarded-proto") ?? "(absent)"} path=${pathname}`,
+  )
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  logForwardedOnce(context.request, context.url.pathname)
+
   // Astro's own checkOrigin is disabled because it is baked at build time; this is the runtime
   // equivalent. A same-origin form always sends Origin, so a mismatch is a cross-site post.
   if (UNSAFE_METHODS.has(context.request.method)) {

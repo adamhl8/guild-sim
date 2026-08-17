@@ -22,7 +22,7 @@ const requireAdmin = (locals: App.Locals): void => {
 export const server = {
   submitSimc: defineAction({
     accept: "form",
-    input: z.object({ simc: z.string(), gem: z.coerce.number().int().positive().optional() }),
+    input: z.object({ simc: z.string(), gem: z.coerce.number().int().positive() }),
     handler: async ({ simc, gem }, context) => {
       const userId = requireUser(context.locals)
 

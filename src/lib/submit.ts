@@ -28,7 +28,7 @@ const COVERED_STATUSES = ["queued", "running", "uploading", "done"]
 const missingDifficulties = async (input: {
   characterId: number
   hash: string
-  gemId: number | null
+  gemId: number
   source: SimSource
   settings: ResolvedSettings
 }): Promise<string[]> => {
@@ -63,7 +63,7 @@ const ALREADY_COVERED = "you have already submitted this export -> run /simc aga
 interface ResubmitInput {
   previous: Submission & { character: RosterCharacter }
   hash: string
-  gemId: number | null
+  gemId: number
   source: SimSource
   settings: ResolvedSettings
 }
@@ -112,14 +112,14 @@ const resubmit = async (input: ResubmitInput): Promise<Result<SubmitResult>> => 
 export const submitPaste = async (
   userId: string,
   simcText: string,
-  gemItemId?: number,
+  gemItemId: number,
 ): Promise<Result<SubmitResult>> => {
   const text = simcText.trim()
   if (!text) return err("paste your /simc output first", undefined)
 
   const settings = await getSettings()
   const hash = contentHash(text)
-  const gemId = gemItemId ?? null
+  const gemId = gemItemId
 
   const source = await resolveConfiguredSource(settings)
   if (isErr(source)) return err("the configured source is invalid -> tell an officer", source)

@@ -1480,6 +1480,7 @@ export const GemScalarFieldEnum = {
   displayName: 'displayName',
   itemName: 'itemName',
   color: 'color',
+  sortIndex: 'sortIndex',
   syncedAt: 'syncedAt'
 } as const
 

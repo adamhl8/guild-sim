@@ -82,12 +82,25 @@ describe("selectableGems", () => {
     expect(selectableGems(entries).map((gem) => gem.itemId)).not.toContain(240_907)
   })
 
+  // Flawless rank 1 still beats plain rank 2, so item quality has to outrank crafting quality.
+  it("prefers the better item quality over the better crafting quality", () => {
+    expect(selectableGems(entries).map((gem) => gem.itemId)).not.toContain(240_876)
+  })
+
+  // Raidbots' picker keys off a server-side `dps` flag, and every gem it omits is one without a colour.
+  // The Eversong Diamond here outranks everything, so a rank-only filter would wrongly promote it.
+  it("drops the unique diamonds Raidbots does not offer", () => {
+    const gems = selectableGems(entries)
+    expect(gems.map((gem) => gem.itemId)).not.toContain(240_983)
+    expect(gems.map((gem) => gem.itemId)).toContain(240_908)
+  })
+
   it("ignores enchants that are not gems", () => {
     expect(selectableGems(entries).map((gem) => gem.itemId)).not.toContain(999)
   })
 
-  it("sorts coloured gems together and uncoloured ones last", () => {
-    expect(selectableGems(entries).map((gem) => gem.color)).toEqual(["garnet", "lapis", null])
+  it("sorts coloured gems together", () => {
+    expect(selectableGems(entries).map((gem) => gem.color)).toEqual(["garnet", "lapis"])
   })
 
   it("returns nothing rather than throwing when the data has no gems", () => {
@@ -96,9 +109,9 @@ describe("selectableGems", () => {
 })
 
 describe("groupGemsByColor", () => {
-  it("groups for optgroups, labelling uncoloured gems", () => {
+  it("groups for optgroups", () => {
     const groups = groupGemsByColor(selectableGems(entries))
-    expect(groups.map((group) => group.color)).toEqual(["garnet", "lapis", "other"])
+    expect(groups.map((group) => group.color)).toEqual(["garnet", "lapis"])
     expect(groups[0]?.gems).toHaveLength(1)
   })
 })

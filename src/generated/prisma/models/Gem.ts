@@ -28,10 +28,12 @@ export type AggregateGem = {
 
 export type GemAvgAggregateOutputType = {
   itemId: number | null
+  sortIndex: number | null
 }
 
 export type GemSumAggregateOutputType = {
   itemId: number | null
+  sortIndex: number | null
 }
 
 export type GemMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type GemMinAggregateOutputType = {
   displayName: string | null
   itemName: string | null
   color: string | null
+  sortIndex: number | null
   syncedAt: Date | null
 }
 
@@ -47,6 +50,7 @@ export type GemMaxAggregateOutputType = {
   displayName: string | null
   itemName: string | null
   color: string | null
+  sortIndex: number | null
   syncedAt: Date | null
 }
 
@@ -55,6 +59,7 @@ export type GemCountAggregateOutputType = {
   displayName: number
   itemName: number
   color: number
+  sortIndex: number
   syncedAt: number
   _all: number
 }
@@ -62,10 +67,12 @@ export type GemCountAggregateOutputType = {
 
 export type GemAvgAggregateInputType = {
   itemId?: true | runtime.Types.Skip
+  sortIndex?: true | runtime.Types.Skip
 }
 
 export type GemSumAggregateInputType = {
   itemId?: true | runtime.Types.Skip
+  sortIndex?: true | runtime.Types.Skip
 }
 
 export type GemMinAggregateInputType = {
@@ -73,6 +80,7 @@ export type GemMinAggregateInputType = {
   displayName?: true | runtime.Types.Skip
   itemName?: true | runtime.Types.Skip
   color?: true | runtime.Types.Skip
+  sortIndex?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
 }
 
@@ -81,6 +89,7 @@ export type GemMaxAggregateInputType = {
   displayName?: true | runtime.Types.Skip
   itemName?: true | runtime.Types.Skip
   color?: true | runtime.Types.Skip
+  sortIndex?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
 }
 
@@ -89,6 +98,7 @@ export type GemCountAggregateInputType = {
   displayName?: true | runtime.Types.Skip
   itemName?: true | runtime.Types.Skip
   color?: true | runtime.Types.Skip
+  sortIndex?: true | runtime.Types.Skip
   syncedAt?: true | runtime.Types.Skip
   _all?: true | runtime.Types.Skip
 }
@@ -183,7 +193,8 @@ export type GemGroupByOutputType = {
   itemId: number
   displayName: string
   itemName: string
-  color: string | null
+  color: string
+  sortIndex: number
   syncedAt: Date
   _count: GemCountAggregateOutputType | null
   _avg: GemAvgAggregateOutputType | null
@@ -214,7 +225,8 @@ export type GemWhereInput = {
   itemId?: Prisma.IntFilter<"Gem"> | number | runtime.Types.Skip
   displayName?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
   itemName?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
-  color?: Prisma.StringNullableFilter<"Gem"> | string | null | runtime.Types.Skip
+  color?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFilter<"Gem"> | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFilter<"Gem"> | Date | string | runtime.Types.Skip
 }
 
@@ -222,7 +234,8 @@ export type GemOrderByWithRelationInput = {
   itemId?: Prisma.SortOrder | runtime.Types.Skip
   displayName?: Prisma.SortOrder | runtime.Types.Skip
   itemName?: Prisma.SortOrder | runtime.Types.Skip
-  color?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  color?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
@@ -233,7 +246,8 @@ export type GemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GemWhereInput | Prisma.GemWhereInput[] | runtime.Types.Skip
   displayName?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
   itemName?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
-  color?: Prisma.StringNullableFilter<"Gem"> | string | null | runtime.Types.Skip
+  color?: Prisma.StringFilter<"Gem"> | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFilter<"Gem"> | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFilter<"Gem"> | Date | string | runtime.Types.Skip
 }, "itemId">
 
@@ -241,7 +255,8 @@ export type GemOrderByWithAggregationInput = {
   itemId?: Prisma.SortOrder | runtime.Types.Skip
   displayName?: Prisma.SortOrder | runtime.Types.Skip
   itemName?: Prisma.SortOrder | runtime.Types.Skip
-  color?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  color?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
   _count?: Prisma.GemCountOrderByAggregateInput | runtime.Types.Skip
   _avg?: Prisma.GemAvgOrderByAggregateInput | runtime.Types.Skip
@@ -257,7 +272,8 @@ export type GemScalarWhereWithAggregatesInput = {
   itemId?: Prisma.IntWithAggregatesFilter<"Gem"> | number | runtime.Types.Skip
   displayName?: Prisma.StringWithAggregatesFilter<"Gem"> | string | runtime.Types.Skip
   itemName?: Prisma.StringWithAggregatesFilter<"Gem"> | string | runtime.Types.Skip
-  color?: Prisma.StringNullableWithAggregatesFilter<"Gem"> | string | null | runtime.Types.Skip
+  color?: Prisma.StringWithAggregatesFilter<"Gem"> | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntWithAggregatesFilter<"Gem"> | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeWithAggregatesFilter<"Gem"> | Date | string | runtime.Types.Skip
 }
 
@@ -265,7 +281,8 @@ export type GemCreateInput = {
   itemId: number
   displayName: string
   itemName: string
-  color?: string | null | runtime.Types.Skip
+  color: string
+  sortIndex: number
   syncedAt: Date | string
 }
 
@@ -273,7 +290,8 @@ export type GemUncheckedCreateInput = {
   itemId: number
   displayName: string
   itemName: string
-  color?: string | null | runtime.Types.Skip
+  color: string
+  sortIndex: number
   syncedAt: Date | string
 }
 
@@ -281,7 +299,8 @@ export type GemUpdateInput = {
   itemId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   displayName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   itemName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  color?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -289,7 +308,8 @@ export type GemUncheckedUpdateInput = {
   itemId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   displayName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   itemName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  color?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -297,7 +317,8 @@ export type GemCreateManyInput = {
   itemId: number
   displayName: string
   itemName: string
-  color?: string | null | runtime.Types.Skip
+  color: string
+  sortIndex: number
   syncedAt: Date | string
 }
 
@@ -305,7 +326,8 @@ export type GemUpdateManyMutationInput = {
   itemId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   displayName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   itemName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  color?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -313,7 +335,8 @@ export type GemUncheckedUpdateManyInput = {
   itemId?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   displayName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
   itemName?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  color?: Prisma.StringFieldUpdateOperationsInput | string | runtime.Types.Skip
+  sortIndex?: Prisma.IntFieldUpdateOperationsInput | number | runtime.Types.Skip
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
 
@@ -322,11 +345,13 @@ export type GemCountOrderByAggregateInput = {
   displayName?: Prisma.SortOrder | runtime.Types.Skip
   itemName?: Prisma.SortOrder | runtime.Types.Skip
   color?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type GemAvgOrderByAggregateInput = {
   itemId?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type GemMaxOrderByAggregateInput = {
@@ -334,6 +359,7 @@ export type GemMaxOrderByAggregateInput = {
   displayName?: Prisma.SortOrder | runtime.Types.Skip
   itemName?: Prisma.SortOrder | runtime.Types.Skip
   color?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
@@ -342,11 +368,13 @@ export type GemMinOrderByAggregateInput = {
   displayName?: Prisma.SortOrder | runtime.Types.Skip
   itemName?: Prisma.SortOrder | runtime.Types.Skip
   color?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
   syncedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 export type GemSumOrderByAggregateInput = {
   itemId?: Prisma.SortOrder | runtime.Types.Skip
+  sortIndex?: Prisma.SortOrder | runtime.Types.Skip
 }
 
 
@@ -356,6 +384,7 @@ export type GemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   displayName?: boolean | runtime.Types.Skip
   itemName?: boolean | runtime.Types.Skip
   color?: boolean | runtime.Types.Skip
+  sortIndex?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }, ExtArgs["result"]["gem"]>
 
@@ -364,6 +393,7 @@ export type GemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   displayName?: boolean | runtime.Types.Skip
   itemName?: boolean | runtime.Types.Skip
   color?: boolean | runtime.Types.Skip
+  sortIndex?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }, ExtArgs["result"]["gem"]>
 
@@ -372,6 +402,7 @@ export type GemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   displayName?: boolean | runtime.Types.Skip
   itemName?: boolean | runtime.Types.Skip
   color?: boolean | runtime.Types.Skip
+  sortIndex?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }, ExtArgs["result"]["gem"]>
 
@@ -380,10 +411,11 @@ export type GemSelectScalar = {
   displayName?: boolean | runtime.Types.Skip
   itemName?: boolean | runtime.Types.Skip
   color?: boolean | runtime.Types.Skip
+  sortIndex?: boolean | runtime.Types.Skip
   syncedAt?: boolean | runtime.Types.Skip
 }
 
-export type GemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"itemId" | "displayName" | "itemName" | "color" | "syncedAt", ExtArgs["result"]["gem"], runtime.Types.Skip>
+export type GemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"itemId" | "displayName" | "itemName" | "color" | "sortIndex" | "syncedAt", ExtArgs["result"]["gem"], runtime.Types.Skip>
 
 export type $GemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Gem"
@@ -402,9 +434,13 @@ export type $GemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
      */
     itemName: string
     /**
-     * garnet / amethyst / lapis / peridot, or null for the diamonds and heliotropes.
+     * garnet / amethyst / lapis / peridot. Never null: a gem without a colour is one Raidbots does not offer.
      */
-    color: string | null
+    color: string
+    /**
+     * Position from the derived list, so the cache renders in the same order without re-deriving it.
+     */
+    sortIndex: number
     syncedAt: Date
   }, ExtArgs["result"]["gem"]>
   composites: {}
@@ -833,6 +869,7 @@ export interface GemFieldRefs {
   readonly displayName: Prisma.FieldRef<"Gem", 'String'>
   readonly itemName: Prisma.FieldRef<"Gem", 'String'>
   readonly color: Prisma.FieldRef<"Gem", 'String'>
+  readonly sortIndex: Prisma.FieldRef<"Gem", 'Int'>
   readonly syncedAt: Prisma.FieldRef<"Gem", 'DateTime'>
 }
     

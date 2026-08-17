@@ -196,8 +196,10 @@ model Gem {
   displayName String
   /// e.g. "Flawless Masterful Garnet"
   itemName String
-  /// garnet / amethyst / lapis / peridot, or null for the diamonds and heliotropes.
-  color String?
+  /// garnet / amethyst / lapis / peridot. Never null: a gem without a colour is one Raidbots does not offer.
+  color String
+  /// Position from the derived list, so the cache renders in the same order without re-deriving it.
+  sortIndex Int
 
   syncedAt DateTime
 
