@@ -25,8 +25,18 @@ export interface Character {
   blizzardId: string
 }
 
-/** Wowaudit slugs realms for its own URLs, but Raidbots wants the armory form. */
-export const realmSlug = (realm: string): string => realm.toLowerCase().replaceAll("'", "").replaceAll(/\s+/gv, "-")
+/**
+ * Wowaudit slugs realms for its own URLs, but Raidbots wants the armory form.
+ *
+ * Underscores count as separators alongside spaces: wowaudit stores "Area 52" while SimC writes "area_52", and both
+ * have to reach "area-52" or ownership matching rejects the raider's own character. Apostrophes are removed rather than
+ * folded into that class, because Blizzard drops them: "Zul'jin" is "zuljin", not "zul-jin".
+ */
+export const realmSlug = (realm: string): string =>
+  realm
+    .toLowerCase()
+    .replaceAll("'", "")
+    .replaceAll(/[\s_]+/gv, "-")
 
 export const getCharacters = async (client: WowauditClient): Promise<Result<Character[]>> => {
   const response = await client.get<CharacterResponse[]>("/characters")

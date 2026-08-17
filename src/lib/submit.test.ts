@@ -86,8 +86,11 @@ interface Fixture {
   simc: string
 }
 
-/** Every test gets its own user, character and paste, so concurrent tests cannot interfere. */
-const fixture = async (overrides: Partial<LoadedShape> = {}): Promise<Fixture> => {
+/**
+ * Every test gets its own user, character and paste, so concurrent tests cannot interfere. `overrides` shapes what
+ * Raidbots returns; `rosterRealm` shapes what wowaudit stored, which is the pair ownership matching compares.
+ */
+const fixture = async (overrides: Partial<LoadedShape> = {}, rosterRealm = "Illidan"): Promise<Fixture> => {
   seq += 1
   const id = seq
   const userId = `user-${String(id)}`
@@ -116,7 +119,7 @@ const fixture = async (overrides: Partial<LoadedShape> = {}): Promise<Fixture> =
     data: {
       id,
       name,
-      realm: "Illidan",
+      realm: rosterRealm,
       class: "Warlock",
       role: "Ranged",
       rank: "Raider",
@@ -228,6 +231,17 @@ describe("submitPaste", () => {
 
     const result = await submitPaste(userId, simc, GARNET)
     expect(errMessage(result)).toContain("cannot sim Destruction")
+  })
+
+  // Eight of the guild's roster are on Area 52. wowaudit stores "Area 52", SimC writes "area_52", and
+  // before the slug handled underscores every one of them was told the character was not theirs.
+  it("accepts a realm wowaudit spells with a space and simc with an underscore", async () => {
+    const { userId, characterId, simc } = await fixture({ realm: "area_52" }, "Area 52")
+
+    const result = okResult(await submitPaste(userId, simc, GARNET))
+    expect(result.characterName).toEndWith("-Area 52")
+    expect(result.queued).toBe(2)
+    expect(await prisma.submission.count({ where: { characterId } })).toBe(1)
   })
 
   it("stores the chosen gem and remembers it on the character", async () => {
