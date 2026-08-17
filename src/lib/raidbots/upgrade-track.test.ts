@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test"
 
 import type { Instance } from "#lib/raidbots/static-data.ts"
 import type { Season, UpgradeStep } from "#lib/raidbots/upgrade-track.ts"
-import { mythStepFor, seasonByNumber, seasonNumberForInstance } from "#lib/raidbots/upgrade-track.ts"
+import { seasonByNumber, seasonNumberForInstance, topStepFor } from "#lib/raidbots/upgrade-track.ts"
 
 const step = (group: number, name: string, s: { level: number; bonusId: number; itemLevel: number }): UpgradeStep => ({
   group,
@@ -14,13 +14,15 @@ const step = (group: number, name: string, s: { level: number; bonusId: number; 
   itemLevel: s.itemLevel,
 })
 
-// Trimmed from live data: season 34 Myth = group 612, season 37 Myth = group 618.
+// Trimmed from live data: one group per track, each with a single step at level === max.
 const sets: Record<string, UpgradeStep[]> = {
   "611": [step(611, "Hero", { level: 6, bonusId: 12_798, itemLevel: 276 })],
   "612": [
     step(612, "Myth", { level: 1, bonusId: 12_801, itemLevel: 268 }),
     step(612, "Myth", { level: 6, bonusId: 12_806, itemLevel: 289 }),
   ],
+  "615": [step(615, "Veteran", { level: 6, bonusId: 12_830, itemLevel: 295 })],
+  "616": [step(616, "Champion", { level: 6, bonusId: 12_838, itemLevel: 308 })],
   "617": [step(617, "Hero", { level: 6, bonusId: 12_846, itemLevel: 321 })],
   "618": [
     step(618, "Myth", { level: 1, bonusId: 12_849, itemLevel: 318 }),
@@ -29,7 +31,12 @@ const sets: Record<string, UpgradeStep[]> = {
 }
 
 const midnight1: Season = { id: 34, name: "Midnight Season 1", bonusListGroups: [611, 612] }
-const midnight2: Season = { id: 37, name: "Midnight Season 2", active: true, bonusListGroups: [617, 618] }
+const midnight2: Season = {
+  id: 37,
+  name: "Midnight Season 2",
+  active: true,
+  bonusListGroups: [615, 616, 617, 618],
+}
 const seasons = [midnight1, midnight2]
 
 const instances: Instance[] = [
@@ -40,14 +47,20 @@ const instances: Instance[] = [
   { id: -102, name: "Season 2 Raids", type: "raid", encounters: [{ id: 2800 }] },
 ]
 
-describe("mythStepFor", () => {
-  it("picks the top Myth step for the season", () => {
-    expect(mythStepFor(midnight1, sets)?.bonusId).toBe(12_806)
-    expect(mythStepFor(midnight2, sets)?.bonusId).toBe(12_854)
+describe("topStepFor", () => {
+  it("picks the top step of the season's track", () => {
+    expect(topStepFor(midnight1, sets, "Myth")?.bonusId).toBe(12_806)
+    expect(topStepFor(midnight2, sets, "Myth")?.bonusId).toBe(12_854)
   })
 
-  it("ignores non-Myth tracks", () => {
-    expect(mythStepFor({ id: 1, name: "x", bonusListGroups: [611] }, sets)).toBeUndefined()
+  // wowaudit validates the track against the report's difficulty, so each has to resolve separately.
+  it("resolves a different bonus id per track", () => {
+    const bonusIds = ["Veteran", "Champion", "Hero", "Myth"].map((track) => topStepFor(midnight2, sets, track)?.bonusId)
+    expect(bonusIds).toEqual([12_830, 12_838, 12_846, 12_854])
+  })
+
+  it("returns nothing for a track the season does not carry", () => {
+    expect(topStepFor({ id: 1, name: "x", bonusListGroups: [611] }, sets, "Myth")).toBeUndefined()
   })
 })
 
@@ -85,7 +98,7 @@ describe("end-to-end resolution for a season-behind raid", () => {
   it("resolves March on Quel'Danas to season 34 Myth 6/6, not the active season's", () => {
     expect(seasonNumberForInstance(instances, 1308)).toBe(1)
     expect(seasonByNumber(seasons, midnight2, 1)).toEqual(midnight1)
-    expect(mythStepFor(midnight1, sets)?.bonusId).toBe(12_806)
-    expect(mythStepFor(midnight2, sets)?.bonusId).not.toBe(12_806)
+    expect(topStepFor(midnight1, sets, "Myth")?.bonusId).toBe(12_806)
+    expect(topStepFor(midnight2, sets, "Myth")?.bonusId).not.toBe(12_806)
   })
 })

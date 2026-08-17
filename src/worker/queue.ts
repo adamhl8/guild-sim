@@ -136,14 +136,14 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
     return
   }
 
-  const upgrade = await createUpgradeResolver().forInstance(job.sourceId)
-  if (isErr(upgrade)) {
-    await fail(job, `could not resolve the upgrade track: ${upgrade.messageChain}`)
+  if (!isDifficulty(job.difficulty)) {
+    await fail(job, `unknown difficulty "${job.difficulty}"`)
     return
   }
 
-  if (!isDifficulty(job.difficulty)) {
-    await fail(job, `unknown difficulty "${job.difficulty}"`)
+  const upgrade = await createUpgradeResolver().forInstance(job.sourceId, job.difficulty)
+  if (isErr(upgrade)) {
+    await fail(job, `could not resolve the upgrade track: ${upgrade.messageChain}`)
     return
   }
 

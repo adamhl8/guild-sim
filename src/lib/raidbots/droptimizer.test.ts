@@ -101,6 +101,12 @@ describe("buildPayload", () => {
     expect(build({ gemItemId: 240_908 })["droptimizer"]).toMatchObject({ gem: 240_908 })
   })
 
+  // Omission is the failure mode, not a wrong value: wowaudit rejects the report when it cannot see the
+  // vault socket explicitly disabled, exactly as with powerInfusion.
+  it("disables the vault socket explicitly", () => {
+    expect(build()["droptimizer"]).toMatchObject({ addSocket: false })
+  })
+
   it("leaves buffs and consumables to the server defaults", () => {
     const payload = build()
     const defaulted = [

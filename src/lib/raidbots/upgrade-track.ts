@@ -3,6 +3,7 @@ import { err, isErr } from "ts-explicit-errors"
 
 import type { Instance } from "#lib/raidbots/static-data.ts"
 import { staticData } from "#lib/raidbots/static-data.ts"
+import type { Difficulty } from "#lib/settings.ts"
 
 export interface UpgradeStep {
   group: number
@@ -22,7 +23,21 @@ export interface Season {
   bonusListGroups?: number[]
 }
 
-interface MythTrack {
+/**
+ * The gear track each raid difficulty drops. wowaudit validates the report against this and rejects a mismatch
+ * ("Uploaded reports must be set to Champion 6/6 upgrades"), so it is not a preference.
+ *
+ * Exhaustive over Difficulty on purpose: a new difficulty should fail to compile rather than silently inherit whichever
+ * track happened to be last.
+ */
+const TRACK_FOR: Record<Difficulty, string> = {
+  lfr: "Veteran",
+  normal: "Champion",
+  heroic: "Hero",
+  mythic: "Myth",
+}
+
+interface UpgradeTrack {
   bonusId: number
   itemLevel: number
   fullName: string
@@ -31,10 +46,15 @@ interface MythTrack {
 
 const SEASON_RAIDS_PATTERN = /^Season (?<n>\d+) Raids$/v
 
-export const mythStepFor = (season: Season, sets: Record<string, UpgradeStep[]>): UpgradeStep | undefined => {
+/** Each track has its own bonus list group, holding exactly one step at `level === max`. */
+export const topStepFor = (
+  season: Season,
+  sets: Record<string, UpgradeStep[]>,
+  track: string,
+): UpgradeStep | undefined => {
   for (const group of season.bonusListGroups ?? []) {
     const steps = sets[String(group)] ?? []
-    const top = steps.find((step) => step.name === "Myth" && step.level === step.max)
+    const top = steps.find((step) => step.name === track && step.level === step.max)
     if (top) return top
   }
   return undefined
@@ -62,18 +82,18 @@ export const seasonByNumber = (seasons: Season[], active: Season, n: number): Se
 }
 
 export interface UpgradeResolver {
-  forInstance: (instanceId: number) => Promise<Result<MythTrack>>
+  forInstance: (instanceId: number, difficulty: Difficulty) => Promise<Result<UpgradeTrack>>
 }
 
 /**
- * Wowaudit rejects any report not simmed at Myth 6/6, and that bonus id differs per season. Raidbots can be a season
- * ahead of wowaudit (it was on 2026-08-11), so the season is resolved from the instance rather than from what is
- * active.
+ * Wowaudit rejects any report whose upgrade track does not match its difficulty, and the bonus id for a track differs
+ * per season. Raidbots can be a season ahead of wowaudit (it was on 2026-08-11), so the season is resolved from the
+ * instance rather than from what is active.
  */
 export const createUpgradeResolver = (): UpgradeResolver => {
-  const cache = new Map<number, MythTrack>()
+  const cache = new Map<string, UpgradeTrack>()
 
-  const resolve = async (instanceId: number): Promise<Result<MythTrack>> => {
+  const resolve = async (instanceId: number, difficulty: Difficulty): Promise<Result<UpgradeTrack>> => {
     const instances = await staticData<Instance[]>("instances")
     if (isErr(instances)) return instances
     const seasonsRaw = await staticData<Season[] | { seasons?: Season[] }>("seasons")
@@ -87,10 +107,12 @@ export const createUpgradeResolver = (): UpgradeResolver => {
 
     const n = seasonNumberForInstance(instances, instanceId)
     const season = (n === undefined ? undefined : seasonByNumber(seasons, active, n)) ?? active
-    const step = mythStepFor(season, sets)
+    const track = TRACK_FOR[difficulty]
+    const step = topStepFor(season, sets, track)
     if (!step) {
-      return err(`no Myth upgrade track for season ${season.id} (instance ${instanceId})`, undefined).ctx({
+      return err(`no ${track} upgrade track for season ${season.id} (instance ${instanceId})`, undefined).ctx({
         instanceId,
+        difficulty,
       })
     }
 
@@ -98,12 +120,13 @@ export const createUpgradeResolver = (): UpgradeResolver => {
   }
 
   return {
-    forInstance: async (instanceId) => {
-      const cached = cache.get(instanceId)
+    forInstance: async (instanceId, difficulty) => {
+      const key = `${String(instanceId)}:${difficulty}`
+      const cached = cache.get(key)
       if (cached) return cached
-      const resolved = await resolve(instanceId)
+      const resolved = await resolve(instanceId, difficulty)
       if (isErr(resolved)) return resolved
-      cache.set(instanceId, resolved)
+      cache.set(key, resolved)
       return resolved
     },
   }

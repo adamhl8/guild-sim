@@ -16,7 +16,7 @@ export interface SubmitInput {
   instanceId: number
   difficulty: Difficulty
   sim: SimOptions
-  /** Myth 6/6 bonus id for the instance's season. wowaudit rejects reports simmed at anything else. */
+  /** Top bonus id of the track this difficulty drops. wowaudit rejects a report simmed at any other. */
   upgradeLevel: number
   /** Preferred gem, as an **item** id. Raidbots writes it straight into SimC's `gem_id=`. */
   gemItemId?: number | undefined
@@ -60,6 +60,9 @@ export const buildPayload = (input: SubmitInput): Record<string, unknown> => {
       upgradeLevel: input.upgradeLevel,
       // Required by wowaudit ("Upgrade All Equipped Gear to the Same Level").
       upgradeEquipped: true,
+      // Same trap as powerInfusion below: wowaudit rejects a report whose items carry vault sockets, and
+      // an omitted field is not echoed back for it to check.
+      addSocket: false,
       classId: character.classId,
       specId: character.specId,
       lootSpecId: character.lootSpecId,
