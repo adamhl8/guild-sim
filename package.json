@@ -27,6 +27,7 @@
   "type": "module",
   "imports": {
     "#*": "./src/*",
+    "#package.json": "./package.json",
     "#astro-entry": "./dist/server/entry.mjs"
   },
   "scripts": {
