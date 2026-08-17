@@ -26,7 +26,8 @@
   },
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": "./src/*",
+    "#astro-entry": "./dist/server/entry.mjs"
   },
   "scripts": {
     "prepare": "just prepare"
@@ -49,9 +50,9 @@
     "ts-explicit-errors": "^4.1.3"
   },
   "devDependencies": {
-    "@adamhl8/configs": "^2.3.1",
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
+    "@adamhl8/configs": "^2.3.2",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@types/bun": "^1.3.14",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",

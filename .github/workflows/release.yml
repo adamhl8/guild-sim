@@ -12,3 +12,17 @@ jobs:
     with:
       docker-image: guild-sim
     secrets: inherit
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to homelab
+        env:
+          WATCHTOWER_API_TOKEN: ${{ secrets.WATCHTOWER_API_TOKEN }}
+        run: |
+          curl \
+            --fail \
+            -X POST \
+            -H "Authorization: Bearer $WATCHTOWER_API_TOKEN" \
+            https://watchtower.guild-sim.adamhl.dev/v1/update

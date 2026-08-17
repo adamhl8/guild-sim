@@ -28,8 +28,7 @@ export const quotaDelayMs = (state: QuotaSnapshot, limit: number, now: number): 
 }
 
 export const readQuota = async (): Promise<QuotaSnapshot> => {
-  const row =
-    (await prisma.quotaState.findUnique({ where: { id: 1 } })) ?? (await prisma.quotaState.create({ data: { id: 1 } }))
+  const row = await prisma.quotaState.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
   return {
     submits: parseSubmits(row.submits),
     quotaResetAt: row.quotaResetAt?.getTime(),

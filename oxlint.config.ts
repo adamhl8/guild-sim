@@ -11,7 +11,7 @@ const config = oxlintConfig({
       rules: { "import/unambiguous": "off", "unicorn/prefer-module": "off" },
     },
     {
-      files: ["src/lib/http.ts", "src/worker/**/*.ts", "src/lib/raidbots/job.ts", "src/lib/sync.ts"],
+      files: ["src/lib/http.ts", "src/worker/**/*.ts", "src/lib/raidbots/job.ts", "src/lib/sync.ts", "src/server.ts"],
       rules: { "no-await-in-loop": "off" },
     },
   ],

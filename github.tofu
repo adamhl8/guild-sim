@@ -8,8 +8,9 @@ terraform {
 }
 
 module "github" {
-  source    = "./node_modules/@adamhl8/configs/dist/tofu/github"
-  repo_name = "guild-sim"
+  source             = "./node_modules/@adamhl8/configs/dist/tofu/github"
+  repo_name          = "guild-sim"
+  additional_secrets = ["WATCHTOWER_API_TOKEN"]
   repo_settings = {
     visibility = "public"
   }

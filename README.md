@@ -100,7 +100,7 @@ docker run -d \
   --name=guild-sim \
   --env-file .env \
   -e DATABASE_URL=file:db/prod.db \
-  -p 4321:4321 \
+  -p 8080:8080 \
   -v ./data/:/app/db/ \
   --restart unless-stopped \
   ghcr.io/adamhl8/guild-sim:latest
@@ -114,7 +114,7 @@ Behind Caddy, nothing extra is needed in the Caddyfile:
 
 ```caddyfile
 guild-sim.example.com {
-	reverse_proxy localhost:4321
+	reverse_proxy localhost:8080
 }
 ```
 

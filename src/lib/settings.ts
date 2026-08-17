@@ -48,8 +48,8 @@ const isSimcVersion = (value: string): value is SimOptions["simcVersion"] =>
 
 /** Lazily creates the single settings row, so a fresh database boots with working defaults. */
 export const getSettings = async (): Promise<ResolvedSettings> => {
-  const row =
-    (await prisma.settings.findUnique({ where: { id: 1 } })) ?? (await prisma.settings.create({ data: { id: 1 } }))
+  // upsert rather than find-then-create: the sync and an early request can reach this concurrently.
+  const row = await prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
 
   const iterations = Number(row.iterations)
 

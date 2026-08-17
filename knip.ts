@@ -2,7 +2,7 @@ import { knipConfig } from "@adamhl8/configs"
 
 const config = knipConfig({
   // locals.ts is an ambient type augmentation: nothing imports it, but dropping it breaks Astro.locals.
-  entry: ["server.ts", "src/lib/locals.ts", "src/pages/**/*.{astro,ts}"],
+  entry: ["src/server.ts", "src/lib/locals.ts", "src/pages/**/*.{astro,ts}"],
   project: ["!./src/generated/**/*"],
 })
 
