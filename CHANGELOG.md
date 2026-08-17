@@ -1,3 +1,9 @@
+## [0.1.3](https://github.com/adamhl8/guild-sim/compare/0.1.2..0.1.3) - 2026-08-17
+
+### 🐛 Bug Fixes
+
+- _(db)_ migrate ([71a5cfe](https://github.com/adamhl8/guild-sim/commit/71a5cfed1dd824e14f2614c70691c0b477f95864) by @adamhl8)
+
 ## [0.1.2](https://github.com/adamhl8/guild-sim/compare/0.1.1..0.1.2) - 2026-08-17
 
 ### 🐛 Bug Fixes
