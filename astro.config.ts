@@ -1,7 +1,7 @@
 import node from "@astrojs/node"
 import react from "@astrojs/react"
 import tailwindcss from "@tailwindcss/vite"
-import { defineConfig } from "astro/config"
+import { defineConfig, fontProviders } from "astro/config"
 
 export default defineConfig({
   // Nearly every route is auth-gated or a form POST, so on-demand is the safe default. A missing
@@ -16,6 +16,24 @@ export default defineConfig({
     // checked in middleware against the runtime PUBLIC_SITE_URL instead, so one image serves any host.
     checkOrigin: false,
   },
+  // Downloaded and self-hosted at build time, so the running app still makes no third-party request.
+  // Weights are enumerated rather than pulling whole families.
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "IBM Plex Sans",
+      cssVariable: "--font-ibm-plex-sans",
+      weights: [400, 500, 600],
+      subsets: ["latin"],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "IBM Plex Mono",
+      cssVariable: "--font-ibm-plex-mono",
+      weights: [400, 500],
+      subsets: ["latin"],
+    },
+  ],
   vite: { plugins: [tailwindcss()] },
   integrations: [react()],
 })

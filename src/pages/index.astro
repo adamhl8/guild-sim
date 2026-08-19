@@ -2,20 +2,40 @@
 import Base from "#layouts/Base.astro"
 
 if (Astro.locals.user) return Astro.redirect("/submit")
+
+// A real sequence, so the numbering carries information rather than decorating.
+const steps = [
+  { title: "Sign in with Battle.net", body: "We match your characters against the wowaudit roster." },
+  { title: "Paste your /simc export", body: "One paste covers every raid difficulty your team runs." },
+  { title: "That's it", body: "Droptimizer is automatically run and the results are uploaded to your wowaudit wishlist." },
+]
 ---
 
 <Base title="Sign in">
-  <div class="hero min-h-[60vh]">
-    <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-4xl font-bold">Keep your wowaudit wishlist current</h1>
-        <p class="py-6 opacity-80">
-          Paste your <code class="rounded bg-base-300 px-1">/simc</code> output and Droptimizer will be run for you and uploaded to wowaudit. Sign in with the Battle.net account that owns your raiding character.
-        </p>
-        <button id="signin" class="btn btn-primary btn-lg" type="button">Sign in with Battle.net</button>
-        <p id="signin-error" class="mt-4 hidden text-sm text-error"></p>
-      </div>
-    </div>
+  <div class="mx-auto max-w-2xl py-12 text-center sm:py-20">
+    <h1 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+      Keep your wowaudit wishlist current
+    </h1>
+    <p class="mx-auto mt-4 max-w-md text-base-content/70">
+      Paste your <code class="rounded bg-base-300 px-1 font-mono">/simc</code> output and Droptimizer will be
+      run for you and uploaded to wowaudit. Sign in with the Battle.net account that owns your raiding
+      character.
+    </p>
+
+    <button id="signin" class="btn btn-primary btn-lg mt-8" type="button">Sign in with Battle.net</button>
+    <p id="signin-error" class="mt-4 hidden text-sm text-error"></p>
+
+    <ol class="mt-14 grid gap-6 text-left sm:grid-cols-3">
+      {
+        steps.map((step, index) => (
+          <li class="border-t border-base-content/10 pt-4">
+            <span class="font-mono text-xs text-base-content/40">{String(index + 1).padStart(2, "0")}</span>
+            <h2 class="mt-1 text-sm font-semibold">{step.title}</h2>
+            <p class="mt-1 text-sm text-base-content/60">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
   </div>
 </Base>
 

@@ -24,7 +24,9 @@ const showAlert = (kind: "success" | "error", message: string): void => {
   if (text) text.textContent = message
   box.classList.toggle("alert-success", kind === "success")
   box.classList.toggle("alert-error", kind === "error")
-  box.classList.remove("hidden")
+  // A server-rendered warning can still be on the box, and daisyUI declares `alert-warning` after
+  // `alert-success`, so leaving it would render a success message amber.
+  box.classList.remove("alert-warning", "hidden")
   // The settings form's button sits well below the fold, where an alert pinned to the top would go unseen.
   box.scrollIntoView({ block: "nearest" })
 }
@@ -44,13 +46,16 @@ const submitButtons = (form: HTMLFormElement): HTMLButtonElement[] => [
 ]
 
 const run = async (action: FormAction, form: HTMLFormElement, submitter: HTMLElement | null): Promise<void> => {
+  // Built before the buttons are disabled: a disabled control is left out of the form's entry list, so
+  // disabling first drops the submitter's own name and value -- the entire payload for a form whose
+  // buttons carry the choice, which is the roster's rerun cells.
+  const body = new FormData(form, submitter)
+
   const buttons = submitButtons(form)
   for (const button of buttons) button.disabled = true
   alertBox()?.classList.add("hidden")
 
-  // Without the submitter the clicked button's name and value are dropped, which is the whole payload for a
-  // form whose buttons carry the choice -- the roster's rerun cells.
-  const { data, error } = await action(new FormData(form, submitter))
+  const { data, error } = await action(body)
 
   if (error) {
     // Nothing navigates, so a rejected paste is still sitting in the textarea. This is the whole point.

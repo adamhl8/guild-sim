@@ -4,6 +4,17 @@ import { prisma } from "#lib/db.ts"
 export const DIFFICULTIES = ["lfr", "normal", "heroic", "mythic"] as const
 export type Difficulty = (typeof DIFFICULTIES)[number]
 
+/**
+ * Display only. The lowercase token is a wire value everywhere else: slot keys, the job column, this setting's stored
+ * CSV, and the Raidbots payload.
+ */
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  lfr: "LFR",
+  normal: "Normal",
+  heroic: "Heroic",
+  mythic: "Mythic",
+}
+
 /** How strictly a paste's WoW build must match the live one. */
 export const BUILD_CHECKS = ["exact", "patch", "off"] as const
 export type BuildCheck = (typeof BUILD_CHECKS)[number]

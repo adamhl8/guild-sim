@@ -1,5 +1,7 @@
 ---
+import { DIFFICULTY_LABELS } from "#lib/settings.ts"
 import type { Slot } from "#lib/slots.ts"
+import { SLOT_CLASSES } from "#lib/slots.ts"
 
 interface Props {
   slot: Slot
@@ -10,27 +12,26 @@ interface Props {
 
 const { slot, rerun, character } = Astro.props
 
-const CLASSES: Record<string, string> = {
-  queued: "badge-ghost",
-  running: "badge-info",
-  uploading: "badge-info",
-  done: "badge-success",
-  failed: "badge-error",
-  skipped: "badge-warning",
-  none: "badge-ghost badge-outline opacity-60",
-}
-
 const label = slot.status === "none" ? "not run" : slot.status
-const badge = ["badge badge-sm whitespace-nowrap", CLASSES[slot.status] ?? "badge-ghost"]
-const title = slot.error ?? (rerun ? `Rerun ${slot.difficulty} for ${character ?? "this character"}` : label)
+const badge = ["badge badge-sm whitespace-nowrap", SLOT_CLASSES[slot.status]]
+const title = slot.error ?? (rerun ? `Rerun ${DIFFICULTY_LABELS[slot.difficulty]} for ${character ?? "this character"}` : label)
 ---
 
 {
   rerun ? (
-    <button type="submit" name="slot" value={rerun} class:list={[...badge, "cursor-pointer"]} title={title}>
+    // Not `disabled:pointer-events-none`: the title is the only place a failed slot's error is surfaced.
+    <button
+      type="submit"
+      name="slot"
+      value={rerun}
+      class:list={[...badge, "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"]}
+      title={title}
+    >
       {label}
     </button>
   ) : (
-    <span class:list={badge} title={title}>{label}</span>
+    <span class:list={badge} title={title}>
+      {label}
+    </span>
   )
 }

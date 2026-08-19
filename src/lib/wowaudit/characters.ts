@@ -38,13 +38,25 @@ export const realmSlug = (realm: string): string =>
     .replaceAll("'", "")
     .replaceAll(/[\s_]+/gv, "-")
 
+/**
+ * `temporarily_unavailable` means wowaudit could not refresh the character from Blizzard, not that the team dropped
+ * them: the row keeps its `blizzard_id` and `tracking_since`. Excluding it is not a display bug -- `sync.ts` deletes
+ * every roster row missing from this list, cascading through the raider's claims into their stored pastes. An allowlist
+ * rather than "anything with an id", because being on the roster is what authorises submitting.
+ */
+const ROSTERED_STATUSES: ReadonlySet<string> = new Set(["tracking", "temporarily_unavailable"])
+
+/** On the team roster and joinable to a Battle.net account. `blizzardId` is that join key, so it is required. */
+export const isRostered = (status: string, blizzardId: string | null): boolean =>
+  ROSTERED_STATUSES.has(status) && Boolean(blizzardId)
+
 export const getCharacters = async (client: WowauditClient): Promise<Result<Character[]>> => {
   const response = await client.get<CharacterResponse[]>("/characters")
   if (isErr(response)) return err("could not fetch wowaudit roster", response)
   if (!Array.isArray(response)) return err("unexpected wowaudit roster response: expected an array", undefined)
 
   return response
-    .filter((character) => character.status === "tracking" && character.blizzard_id)
+    .filter((character) => isRostered(character.status, character.blizzard_id))
     .map((character) => ({
       id: character.id,
       name: character.name,

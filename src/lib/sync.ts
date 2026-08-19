@@ -18,7 +18,7 @@ interface Metadata {
   wowBuild?: string
 }
 
-const syncRoster = async (): Promise<Result<number>> => {
+export const syncRoster = async (): Promise<Result<number>> => {
   const client = createWowauditClient(env.WOWAUDIT_API_KEY)
 
   const team = await getTeam(client)
@@ -26,6 +26,11 @@ const syncRoster = async (): Promise<Result<number>> => {
 
   const roster = await getCharacters(client)
   if (isErr(roster)) return err("could not read the wowaudit roster", roster)
+
+  // An empty roster is a valid HTTP response but never a plausible team, and the prune below would read it
+  // as "everyone left": every row deleted, cascading through claims into the stored pastes, unrecoverably.
+  // So refuse it rather than reconcile against it, the way claim.ts refuses to wipe claims it cannot verify.
+  if (roster.length === 0) return err("wowaudit returned an empty roster, so nothing was changed", undefined)
 
   const syncedAt = new Date()
   for (const character of roster) {
@@ -120,20 +125,39 @@ const syncBuild = async (): Promise<Result> => {
   return undefined
 }
 
-/** Refreshes everything the UI and the staleness gate read, so neither needs a redeploy to stay current. */
-export const runSync = async (): Promise<void> => {
+/**
+ * Refreshes everything the UI and the staleness gate read, so neither needs a redeploy to stay current.
+ *
+ * Every sub-sync runs regardless of its siblings, so the return value collects their failures rather than
+ * short-circuiting. The console keeps the full `messageChain`; the returned message is the short form the admin sees
+ * when they press Sync now.
+ */
+export const runSync = async (): Promise<Result> => {
+  const failures: string[] = []
+
   const roster = await syncRoster()
-  if (isErr(roster)) console.error(`sync: roster failed -> ${roster.messageChain}`)
-  else console.info(`sync: ${String(roster)} roster characters`)
+  if (isErr(roster)) {
+    console.error(`sync: roster failed -> ${roster.messageChain}`)
+    failures.push(roster.message)
+  } else console.info(`sync: ${String(roster)} roster characters`)
 
   const sources = await syncSources()
-  if (isErr(sources)) console.error(`sync: sources failed -> ${sources.messageChain}`)
-  else console.info(`sync: ${String(sources)} raid sources`)
+  if (isErr(sources)) {
+    console.error(`sync: sources failed -> ${sources.messageChain}`)
+    failures.push(sources.message)
+  } else console.info(`sync: ${String(sources)} raid sources`)
 
   const gems = await syncGems()
-  if (isErr(gems)) console.error(`sync: gems failed -> ${gems.messageChain}`)
-  else console.info(`sync: ${String(gems)} selectable gems`)
+  if (isErr(gems)) {
+    console.error(`sync: gems failed -> ${gems.messageChain}`)
+    failures.push(gems.message)
+  } else console.info(`sync: ${String(gems)} selectable gems`)
 
   const build = await syncBuild()
-  if (isErr(build)) console.error(`sync: wow build failed -> ${build.messageChain}`)
+  if (isErr(build)) {
+    console.error(`sync: wow build failed -> ${build.messageChain}`)
+    failures.push(build.message)
+  }
+
+  return failures.length > 0 ? err(failures.join("; "), undefined) : undefined
 }

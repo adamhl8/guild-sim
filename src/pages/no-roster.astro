@@ -1,4 +1,5 @@
 ---
+import Panel from "#components/Panel.astro"
 import Base from "#layouts/Base.astro"
 import { refreshAlert } from "#lib/alert.ts"
 
@@ -11,20 +12,22 @@ const alert = refreshAlert(Astro.url.searchParams.get("refresh"))
 
 <Base title="Not on the roster" alert={alert}>
   <div class="mx-auto max-w-xl">
-    <div class="alert alert-warning">
-      <div>
+    <!-- A panel rather than a second alert: this is the page's content, and Base already owns the
+      alert region directly above it. -->
+    <Panel>
+      <div class="p-6">
         <h1 class="text-lg font-semibold">You are not on the roster</h1>
-        <p class="mt-1 text-sm">
-          You signed in as <strong>{user.name}</strong>, but none of the characters on that Battle.net
-          account are tracked in wowaudit.
+        <p class="mt-2 text-sm text-base-content/70">
+          You signed in as <strong class="text-base-content">{user.name}</strong>, but none of the
+          characters on that Battle.net account are tracked in wowaudit.
         </p>
+        <p class="mt-4 text-sm text-base-content/60">
+          If you have just been added, ask an officer to re-sync the roster, then check again.
+        </p>
+        <form method="POST" action="/refresh-characters" class="mt-6">
+          <button class="btn btn-primary btn-sm" type="submit">Refresh my characters</button>
+        </form>
       </div>
-    </div>
-    <p class="mt-6 text-sm opacity-80">
-      If you have just been added, ask an officer to re-sync the roster, then check again.
-    </p>
-    <form method="POST" action="/refresh-characters" class="mt-4">
-      <button class="btn btn-primary btn-sm" type="submit">Refresh my characters</button>
-    </form>
+    </Panel>
   </div>
 </Base>

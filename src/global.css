@@ -1,8 +1,76 @@
 @import "tailwindcss";
 
+/* One theme, listed explicitly. Dropping the `themes` key entirely would fall back to daisyUI's
+   `light --default, dark --prefersdark`, which is the inverted-pairing bug this replaces. */
 @plugin "daisyui" {
   logs: false;
-  themes:
-    night --default,
-    winter --prefersdark;
+  themes: dim --default;
+}
+
+@theme {
+  --font-sans: var(--font-ibm-plex-sans);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+/* Blizzard's class colours, converted to OKLCH and lifted in lightness only where the original falls
+   under 4.5:1 on `dim`'s base-100. Hue carries the class identity, so a lift stays recognisable; a flat
+   lightness floor does not work because OKLCH lightness is not luminance and the blues still fail it.
+   Priest and Monk are capped the other way so they do not outshine every heading.
+
+   Plain rules rather than `@theme` utilities: the class name comes from a database row, so there is no
+   literal for Tailwind's scanner to find and an unused theme variable can be dropped. */
+:root {
+  --color-class-death-knight: oklch(67% 0.203 21);
+  --color-class-demon-hunter: oklch(73.6% 0.205 316);
+  --color-class-druid: oklch(70.5% 0.19 47);
+  --color-class-evoker: oklch(75.5% 0.088 174);
+  --color-class-hunter: oklch(82% 0.132 129);
+  --color-class-mage: oklch(77% 0.117 217);
+  --color-class-monk: oklch(90% 0.167 158);
+  --color-class-paladin: oklch(76.5% 0.132 350);
+  --color-class-priest: oklch(97% 0 264);
+  --color-class-rogue: oklch(94.5% 0.15 105);
+  --color-class-shaman: oklch(75% 0.13 254);
+  --color-class-warlock: oklch(76.5% 0.123 282);
+  --color-class-warrior: oklch(77.5% 0.07 68);
+}
+
+.class-death-knight {
+  color: var(--color-class-death-knight);
+}
+.class-demon-hunter {
+  color: var(--color-class-demon-hunter);
+}
+.class-druid {
+  color: var(--color-class-druid);
+}
+.class-evoker {
+  color: var(--color-class-evoker);
+}
+.class-hunter {
+  color: var(--color-class-hunter);
+}
+.class-mage {
+  color: var(--color-class-mage);
+}
+.class-monk {
+  color: var(--color-class-monk);
+}
+.class-paladin {
+  color: var(--color-class-paladin);
+}
+.class-priest {
+  color: var(--color-class-priest);
+}
+.class-rogue {
+  color: var(--color-class-rogue);
+}
+.class-shaman {
+  color: var(--color-class-shaman);
+}
+.class-warlock {
+  color: var(--color-class-warlock);
+}
+.class-warrior {
+  color: var(--color-class-warrior);
 }

@@ -3,7 +3,7 @@ import { ActionError, defineAction } from "astro:actions"
 import { isErr } from "ts-explicit-errors"
 
 import { prisma } from "#lib/db.ts"
-import { DIFFICULTIES, getSettings, updateSettings } from "#lib/settings.ts"
+import { DIFFICULTIES, DIFFICULTY_LABELS, getSettings, updateSettings } from "#lib/settings.ts"
 import { parseSlotKey } from "#lib/slots.ts"
 import { resolveConfiguredSource } from "#lib/source.ts"
 import { submitPaste } from "#lib/submit.ts"
@@ -161,7 +161,7 @@ export const server = {
       const active = await prisma.simJob.count({
         where: { submissionId: submission.id, difficulty: parsed.difficulty, status: { in: ACTIVE_STATUSES } },
       })
-      if (active > 0) return { message: `${parsed.difficulty} is already running for ${name}.` }
+      if (active > 0) return { message: `${DIFFICULTY_LABELS[parsed.difficulty]} is already running for ${name}.` }
 
       const settings = await getSettings()
       const source = await resolveConfiguredSource(settings)
@@ -176,7 +176,7 @@ export const server = {
         },
       })
 
-      return { message: `Queued ${parsed.difficulty} for ${name}.` }
+      return { message: `Queued ${DIFFICULTY_LABELS[parsed.difficulty]} for ${name}.` }
     },
   }),
 
@@ -185,7 +185,10 @@ export const server = {
     input: z.object({}),
     handler: async (_input, context) => {
       requireAdmin(context.locals)
-      await runSync()
+      // Surfaced rather than swallowed: a refused sync leaves the roster stale, and the console is the
+      // only other place it would be mentioned.
+      const result = await runSync()
+      if (isErr(result)) throw new ActionError({ code: "INTERNAL_SERVER_ERROR", message: result.message })
       return { message: "Sync complete." }
     },
   }),

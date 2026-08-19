@@ -2,11 +2,14 @@
 import { actions } from "astro:actions"
 
 import ActionForm from "#components/ActionForm.astro"
+import CharacterName from "#components/CharacterName.astro"
+import Panel from "#components/Panel.astro"
 import Slot from "#components/Slot.astro"
 import Base from "#layouts/Base.astro"
 import { prisma } from "#lib/db.ts"
-import { BUILD_CHECKS, DIFFICULTIES, getSettings } from "#lib/settings.ts"
+import { BUILD_CHECKS, DIFFICULTIES, DIFFICULTY_LABELS, getSettings } from "#lib/settings.ts"
 import { activeDifficulties, formatSlotKey, slotsFor } from "#lib/slots.ts"
+import { absoluteTime, relativeTime } from "#lib/time.ts"
 
 const settings = await getSettings()
 const sources = await prisma.source.findMany({ orderBy: { name: "asc" } })
@@ -24,6 +27,7 @@ const [queued, roster] = await Promise.all([
 ])
 
 const difficulties = activeDifficulties(settings.difficulties)
+const now = Date.now()
 
 const rows = roster.map((character) => {
   const [latest] = character.submissions
@@ -34,9 +38,11 @@ const simmable = rows.filter((row) => row.character.unsupportedSpec === null)
 const doneSlots = simmable.reduce((total, row) => total + row.slots.filter((slot) => slot.status === "done").length, 0)
 const totalSlots = simmable.length * difficulties.length
 const healers = roster.filter((character) => character.role === "Heal").length
-const field = "input input-bordered w-full"
-const section = "mt-6 grid gap-4 sm:grid-cols-2"
-const heading = "mt-8 text-lg font-semibold"
+
+const field = "input w-full"
+const picker = "select w-full"
+const group = "grid gap-4 p-4 sm:grid-cols-2 sm:p-6"
+const stat = "stat-value font-mono text-2xl tabular-nums"
 
 // Configured ranks are folded in so one that has since left the roster still shows, checked, rather than
 // disappearing from the form and being dropped by the next save.
@@ -46,230 +52,255 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
 ---
 
 <Base title="Admin">
-  <h1 class="text-2xl font-bold">Admin</h1>
+  <h1 class="text-2xl font-semibold tracking-tight">Admin</h1>
 
-  <div class="stats mt-6 w-full shadow">
+  <div class="stats mt-6 w-full rounded-box border border-base-content/10 bg-base-100">
     <div class="stat">
       <div class="stat-title">In queue</div>
-      <div class="stat-value text-2xl">{queued}</div>
+      <div class={stat}>{queued}</div>
+      <div class="stat-desc">jobs waiting or running</div>
     </div>
     <div class="stat">
       <div class="stat-title">Roster</div>
-      <div class="stat-value text-2xl">{roster.length}</div>
+      <div class={stat}>{roster.length}</div>
+      <div class="stat-desc">characters from wowaudit</div>
     </div>
     <div class="stat">
       <div class="stat-title">Slots done</div>
-      <div class="stat-value text-2xl">{doneSlots}/{totalSlots}</div>
+      <div class={stat}>{doneSlots}/{totalSlots}</div>
+      <progress
+        class="progress progress-primary mt-2 h-1 w-full"
+        value={doneSlots}
+        max={totalSlots > 0 ? totalSlots : 1}></progress>
     </div>
     <div class="stat">
       <div class="stat-title">Live WoW build</div>
-      <div class="stat-value text-2xl">{settings.liveWowBuild ?? "unknown"}</div>
+      <div class={stat}>{settings.liveWowBuild ?? "unknown"}</div>
+      <div class="stat-desc">checked on every sync</div>
     </div>
   </div>
 
-  <div class="mt-4 flex gap-2">
-    <ActionForm action={actions.requeueAll}>
-      <button class="btn btn-sm" type="submit">Requeue every stored paste</button>
-    </ActionForm>
-    <ActionForm action={actions.syncNow}>
-      <button class="btn btn-sm btn-ghost" type="submit">Sync now</button>
-    </ActionForm>
-  </div>
+  {/* `.roster` and the rows below must stay authored here: admin's scoped style hashes both, and a
+    component root would carry its own hash instead, silently breaking the healer toggle. */}
+  <div class="roster mt-8">
+    <Panel title="Roster">
+      <Fragment slot="actions">
+        <label class="label cursor-pointer justify-start gap-2 text-sm">
+          <input id="hide-healers" type="checkbox" class="toggle toggle-sm" checked />
+          <span>Hide healers</span>
+          {healers > 0 && <span class="healer-note text-base-content/40">({healers} hidden)</span>}
+        </label>
+        <ActionForm action={actions.requeueAll}>
+          <button class="btn btn-sm" type="submit">Requeue every stored paste</button>
+        </ActionForm>
+        <ActionForm action={actions.syncNow}>
+          <button class="btn btn-ghost btn-sm" type="submit">Sync now</button>
+        </ActionForm>
+      </Fragment>
 
-  <h2 class="mt-10 text-xl font-semibold">Roster</h2>
-  <div class="roster">
-    <div class="mt-2 flex flex-wrap items-center gap-4">
-      <label class="label cursor-pointer justify-start gap-3">
-        <input id="hide-healers" type="checkbox" class="toggle toggle-sm" checked />
-        <span>Hide healers</span>
-      </label>
-      {healers > 0 && <span class="healer-note text-sm opacity-60">{healers} hidden</span>}
-    </div>
-
-    <div class="mt-2 overflow-x-auto">
-      <ActionForm action={actions.rerunSlot}>
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Character</th>
-              <th>Rank</th>
-              <th>Spec</th>
-              <th>Last paste</th>
-              {difficulties.map((difficulty) => <th>{difficulty}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              rows.map(({ character, latest, slots }) => {
-                const name = `${character.name}-${character.realm}`
-                return (
+      <div class="overflow-x-auto">
+        <ActionForm action={actions.rerunSlot}>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Character</th>
+                <th>Rank</th>
+                <th>Spec</th>
+                <th>Last paste</th>
+                {difficulties.map((difficulty) => <th class="text-center">{DIFFICULTY_LABELS[difficulty]}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rows.map(({ character, latest, slots }) => (
                   <tr data-role={character.role}>
-                    <td class="font-medium">{name}</td>
-                    <td class="opacity-70">{character.rank}</td>
-                    <td class="opacity-70">{latest?.spec ?? "-"}</td>
-                    <td class:list={[latest ? "opacity-70" : "text-warning"]}>
-                      {latest ? latest.createdAt.toISOString().slice(0, 16).replace("T", " ") : "never"}
+                    <td>
+                      <CharacterName name={character.name} realm={character.realm} wowClass={character.class} />
+                    </td>
+                    <td class="text-base-content/60">{character.rank}</td>
+                    <td class="text-base-content/60">{latest?.spec ?? "-"}</td>
+                    <td class="whitespace-nowrap">
+                      {latest ? (
+                        <span class="text-base-content/60" title={absoluteTime(latest.createdAt)}>
+                          {relativeTime(latest.createdAt, now)}
+                        </span>
+                      ) : (
+                        <span class="text-base-content/40">never</span>
+                      )}
                     </td>
                     {character.unsupportedSpec ? (
-                      <td colspan={difficulties.length} class="opacity-60">
+                      <td colspan={difficulties.length} class="text-center text-base-content/50">
                         {character.unsupportedSpec} cannot be simmed
                       </td>
                     ) : (
                       slots.map((slot) => (
-                        <td>
-                          <Slot slot={slot} rerun={formatSlotKey(character.id, slot.difficulty)} character={name} />
+                        <td class="text-center">
+                          <Slot
+                            slot={slot}
+                            rerun={formatSlotKey(character.id, slot.difficulty)}
+                            character={`${character.name}-${character.realm}`}
+                          />
                         </td>
                       ))
                     )}
                   </tr>
-                )
-              })
-            }
-          </tbody>
-        </table>
-      </ActionForm>
-    </div>
-    <p class="mt-2 text-sm opacity-60">Click a slot to run that difficulty again from the character's latest paste.</p>
+                ))
+              }
+            </tbody>
+          </table>
+        </ActionForm>
+      </div>
+
+      <p class="border-t border-base-content/10 px-4 py-3 text-xs text-base-content/50">
+        Click a slot to run that difficulty again from the character's latest paste.
+      </p>
+    </Panel>
   </div>
 
-  <h2 class="mt-10 text-xl font-semibold">Settings</h2>
-  <ActionForm action={actions.updateSettings} class="mt-4">
-    <h3 class={heading}>wowaudit</h3>
-    <div class={section}>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Configuration</legend>
-        <input class={field} name="wowauditConfigurationName" value={settings.wowaudit.configurationName} required />
-        <p class="label">The wishlist configuration these uploads write to</p>
-      </fieldset>
+  <h2 class="mt-10 text-lg font-semibold">Settings</h2>
+  <ActionForm action={actions.updateSettings}>
+    <Panel title="wowaudit" class="mt-4">
+      <div class={group}>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Configuration</legend>
+          <input class={field} name="wowauditConfigurationName" value={settings.wowaudit.configurationName} required />
+          <p class="fieldset-label">The wishlist configuration these uploads write to</p>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Wishlists</legend>
-        <label class="label cursor-pointer justify-start gap-3">
-          <input type="checkbox" class="checkbox" name="replaceManualEdits" checked={settings.wowaudit.replaceManualEdits} />
-          <span>Replace manual wishlist edits</span>
-        </label>
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Wishlists</legend>
+          <label class="label cursor-pointer justify-start gap-3">
+            <input type="checkbox" class="checkbox" name="replaceManualEdits" checked={settings.wowaudit.replaceManualEdits} />
+            <span>Replace manual wishlist edits</span>
+          </label>
+        </fieldset>
 
-      <fieldset class="fieldset sm:col-span-2">
-        <legend class="fieldset-legend">Admin ranks</legend>
-        <div class="flex flex-wrap gap-x-6 gap-y-2">
-          {
-            rankOptions.map(({ rank, count }) => (
-              <label class="label cursor-pointer justify-start gap-3">
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  name="adminRanks"
-                  value={rank}
-                  checked={settings.adminRanks.includes(rank)}
-                />
-                <span>{rank} <span class="opacity-60">({count})</span></span>
-              </label>
-            ))
-          }
-        </div>
-        <p class="label">Ranks that grant this dashboard. The count is how many roster characters hold it.</p>
-      </fieldset>
-    </div>
+        <fieldset class="fieldset sm:col-span-2">
+          <legend class="fieldset-legend">Admin ranks</legend>
+          <div class="flex flex-wrap gap-x-6 gap-y-2">
+            {
+              rankOptions.map(({ rank, count }) => (
+                <label class="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    class="checkbox"
+                    name="adminRanks"
+                    value={rank}
+                    checked={settings.adminRanks.includes(rank)}
+                  />
+                  <span>
+                    {rank} <span class="text-base-content/50">({count})</span>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="fieldset-label">Ranks that grant this dashboard. The count is how many roster characters hold it.</p>
+        </fieldset>
+      </div>
+    </Panel>
 
-    <h3 class={heading}>Raidbots</h3>
-    <div class={section}>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Source</legend>
-        <select class="select select-bordered w-full" name="source">
-          <option value="season" selected={settings.source === "season"}>season (current aggregate)</option>
-          {sources.map((source) => (
-            <option value={source.name} selected={settings.source === source.name}>{source.name}</option>
-          ))}
-        </select>
-      </fieldset>
+    <Panel title="Raidbots" class="mt-4">
+      <div class={group}>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Source</legend>
+          <select class={picker} name="source">
+            <option value="season" selected={settings.source === "season"}>season (current aggregate)</option>
+            {sources.map((source) => (
+              <option value={source.name} selected={settings.source === source.name}>{source.name}</option>
+            ))}
+          </select>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Difficulties</legend>
-        <div class="flex flex-wrap gap-x-6 gap-y-2">
-          {
-            DIFFICULTIES.map((difficulty) => (
-              <label class="label cursor-pointer justify-start gap-3">
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  name="difficulties"
-                  value={difficulty}
-                  checked={settings.difficulties.includes(difficulty)}
-                />
-                <span>{difficulty}</span>
-              </label>
-            ))
-          }
-        </div>
-        <p class="label">One sim per difficulty, per paste</p>
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Difficulties</legend>
+          <div class="flex flex-wrap gap-x-6 gap-y-2">
+            {
+              DIFFICULTIES.map((difficulty) => (
+                <label class="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    class="checkbox"
+                    name="difficulties"
+                    value={difficulty}
+                    checked={settings.difficulties.includes(difficulty)}
+                  />
+                  <span>{DIFFICULTY_LABELS[difficulty]}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="fieldset-label">One sim per difficulty, per paste</p>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">SimC version</legend>
-        <select class="select select-bordered w-full" name="simcVersion">
-          {["weekly", "nightly", "latest"].map((version) => (
-            <option value={version} selected={settings.sim.simcVersion === version}>{version}</option>
-          ))}
-        </select>
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">SimC version</legend>
+          <select class={picker} name="simcVersion">
+            {["weekly", "nightly", "latest"].map((version) => (
+              <option value={version} selected={settings.sim.simcVersion === version}>{version}</option>
+            ))}
+          </select>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Iterations</legend>
-        <input class={field} name="iterations" value={String(settings.sim.iterations)} required />
-        <p class="label">`smart` or a whole number</p>
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Iterations</legend>
+          <input class={field} name="iterations" value={String(settings.sim.iterations)} required />
+          <p class="fieldset-label"><code class="rounded bg-base-300 px-1 font-mono">smart</code> or a whole number</p>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Fight style</legend>
-        <input class={field} name="fightStyle" value={settings.sim.fightStyle} required />
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Fight style</legend>
+          <input class={field} name="fightStyle" value={settings.sim.fightStyle} required />
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Fight length (s)</legend>
-        <input class={field} type="number" name="fightLength" value={settings.sim.fightLength} min="1" required />
-      </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Fight length (s)</legend>
+          <input class={field} type="number" name="fightLength" value={settings.sim.fightLength} min="1" required />
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Enemy count</legend>
-        <input class={field} type="number" name="enemyCount" value={settings.sim.enemyCount} min="1" required />
-      </fieldset>
-    </div>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Enemy count</legend>
+          <input class={field} type="number" name="enemyCount" value={settings.sim.enemyCount} min="1" required />
+        </fieldset>
+      </div>
+    </Panel>
 
-    <h3 class={heading}>Runner</h3>
-    <div class={section}>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Submits per hour</legend>
-        <input class={field} type="number" name="submitsPerHour" value={settings.runner.submitsPerHour} min="1" required />
-        <p class="label">A local guard only; Raidbots enforces the real limit</p>
-      </fieldset>
+    <Panel title="Runner" class="mt-4">
+      <div class={group}>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Submits per hour</legend>
+          <input class={field} type="number" name="submitsPerHour" value={settings.runner.submitsPerHour} min="1" required />
+          <p class="fieldset-label">A local guard only; Raidbots enforces the real limit</p>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Poll interval (ms)</legend>
-        <input class={field} type="number" name="pollIntervalMs" value={settings.runner.pollIntervalMs} min="1000" required />
-        <p class="label">How often a running sim is checked for a result</p>
-      </fieldset>
-    </div>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Poll interval (ms)</legend>
+          <input class={field} type="number" name="pollIntervalMs" value={settings.runner.pollIntervalMs} min="1000" required />
+          <p class="fieldset-label">How often a running sim is checked for a result</p>
+        </fieldset>
+      </div>
+    </Panel>
 
-    <h3 class={heading}>Submissions</h3>
-    <div class={section}>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Build check</legend>
-        <select class="select select-bordered w-full" name="buildCheck">
-          {BUILD_CHECKS.map((check) => (
-            <option value={check} selected={settings.buildCheck === check}>{check}</option>
-          ))}
-        </select>
-        <p class="label">exact rejects after every hotfix; patch ignores the build number</p>
-      </fieldset>
+    <Panel title="Submissions" class="mt-4">
+      <div class={group}>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Build check</legend>
+          <select class={picker} name="buildCheck">
+            {BUILD_CHECKS.map((check) => (
+              <option value={check} selected={settings.buildCheck === check}>{check}</option>
+            ))}
+          </select>
+          <p class="fieldset-label">exact rejects after every hotfix; patch ignores the build number</p>
+        </fieldset>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">Max paste age (days)</legend>
-        <input class={field} type="number" name="maxPasteAgeDays" value={settings.maxPasteAgeDays} min="1" required />
-      </fieldset>
-    </div>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Max paste age (days)</legend>
+          <input class={field} type="number" name="maxPasteAgeDays" value={settings.maxPasteAgeDays} min="1" required />
+        </fieldset>
+      </div>
+    </Panel>
 
-    <button class="btn btn-primary mt-8" type="submit">Save settings</button>
+    <button class="btn btn-primary mt-6" type="submit">Save settings</button>
   </ActionForm>
 </Base>
 

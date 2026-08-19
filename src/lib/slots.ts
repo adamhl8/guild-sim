@@ -2,7 +2,7 @@ import type { Difficulty } from "#lib/settings.ts"
 import { DIFFICULTIES, isDifficulty } from "#lib/settings.ts"
 
 /** `none` is a difficulty that has no job on the latest paste, which is the whole point of a slot: a gap is visible. */
-type SlotStatus = "queued" | "running" | "uploading" | "done" | "failed" | "skipped" | "none"
+export type SlotStatus = "queued" | "running" | "uploading" | "done" | "failed" | "skipped" | "none"
 
 /** The six the worker writes. Anything else means a job row we do not understand, so the slot reads as a gap. */
 const JOB_STATUSES: ReadonlySet<string> = new Set(["queued", "running", "uploading", "done", "failed", "skipped"])
@@ -13,6 +13,23 @@ export interface Slot {
   difficulty: Difficulty
   status: SlotStatus
   error: string | null
+}
+
+/**
+ * Soft badges everywhere except `failed`, so a roster of ninety `done` slots stays quiet and the handful that need an
+ * officer are the only solid blocks on the page. `queued` is deliberately colourless, and `none` is drawn rather than
+ * coloured: a dashed box reads as a gap without spending a hue on it. Not `badge-ghost` for either -- it hard-codes
+ * base-200, which is the page background.
+ */
+export const SLOT_CLASSES: Record<SlotStatus, string> = {
+  queued: "badge-soft",
+  running: "badge-info badge-soft",
+  uploading: "badge-info badge-soft",
+  done: "badge-success badge-soft",
+  failed: "badge-error",
+  skipped: "badge-warning badge-soft",
+  // `badge-dash` colours its border from `currentColor`, so the text token mutes the outline with it.
+  none: "badge-dash text-base-content/40",
 }
 
 interface JobLike {

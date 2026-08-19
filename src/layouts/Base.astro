@@ -1,4 +1,6 @@
 ---
+import { Font } from "astro:assets"
+
 import "#global.css"
 import type { Alert } from "#lib/alert.ts"
 import { VERSION } from "#lib/version.ts"
@@ -11,6 +13,11 @@ interface Props {
 
 const { title, alert } = Astro.props
 const { user, isAdmin, characters } = Astro.locals
+
+// One constant so the navbar and the content below it cannot drift apart.
+const container = "mx-auto w-full max-w-6xl px-4"
+const path = Astro.url.pathname
+const navLink = (href: string): string => `btn btn-ghost btn-sm${path === href ? " btn-active" : ""}`
 ---
 
 <!doctype html>
@@ -20,20 +27,34 @@ const { user, isAdmin, characters } = Astro.locals
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>{title} · guild-sim</title>
+    <Font cssVariable="--font-ibm-plex-sans" preload />
+    <Font cssVariable="--font-ibm-plex-mono" />
   </head>
   <body class="flex min-h-screen flex-col bg-base-200">
-    <div class="navbar bg-base-100 shadow-sm">
-      <div class="mx-auto flex w-full max-w-5xl items-center gap-2 px-4">
-        <a href={user ? "/submit" : "/"} class="btn btn-ghost text-lg font-semibold">guild-sim</a>
+    <div class="navbar border-b border-base-content/10 bg-base-100">
+      <div class:list={[container, "flex items-center gap-1"]}>
+        <a href={user ? "/submit" : "/"} class="btn btn-ghost px-2 font-mono text-base font-semibold tracking-tight">
+          guild-sim
+        </a>
         <div class="flex-1"></div>
         {
           user && (
             <>
-              {characters.length > 0 && <a href="/submit" class="btn btn-ghost btn-sm">Submit</a>}
-              {isAdmin && <a href="/admin" class="btn btn-ghost btn-sm">Admin</a>}
-              <span class="hidden text-sm opacity-70 sm:inline">{user.name}</span>
+              {characters.length > 0 && (
+                <a href="/submit" class={navLink("/submit")}>
+                  Submit
+                </a>
+              )}
+              {isAdmin && (
+                <a href="/admin" class={navLink("/admin")}>
+                  Admin
+                </a>
+              )}
+              <span class="hidden px-2 text-sm text-base-content/60 sm:inline">{user.name}</span>
               <form method="POST" action="/sign-out">
-                <button class="btn btn-ghost btn-sm" type="submit">Sign out</button>
+                <button class="btn btn-ghost btn-sm" type="submit">
+                  Sign out
+                </button>
               </form>
             </>
           )
@@ -41,15 +62,17 @@ const { user, isAdmin, characters } = Astro.locals
       </div>
     </div>
 
-    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+    <main class:list={[container, "flex-1 py-8"]}>
       <div
         id="alert"
         class:list={[
-          "alert mb-6",
-          { hidden: !alert },
-          { "alert-success": alert?.kind === "success" },
-          { "alert-warning": alert?.kind === "warning" },
-          { "alert-error": alert?.kind === "error" },
+          "alert alert-soft mb-6",
+          {
+            hidden: !alert,
+            "alert-success": alert?.kind === "success",
+            "alert-warning": alert?.kind === "warning",
+            "alert-error": alert?.kind === "error",
+          },
         ]}
       >
         <span>{alert?.message}</span>
@@ -57,7 +80,9 @@ const { user, isAdmin, characters } = Astro.locals
       <slot />
     </main>
 
-    <footer class="px-4 py-6 text-center text-xs opacity-50">v{VERSION}</footer>
+    <footer class="border-t border-base-content/10 py-5">
+      <div class:list={[container, "text-center font-mono text-xs text-base-content/40"]}>v{VERSION}</div>
+    </footer>
 
     <script>
       import { bindActionForms } from "#lib/action-form.ts"

@@ -1,0 +1,25 @@
+---
+interface Props {
+  title?: string | undefined
+  class?: string | undefined
+}
+
+const { title, class: className } = Astro.props
+const hasActions = Astro.slots.has("actions")
+---
+
+<section class:list={["rounded-box border border-base-content/10 bg-base-100", className]}>
+  {
+    (title || hasActions) && (
+      <header class="flex flex-wrap items-center justify-between gap-3 border-b border-base-content/10 px-4 py-3">
+        {title && <h2 class="text-sm font-semibold">{title}</h2>}
+        {hasActions && (
+          <div class="flex flex-wrap items-center gap-2">
+            <slot name="actions" />
+          </div>
+        )}
+      </header>
+    )
+  }
+  <slot />
+</section>

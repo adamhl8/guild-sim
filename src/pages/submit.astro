@@ -2,13 +2,16 @@
 import { actions } from "astro:actions"
 
 import ActionForm from "#components/ActionForm.astro"
+import CharacterName from "#components/CharacterName.astro"
+import Panel from "#components/Panel.astro"
 import Slot from "#components/Slot.astro"
 import Base from "#layouts/Base.astro"
 import { refreshAlert } from "#lib/alert.ts"
 import { prisma } from "#lib/db.ts"
 import { groupGemsByColor, listGems } from "#lib/gems.ts"
-import { getSettings } from "#lib/settings.ts"
+import { DIFFICULTY_LABELS, getSettings } from "#lib/settings.ts"
 import { activeDifficulties, slotsFor } from "#lib/slots.ts"
+import { absoluteTime, relativeTime } from "#lib/time.ts"
 
 const { characters } = Astro.locals
 
@@ -23,6 +26,7 @@ const submissions = await prisma.submission.findMany({
 
 const gemGroups = groupGemsByColor(await listGems())
 const difficulties = activeDifficulties((await getSettings()).difficulties)
+const now = Date.now()
 
 // Whatever this account picked last. With one character it is unambiguous; with alts, the most recently
 // set one is the best guess, and the raider can still change it.
@@ -31,99 +35,118 @@ const preferredGemId = characters.map((character) => character.preferredGemId).f
 // Latest paste per character, so the table answers "am I covered?" rather than listing every attempt.
 const latestByCharacter = new Map<number, (typeof submissions)[number]>()
 for (const submission of submissions) if (!latestByCharacter.has(submission.characterId)) latestByCharacter.set(submission.characterId, submission)
+
+const field = "w-full sm:max-w-md"
 ---
 
 <Base title="Submit" alert={alert}>
-  <h1 class="text-2xl font-bold">Paste your /simc output</h1>
-  <p class="mt-1 text-sm opacity-80">
-    In game, type <code class="rounded bg-base-300 px-1">/simc</code>, copy everything, and paste it below.
+  <h1 class="text-2xl font-semibold tracking-tight">Paste your /simc output</h1>
+  <p class="mt-1 text-sm text-base-content/70">
+    In game, type <code class="rounded bg-base-300 px-1 font-mono">/simc</code>, copy everything, and paste
+    it below.
   </p>
-  <p class="mt-1 text-sm font-bold">
-    Make sure you are in the correct raid talents, gear, etc when you run <code class="rounded bg-base-300 px-1">/simc</code>.
+  <p class="mt-1 text-sm font-medium text-warning">
+    Make sure you are in the correct raid talents, gear, etc when you run <code
+      class="rounded bg-base-300 px-1 font-mono">/simc</code
+    >.
   </p>
 
-  <ActionForm action={actions.submitSimc} class="mt-6">
-    <fieldset class="fieldset">
-      <textarea
-        name="simc"
-        class="textarea textarea-bordered h-64 w-full font-mono text-xs"
-        placeholder="warlock=&quot;Isaaclock&quot;&#10;level=90&#10;..."
-        required></textarea>
+  <Panel class="mt-6">
+    <ActionForm action={actions.submitSimc} class="p-4 sm:p-6">
+      <fieldset class="fieldset">
+        <textarea
+          name="simc"
+          class="textarea h-64 w-full bg-base-200 font-mono text-xs"
+          placeholder="warlock=&quot;Isaaclock&quot;&#10;level=90&#10;..."
+          required></textarea>
 
-      {
-        gemGroups.length > 0 && (
-          <>
-            <label class="label mt-4" for="gem">Preferred gem</label>
-            <select id="gem" name="gem" class="select select-bordered w-full sm:w-auto" required>
-              <option value="" disabled selected={preferredGemId === null}>Select a gem</option>
-              {gemGroups.map((group) => (
-                <optgroup label={group.color}>
-                  {group.gems.map((gem) => (
-                    <option value={gem.itemId} selected={gem.itemId === preferredGemId}>
-                      {gem.displayName} - {gem.itemName}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            <p class="label">
-              The gem you would socket into a drop with a spare socket.
-            </p>
-          </>
-        )
-      }
+        {
+          gemGroups.length > 0 && (
+            <>
+              <label class="fieldset-legend mt-4" for="gem">
+                Preferred gem
+              </label>
+              <select id="gem" name="gem" class:list={["select", field]} required>
+                <option value="" disabled selected={preferredGemId === null}>
+                  Select a gem
+                </option>
+                {gemGroups.map((group) => (
+                  <optgroup label={group.color}>
+                    {group.gems.map((gem) => (
+                      <option value={gem.itemId} selected={gem.itemId === preferredGemId}>
+                        {gem.displayName} - {gem.itemName}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <p class="fieldset-label">The gem you would socket into a drop with a spare socket.</p>
+            </>
+          )
+        }
 
-      <button class="btn btn-primary mt-4 w-full sm:w-auto" type="submit">Submit</button>
-    </fieldset>
-  </ActionForm>
+        <button class="btn btn-primary mt-6 w-full sm:w-auto sm:justify-self-start" type="submit">Submit</button>
+      </fieldset>
+    </ActionForm>
+  </Panel>
 
-  <div class="mt-10 flex flex-wrap items-center justify-between gap-2">
-    <h2 class="text-xl font-semibold">Your characters</h2>
-    <form method="POST" action="/refresh-characters">
-      <button class="btn btn-ghost btn-sm" type="submit" title="Recheck your Battle.net account for new or renamed characters">
+  <Panel class="mt-8" title="Your characters">
+    <form method="POST" action="/refresh-characters" slot="actions">
+      <button
+        class="btn btn-ghost btn-sm"
+        type="submit"
+        title="Recheck your Battle.net account for new or renamed characters"
+      >
         Refresh my characters
       </button>
     </form>
-  </div>
-  <div class="mt-4 overflow-x-auto">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Character</th>
-          <th>Last paste</th>
-          {difficulties.map((difficulty) => <th>{difficulty}</th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {
-          characters.map((character) => {
-            const submission = latestByCharacter.get(character.id)
-            return (
-              <tr>
-                <td class="font-medium">
-                  {character.name}-{character.realm}
-                </td>
-                <td class:list={[submission ? "opacity-70" : "text-warning"]}>
-                  {submission ? submission.createdAt.toISOString().slice(0, 16).replace("T", " ") : "never"}
-                </td>
-                {character.unsupportedSpec ? (
-                  <td colspan={difficulties.length}>
-                    <span class="badge badge-ghost" title="SimC does not model healing throughput">
-                      {character.unsupportedSpec} cannot be simmed
-                    </span>
+
+    <div class="overflow-x-auto">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Character</th>
+            <th>Last paste</th>
+            {difficulties.map((difficulty) => <th class="text-center">{DIFFICULTY_LABELS[difficulty]}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            characters.map((character) => {
+              const submission = latestByCharacter.get(character.id)
+              return (
+                <tr>
+                  <td>
+                    <CharacterName name={character.name} realm={character.realm} wowClass={character.class} />
                   </td>
-                ) : (
-                  slotsFor(submission?.jobs ?? [], difficulties).map((slot) => (
-                    <td>
-                      <Slot slot={slot} />
+                  <td class="whitespace-nowrap">
+                    {submission ? (
+                      <span class="text-base-content/60" title={absoluteTime(submission.createdAt)}>
+                        {relativeTime(submission.createdAt, now)}
+                      </span>
+                    ) : (
+                      <span class="text-base-content/40">never</span>
+                    )}
+                  </td>
+                  {character.unsupportedSpec ? (
+                    <td colspan={difficulties.length} class="text-center">
+                      <span class="badge badge-sm badge-soft" title="SimC does not model healing throughput">
+                        {character.unsupportedSpec} cannot be simmed
+                      </span>
                     </td>
-                  ))
-                )}
-              </tr>
-            )
-          })
-        }
-      </tbody>
-    </table>
-  </div>
+                  ) : (
+                    slotsFor(submission?.jobs ?? [], difficulties).map((slot) => (
+                      <td class="text-center">
+                        <Slot slot={slot} />
+                      </td>
+                    ))
+                  )}
+                </tr>
+              )
+            })
+          }
+        </tbody>
+      </table>
+    </div>
+  </Panel>
 </Base>
