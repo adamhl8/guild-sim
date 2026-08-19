@@ -9,7 +9,7 @@ import type { Instance } from "#lib/raidbots/static-data.ts"
 import { staticData } from "#lib/raidbots/static-data.ts"
 import { seasonNumberForInstance } from "#lib/raidbots/upgrade-track.ts"
 import { updateSettings } from "#lib/settings.ts"
-import { getCharacters } from "#lib/wowaudit/characters.ts"
+import { getCharacters, isPlausibleRoster } from "#lib/wowaudit/characters.ts"
 import { createWowauditClient } from "#lib/wowaudit/client.ts"
 import { getSeason } from "#lib/wowaudit/period.ts"
 import { getTeam } from "#lib/wowaudit/team.ts"
@@ -18,7 +18,7 @@ interface Metadata {
   wowBuild?: string
 }
 
-export const syncRoster = async (): Promise<Result<number>> => {
+const syncRoster = async (): Promise<Result<number>> => {
   const client = createWowauditClient(env.WOWAUDIT_API_KEY)
 
   const team = await getTeam(client)
@@ -27,10 +27,8 @@ export const syncRoster = async (): Promise<Result<number>> => {
   const roster = await getCharacters(client)
   if (isErr(roster)) return err("could not read the wowaudit roster", roster)
 
-  // An empty roster is a valid HTTP response but never a plausible team, and the prune below would read it
-  // as "everyone left": every row deleted, cascading through claims into the stored pastes, unrecoverably.
-  // So refuse it rather than reconcile against it, the way claim.ts refuses to wipe claims it cannot verify.
-  if (roster.length === 0) return err("wowaudit returned an empty roster, so nothing was changed", undefined)
+  // Refused rather than reconciled against, the way claim.ts refuses to wipe claims it cannot verify.
+  if (!isPlausibleRoster(roster)) return err("wowaudit returned an empty roster, so nothing was changed", undefined)
 
   const syncedAt = new Date()
   for (const character of roster) {

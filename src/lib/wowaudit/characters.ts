@@ -50,6 +50,14 @@ const ROSTERED_STATUSES: ReadonlySet<string> = new Set(["tracking", "temporarily
 export const isRostered = (status: string, blizzardId: string | null): boolean =>
   ROSTERED_STATUSES.has(status) && Boolean(blizzardId)
 
+/**
+ * Wowaudit answering with an empty list is a valid HTTP response but never a plausible team. It matters because
+ * `sync.ts` reconciles by deleting every roster row it did not just see, cascading through claims into the stored
+ * pastes, so an empty answer would read as "everyone left" and destroy them. Treat it as untrustworthy rather than as
+ * fact.
+ */
+export const isPlausibleRoster = (roster: readonly Character[]): boolean => roster.length > 0
+
 export const getCharacters = async (client: WowauditClient): Promise<Result<Character[]>> => {
   const response = await client.get<CharacterResponse[]>("/characters")
   if (isErr(response)) return err("could not fetch wowaudit roster", response)
