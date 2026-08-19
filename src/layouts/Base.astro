@@ -1,12 +1,15 @@
 ---
 import "#global.css"
+import type { Alert } from "#lib/alert.ts"
 import { VERSION } from "#lib/version.ts"
 
 interface Props {
   title: string
+  /** Server-rendered outcome of a redirect. Action results fill the same region from the client instead. */
+  alert?: Alert | undefined
 }
 
-const { title } = Astro.props
+const { title, alert } = Astro.props
 const { user, isAdmin, characters } = Astro.locals
 ---
 
@@ -29,7 +32,7 @@ const { user, isAdmin, characters } = Astro.locals
               {characters.length > 0 && <a href="/submit" class="btn btn-ghost btn-sm">Submit</a>}
               {isAdmin && <a href="/admin" class="btn btn-ghost btn-sm">Admin</a>}
               <span class="hidden text-sm opacity-70 sm:inline">{user.name}</span>
-              <form method="POST" action="/api/auth/sign-out">
+              <form method="POST" action="/sign-out">
                 <button class="btn btn-ghost btn-sm" type="submit">Sign out</button>
               </form>
             </>
@@ -39,9 +42,27 @@ const { user, isAdmin, characters } = Astro.locals
     </div>
 
     <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+      <div
+        id="alert"
+        class:list={[
+          "alert mb-6",
+          { hidden: !alert },
+          { "alert-success": alert?.kind === "success" },
+          { "alert-warning": alert?.kind === "warning" },
+          { "alert-error": alert?.kind === "error" },
+        ]}
+      >
+        <span>{alert?.message}</span>
+      </div>
       <slot />
     </main>
 
     <footer class="px-4 py-6 text-center text-xs opacity-50">v{VERSION}</footer>
+
+    <script>
+      import { bindActionForms } from "#lib/action-form.ts"
+
+      bindActionForms()
+    </script>
   </body>
 </html>

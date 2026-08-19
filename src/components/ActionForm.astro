@@ -1,0 +1,14 @@
+---
+import { actions } from "astro:actions"
+
+interface Props {
+  action: (typeof actions)[keyof typeof actions]
+  class?: string | undefined
+}
+
+const { action, class: className } = Astro.props
+---
+
+<form method="POST" action={action} class={className} data-action-form>
+  <slot />
+</form>

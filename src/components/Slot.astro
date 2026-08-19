@@ -1,0 +1,36 @@
+---
+import type { Slot } from "#lib/slots.ts"
+
+interface Props {
+  slot: Slot
+  /** Present only where the slot is clickable, which is the admin roster. */
+  rerun?: string | undefined
+  character?: string | undefined
+}
+
+const { slot, rerun, character } = Astro.props
+
+const CLASSES: Record<string, string> = {
+  queued: "badge-ghost",
+  running: "badge-info",
+  uploading: "badge-info",
+  done: "badge-success",
+  failed: "badge-error",
+  skipped: "badge-warning",
+  none: "badge-ghost badge-outline opacity-60",
+}
+
+const label = slot.status === "none" ? "not run" : slot.status
+const badge = ["badge badge-sm whitespace-nowrap", CLASSES[slot.status] ?? "badge-ghost"]
+const title = slot.error ?? (rerun ? `Rerun ${slot.difficulty} for ${character ?? "this character"}` : label)
+---
+
+{
+  rerun ? (
+    <button type="submit" name="slot" value={rerun} class:list={[...badge, "cursor-pointer"]} title={title}>
+      {label}
+    </button>
+  ) : (
+    <span class:list={badge} title={title}>{label}</span>
+  )
+}

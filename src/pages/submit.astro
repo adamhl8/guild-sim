@@ -1,14 +1,18 @@
 ---
 import { actions } from "astro:actions"
 
-import JobStatus from "#components/JobStatus.astro"
+import ActionForm from "#components/ActionForm.astro"
+import Slot from "#components/Slot.astro"
 import Base from "#layouts/Base.astro"
+import { refreshAlert } from "#lib/alert.ts"
 import { prisma } from "#lib/db.ts"
 import { groupGemsByColor, listGems } from "#lib/gems.ts"
+import { getSettings } from "#lib/settings.ts"
+import { activeDifficulties, slotsFor } from "#lib/slots.ts"
 
 const { characters } = Astro.locals
 
-const result = Astro.getActionResult(actions.submitSimc)
+const alert = refreshAlert(Astro.url.searchParams.get("refresh"))
 
 const submissions = await prisma.submission.findMany({
   where: { characterId: { in: characters.map((character) => character.id) } },
@@ -18,6 +22,7 @@ const submissions = await prisma.submission.findMany({
 })
 
 const gemGroups = groupGemsByColor(await listGems())
+const difficulties = activeDifficulties((await getSettings()).difficulties)
 
 // Whatever this account picked last. With one character it is unambiguous; with alts, the most recently
 // set one is the best guess, and the raider can still change it.
@@ -28,32 +33,16 @@ const latestByCharacter = new Map<number, (typeof submissions)[number]>()
 for (const submission of submissions) if (!latestByCharacter.has(submission.characterId)) latestByCharacter.set(submission.characterId, submission)
 ---
 
-<Base title="Submit">
+<Base title="Submit" alert={alert}>
   <h1 class="text-2xl font-bold">Paste your /simc output</h1>
   <p class="mt-1 text-sm opacity-80">
     In game, type <code class="rounded bg-base-300 px-1">/simc</code>, copy everything, and paste it below.
   </p>
+  <p class="mt-1 text-sm font-bold">
+    Make sure you are in the correct raid talents, gear, etc when you run <code class="rounded bg-base-300 px-1">/simc</code>.
+  </p>
 
-  {
-    result?.error && (
-      <div class="alert alert-error mt-6">
-        <span>{result.error.message}</span>
-      </div>
-    )
-  }
-  {
-    result?.data && (
-      <div class="alert alert-success mt-6">
-        <span>
-          Queued {result.data.queued} sim{result.data.queued === 1 ? "" : "s"} for {result.data.characterName}.
-        </span>
-      </div>
-    )
-  }
-
-  <div id="submit-error" class="alert alert-error mt-6 hidden"><span></span></div>
-
-  <form id="submit-form" method="POST" action={actions.submitSimc} class="mt-6">
+  <ActionForm action={actions.submitSimc} class="mt-6">
     <fieldset class="fieldset">
       <textarea
         name="simc"
@@ -86,47 +75,23 @@ for (const submission of submissions) if (!latestByCharacter.has(submission.char
 
       <button class="btn btn-primary mt-4 w-full sm:w-auto" type="submit">Submit</button>
     </fieldset>
-  </form>
+  </ActionForm>
 
-  <script>
-    import { actions } from "astro:actions"
-
-    const form = document.querySelector<HTMLFormElement>("#submit-form")
-    const errorBox = document.querySelector<HTMLDivElement>("#submit-error")
-    const errorText = errorBox?.querySelector("span")
-
-    // Intercepting keeps the POST out of history, so refreshing never re-sends. Without JS the form
-    // still posts normally, and the duplicate check makes that replay a no-op.
-    form?.addEventListener("submit", async (event) => {
-      event.preventDefault()
-      const button = form.querySelector<HTMLButtonElement>("button[type=submit]")
-      if (button) button.disabled = true
-      errorBox?.classList.add("hidden")
-
-      const { error } = await actions.submitSimc(new FormData(form))
-
-      if (error) {
-        // Left on the page with the textarea intact, so nothing has to be pasted again.
-        if (errorText) errorText.textContent = error.message
-        errorBox?.classList.remove("hidden")
-        if (button) button.disabled = false
-        return
-      }
-
-      // A GET, so the status table below reflects the new jobs and a refresh is harmless.
-      location.assign("/submit")
-    })
-  </script>
-
-  <h2 class="mt-10 text-xl font-semibold">Your characters</h2>
+  <div class="mt-10 flex flex-wrap items-center justify-between gap-2">
+    <h2 class="text-xl font-semibold">Your characters</h2>
+    <form method="POST" action="/refresh-characters">
+      <button class="btn btn-ghost btn-sm" type="submit" title="Recheck your Battle.net account for new or renamed characters">
+        Refresh my characters
+      </button>
+    </form>
+  </div>
   <div class="mt-4 overflow-x-auto">
     <table class="table">
       <thead>
         <tr>
           <th>Character</th>
-          <th>Rank</th>
           <th>Last paste</th>
-          <th>Status</th>
+          {difficulties.map((difficulty) => <th>{difficulty}</th>)}
         </tr>
       </thead>
       <tbody>
@@ -138,25 +103,22 @@ for (const submission of submissions) if (!latestByCharacter.has(submission.char
                 <td class="font-medium">
                   {character.name}-{character.realm}
                 </td>
-                <td class="opacity-70">{character.rank}</td>
-                <td class="opacity-70">
+                <td class:list={[submission ? "opacity-70" : "text-warning"]}>
                   {submission ? submission.createdAt.toISOString().slice(0, 16).replace("T", " ") : "never"}
                 </td>
-                <td>
-                  {character.unsupportedSpec ? (
+                {character.unsupportedSpec ? (
+                  <td colspan={difficulties.length}>
                     <span class="badge badge-ghost" title="SimC does not model healing throughput">
                       {character.unsupportedSpec} cannot be simmed
                     </span>
-                  ) : submission ? (
-                    <div class="flex flex-wrap gap-1">
-                      {submission.jobs.map((job) => (
-                        <JobStatus status={job.status} label={job.difficulty} error={job.error} />
-                      ))}
-                    </div>
-                  ) : (
-                    <span class="badge badge-ghost">no paste yet</span>
-                  )}
-                </td>
+                  </td>
+                ) : (
+                  slotsFor(submission?.jobs ?? [], difficulties).map((slot) => (
+                    <td>
+                      <Slot slot={slot} />
+                    </td>
+                  ))
+                )}
               </tr>
             )
           })

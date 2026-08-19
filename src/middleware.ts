@@ -5,7 +5,9 @@ import { auth } from "#lib/auth.ts"
 import { prisma } from "#lib/db.ts"
 import { getSettings } from "#lib/settings.ts"
 
-const PUBLIC_PATHS = new Set(["/", "/no-roster"])
+// /sign-out and /refresh-characters are listed because the roster gate below would otherwise bounce a
+// signed-in account with no characters to /no-roster, the one page that offers both of them.
+const PUBLIC_PATHS = new Set(["/", "/no-roster", "/sign-out", "/refresh-characters"])
 
 /**
  * Logged once per process. Better Auth resolves a client IP only from a single-hop `X-Forwarded-For`, or from a longer

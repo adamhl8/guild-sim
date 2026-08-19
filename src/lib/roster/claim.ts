@@ -41,20 +41,21 @@ const fetchOwnedBlizzardIds = async (accessToken: string, region: string): Promi
 }
 
 /**
- * Records which roster characters a Battle.net account owns. Re-run on every login, so a roster change or a newly
- * levelled alt is picked up without the raider doing anything.
+ * Records which roster characters a Battle.net account owns, returning how many were claimed. Re-run on every login, so
+ * a roster change or a newly levelled alt is picked up without the raider doing anything.
+ *
+ * A failed lookup leaves the existing claims alone rather than wiping them, so a Battle.net outage cannot lock a raider
+ * out of their own characters. Callers decide what to say about it: the refresh button reports it, the login hook
+ * logs.
  *
  * The token is passed in rather than fetched here: this module is imported by the auth config, so reaching back into it
  * would be circular.
  */
-export const claimCharacters = async (userId: string, accessToken: string): Promise<void> => {
+export const claimCharacters = async (userId: string, accessToken: string): Promise<Result<number>> => {
   const settings = await getSettings()
 
   const owned = await fetchOwnedBlizzardIds(accessToken, settings.region)
-  if (isErr(owned)) {
-    console.error(`could not resolve characters for ${userId}: ${owned.messageChain}`)
-    return
-  }
+  if (isErr(owned)) return err(`could not resolve characters for ${userId}`, owned)
 
   const characters = await prisma.rosterCharacter.findMany({ where: { blizzardId: { in: owned } } })
 
@@ -64,4 +65,6 @@ export const claimCharacters = async (userId: string, accessToken: string): Prom
       data: characters.map((character) => ({ userId, characterId: character.id })),
     }),
   ])
+
+  return characters.length
 }
