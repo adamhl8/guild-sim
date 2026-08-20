@@ -20,6 +20,7 @@ const [queued, roster] = await Promise.all([
   prisma.simJob.count({ where: { status: { in: ["queued", "running"] } } }),
   prisma.rosterCharacter.findMany({
     include: {
+      claims: { include: { user: true }, orderBy: { claimedAt: "asc" } },
       submissions: { orderBy: { createdAt: "desc" }, take: 1, include: { jobs: { orderBy: { queuedAt: "desc" } } } },
     },
     orderBy: { name: "asc" },
@@ -31,12 +32,14 @@ const now = Date.now()
 
 const rows = roster.map((character) => {
   const [latest] = character.submissions
-  return { character, latest, slots: slotsFor(latest?.jobs ?? [], difficulties) }
+  const [claim] = character.claims
+  return { character, claim, latest, slots: slotsFor(latest?.jobs ?? [], difficulties) }
 })
 
 const simmable = rows.filter((row) => row.character.unsupportedSpec === null)
 const doneSlots = simmable.reduce((total, row) => total + row.slots.filter((slot) => slot.status === "done").length, 0)
 const totalSlots = simmable.length * difficulties.length
+const claimed = roster.filter((character) => character.claims.length > 0).length
 const healers = roster.filter((character) => character.role === "Heal").length
 
 const field = "input w-full"
@@ -64,6 +67,11 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
       <div class="stat-title">Roster</div>
       <div class={stat}>{roster.length}</div>
       <div class="stat-desc">characters from wowaudit</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">Claimed</div>
+      <div class={stat}>{claimed}/{roster.length}</div>
+      <div class="stat-desc">linked to a Battle.net account</div>
     </div>
     <div class="stat">
       <div class="stat-title">Slots done</div>
@@ -105,6 +113,7 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
               <tr>
                 <th>Character</th>
                 <th>Rank</th>
+                <th>Claimed by</th>
                 <th>Spec</th>
                 <th>Last paste</th>
                 {difficulties.map((difficulty) => <th class="text-center">{DIFFICULTY_LABELS[difficulty]}</th>)}
@@ -112,12 +121,21 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
             </thead>
             <tbody>
               {
-                rows.map(({ character, latest, slots }) => (
+                rows.map(({ character, claim, latest, slots }) => (
                   <tr data-role={character.role}>
                     <td>
                       <CharacterName name={character.name} realm={character.realm} wowClass={character.class} />
                     </td>
                     <td class="text-base-content/60">{character.rank}</td>
+                    <td class="whitespace-nowrap">
+                      {claim ? (
+                        <span class="text-base-content/60" title={`claimed ${absoluteTime(claim.claimedAt)}`}>
+                          {character.claims.map((entry) => entry.user.name).join(", ")}
+                        </span>
+                      ) : (
+                        <span class="badge badge-sm badge-soft badge-warning">unclaimed</span>
+                      )}
+                    </td>
                     <td class="text-base-content/60">{latest?.spec ?? "-"}</td>
                     <td class="whitespace-nowrap">
                       {latest ? (

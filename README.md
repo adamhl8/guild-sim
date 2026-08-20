@@ -101,6 +101,10 @@ There is no user list to manage. Both questions are answered by the roster:
 
 Claims are re-resolved on every sign-in, so a roster change needs no intervention.
 
+The dashboard's **Claimed by** column shows which Battle.net account holds each character. That is where to
+look when a raider is told they are not on the roster: no account means they need **Refresh my characters**
+rather than a browser reload, and an unexpected account means they signed in with the wrong one.
+
 ## Deployment
 
 One process, one container: the Astro server, the queue worker and the daily sync all share it.

@@ -1,5 +1,5 @@
 import type { Result } from "ts-explicit-errors"
-import { err, isErr } from "ts-explicit-errors"
+import { attempt, err, isErr } from "ts-explicit-errors"
 
 import { env } from "#env.ts"
 import { prisma } from "#lib/db.ts"
@@ -9,6 +9,7 @@ import type { Instance } from "#lib/raidbots/static-data.ts"
 import { staticData } from "#lib/raidbots/static-data.ts"
 import { seasonNumberForInstance } from "#lib/raidbots/upgrade-track.ts"
 import { updateSettings } from "#lib/settings.ts"
+import type { Character } from "#lib/wowaudit/characters.ts"
 import { getCharacters, isPlausibleRoster } from "#lib/wowaudit/characters.ts"
 import { createWowauditClient } from "#lib/wowaudit/client.ts"
 import { getSeason } from "#lib/wowaudit/period.ts"
@@ -16,6 +17,17 @@ import { getTeam } from "#lib/wowaudit/team.ts"
 
 interface Metadata {
   wowBuild?: string
+}
+
+/**
+ * Wowaudit issues a new character id when someone is removed and re-added, so the same Blizzard character can arrive
+ * under an id we have never seen. `blizzardId` is unique, so creating that row would collide. Re-pointing the existing
+ * row instead carries its claims and stored pastes across with it, on the ON UPDATE CASCADE the foreign keys declare.
+ */
+export const repointReissuedId = async (character: Character): Promise<void> => {
+  const existing = await prisma.rosterCharacter.findUnique({ where: { blizzardId: character.blizzardId } })
+  if (!existing || existing.id === character.id) return
+  await prisma.rosterCharacter.update({ where: { id: existing.id }, data: { id: character.id } })
 }
 
 const syncRoster = async (): Promise<Result<number>> => {
@@ -31,30 +43,45 @@ const syncRoster = async (): Promise<Result<number>> => {
   if (!isPlausibleRoster(roster)) return err("wowaudit returned an empty roster, so nothing was changed", undefined)
 
   const syncedAt = new Date()
+  const failed: string[] = []
+
   for (const character of roster) {
-    await prisma.rosterCharacter.upsert({
-      where: { id: character.id },
-      update: {
-        name: character.name,
-        realm: character.realm,
-        class: character.class,
-        role: character.role,
-        rank: character.rank,
-        blizzardId: character.blizzardId,
-        syncedAt,
-      },
-      create: {
-        id: character.id,
-        name: character.name,
-        realm: character.realm,
-        class: character.class,
-        role: character.role,
-        rank: character.rank,
-        blizzardId: character.blizzardId,
-        syncedAt,
-      },
+    const written = await attempt(async () => {
+      await repointReissuedId(character)
+      await prisma.rosterCharacter.upsert({
+        where: { id: character.id },
+        update: {
+          name: character.name,
+          realm: character.realm,
+          class: character.class,
+          role: character.role,
+          rank: character.rank,
+          blizzardId: character.blizzardId,
+          syncedAt,
+        },
+        create: {
+          id: character.id,
+          name: character.name,
+          realm: character.realm,
+          class: character.class,
+          role: character.role,
+          rank: character.rank,
+          blizzardId: character.blizzardId,
+          syncedAt,
+        },
+      })
     })
+
+    if (isErr(written)) {
+      console.error(`sync: ${character.name}-${character.realm} failed -> ${written.messageChain}`)
+      failed.push(`${character.name}-${character.realm}`)
+    }
   }
+
+  // The upserts that did land stand: writing a row is safe, deleting one is not. Pruning against a partial
+  // roster would delete characters that merely failed to upsert, cascading into their stored pastes, so this
+  // refuses for the same reason `isPlausibleRoster` refuses an empty answer.
+  if (failed.length > 0) return err(`could not sync ${failed.join(", ")}, so the roster was left as it was`, undefined)
 
   // Anyone no longer tracked in wowaudit loses their claims along with the row.
   await prisma.rosterCharacter.deleteMany({ where: { syncedAt: { lt: syncedAt } } })

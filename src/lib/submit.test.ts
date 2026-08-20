@@ -23,6 +23,19 @@ if (migrate.exitCode !== 0) throw new Error(`migrations failed: ${migrate.stderr
 const LIVE_BUILD = "12.1.0.69299"
 const NOW = new Date("2026-08-17T12:00:00.000Z")
 
+const pad = (value: number): string => String(value).padStart(2, "0")
+
+/**
+ * The addon's own `YYYY-MM-DD HH:mm`, an hour ago. Relative to the clock rather than fixed, because `submitPaste` ages
+ * a paste against the real `Date.now()`: a hard-coded date silently rots every test in this file the day it passes
+ * `maxPasteAgeDays`. Local components, since a space-separated datetime parses as local time.
+ */
+const recentExport = (): string => {
+  const at = new Date(Date.now() - 60 * 60 * 1000)
+  const date = `${String(at.getFullYear())}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`
+  return `${date} ${pad(at.getHours())}:${pad(at.getMinutes())}`
+}
+
 interface LoadedShape {
   name: string
   realm: string
@@ -66,6 +79,7 @@ await mock.module("#lib/raidbots/character.ts", () => ({
 
 const { prisma } = await import("#lib/db.ts")
 const { submitPaste } = await import("#lib/submit.ts")
+const { repointReissuedId } = await import("#lib/sync.ts")
 
 /** Keeps `if (isErr(...))` out of the test bodies, which the lint rules disallow. */
 const errMessage = (result: unknown): string => {
@@ -102,7 +116,7 @@ const fixture = async (overrides: Partial<LoadedShape> = {}, rosterRealm = "Illi
     name,
     realm: "Illidan",
     spec: "Destruction",
-    addonInfo: { version: "12.1.0", wowVersion: LIVE_BUILD, exportedAt: "2026-08-17 11:00" },
+    addonInfo: { version: "12.1.0", wowVersion: LIVE_BUILD, exportedAt: recentExport() },
     ...overrides,
   })
 
@@ -203,7 +217,7 @@ describe("submitPaste", () => {
 
   it("rejects a paste from an older build and queues nothing", async () => {
     const { userId, characterId, simc } = await fixture({
-      addonInfo: { version: "12.1.0", wowVersion: "12.1.0.69214", exportedAt: "2026-08-17 11:00" },
+      addonInfo: { version: "12.1.0", wowVersion: "12.1.0.69214", exportedAt: recentExport() },
     })
     const result = await submitPaste(userId, simc, GARNET)
     expect(errMessage(result)).toContain("12.1.0.69214")
@@ -332,5 +346,47 @@ describe("submitPaste", () => {
     })
 
     expect(errMessage(await submitPaste(userId, simc, GARNET))).toContain("days old")
+  })
+})
+
+describe("repointReissuedId", () => {
+  /**
+   * Wowaudit issues a fresh character id when someone is removed and re-added, so the same character comes back under
+   * an id we have never seen. Recreating the row would trip the unique `blizzardId`, and deleting the old one first
+   * would cascade the raider's claims and every stored paste away, so the row has to follow the new id instead.
+   */
+  it("carries claims and stored pastes across to a reissued id", async () => {
+    const { userId, characterId, simc } = await fixture()
+    okResult(await submitPaste(userId, simc, GARNET))
+
+    const before = await prisma.rosterCharacter.findUniqueOrThrow({ where: { id: characterId } })
+    // Counted rather than hard-coded: `difficulties` is a shared settings row that concurrent tests mutate.
+    const jobs = await prisma.simJob.count({ where: { submission: { characterId } } })
+    const reissued = characterId + 900_000
+
+    await repointReissuedId({
+      id: reissued,
+      name: before.name,
+      realm: before.realm,
+      class: before.class,
+      role: before.role,
+      rank: before.rank,
+      blizzardId: before.blizzardId,
+    })
+
+    expect(await prisma.rosterCharacter.count({ where: { id: characterId } })).toBe(0)
+    expect(await prisma.rosterCharacter.count({ where: { id: reissued } })).toBe(1)
+    expect(await prisma.characterClaim.count({ where: { userId, characterId: reissued } })).toBe(1)
+    expect(await prisma.submission.count({ where: { characterId: reissued } })).toBe(1)
+    expect(await prisma.simJob.count({ where: { submission: { characterId: reissued } } })).toBe(jobs)
+  })
+
+  it("leaves a character whose id has not changed untouched", async () => {
+    const { characterId } = await fixture()
+    const before = await prisma.rosterCharacter.findUniqueOrThrow({ where: { id: characterId } })
+
+    await repointReissuedId(before)
+
+    expect(await prisma.rosterCharacter.count({ where: { id: characterId } })).toBe(1)
   })
 })
