@@ -63,6 +63,10 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
+  /// Outcome of the last claim attempt. `scope` above is only what one token response reported and has been
+  /// seen to say `openid` for a token that reads characters fine, so an actual API answer is the record.
+  lastClaimStatus       String?
+  lastClaimAt           DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 

@@ -2,11 +2,10 @@ import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
 import { betterAuth } from "better-auth/minimal"
 import { genericOAuth } from "better-auth/plugins"
-import { isErr } from "ts-explicit-errors"
 
 import { env, isProduction } from "#env.ts"
 import { prisma } from "#lib/db.ts"
-import { claimCharacters } from "#lib/roster/claim.ts"
+import { claimAndRecord } from "#lib/roster/claim.ts"
 
 export const BATTLENET_PROVIDER_ID = "battlenet"
 
@@ -99,8 +98,7 @@ export const auth = betterAuth({
 
       // Awaited rather than backgrounded: no `backgroundTasks.handler` is configured, so this resolves
       // before the callback responds and the raider lands on a page with their claims already written.
-      const claimed = await claimCharacters(session.user.id, token.accessToken)
-      if (isErr(claimed)) console.error(`sign-in claim failed -> ${claimed.messageChain}`)
+      await claimAndRecord(session.user.id, token.accessToken)
     }),
   },
 })

@@ -6,16 +6,19 @@ describe("refreshAlert", () => {
   it.each([
     ["ok", "success"],
     ["empty", "warning"],
-    ["bnet", "error"],
+    ["denied", "error"],
+    ["stale", "error"],
+    ["unreachable", "error"],
   ] as const)("maps %s to an %s alert", (status, kind) => {
     expect(refreshAlert(status)?.kind).toBe(kind)
   })
 
-  it("names Battle.net so the raider knows it is not their roster at fault", () => {
-    expect(refreshAlert("bnet")?.message).toContain("Battle.net")
+  it.each(["denied", "stale", "unreachable"])("names Battle.net in %p so the roster is not blamed", (status) => {
+    expect(refreshAlert(status)?.message).toContain("Battle.net")
   })
 
-  it.each([null, "", "nonsense", "OK"])("ignores %p", (status) => {
+  // "bnet" is the name this vocabulary used before it had to distinguish a refusal from an outage.
+  it.each([null, "", "nonsense", "OK", "bnet"])("ignores %p", (status) => {
     expect(refreshAlert(status)).toBeUndefined()
   })
 })

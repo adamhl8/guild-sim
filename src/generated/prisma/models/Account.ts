@@ -37,6 +37,8 @@ export type AccountMinAggregateOutputType = {
   refreshTokenExpiresAt: Date | null
   scope: string | null
   password: string | null
+  lastClaimStatus: string | null
+  lastClaimAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +56,8 @@ export type AccountMaxAggregateOutputType = {
   refreshTokenExpiresAt: Date | null
   scope: string | null
   password: string | null
+  lastClaimStatus: string | null
+  lastClaimAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +75,8 @@ export type AccountCountAggregateOutputType = {
   refreshTokenExpiresAt: number
   scope: number
   password: number
+  lastClaimStatus: number
+  lastClaimAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -90,6 +96,8 @@ export type AccountMinAggregateInputType = {
   refreshTokenExpiresAt?: true | runtime.Types.Skip
   scope?: true | runtime.Types.Skip
   password?: true | runtime.Types.Skip
+  lastClaimStatus?: true | runtime.Types.Skip
+  lastClaimAt?: true | runtime.Types.Skip
   createdAt?: true | runtime.Types.Skip
   updatedAt?: true | runtime.Types.Skip
 }
@@ -107,6 +115,8 @@ export type AccountMaxAggregateInputType = {
   refreshTokenExpiresAt?: true | runtime.Types.Skip
   scope?: true | runtime.Types.Skip
   password?: true | runtime.Types.Skip
+  lastClaimStatus?: true | runtime.Types.Skip
+  lastClaimAt?: true | runtime.Types.Skip
   createdAt?: true | runtime.Types.Skip
   updatedAt?: true | runtime.Types.Skip
 }
@@ -124,6 +134,8 @@ export type AccountCountAggregateInputType = {
   refreshTokenExpiresAt?: true | runtime.Types.Skip
   scope?: true | runtime.Types.Skip
   password?: true | runtime.Types.Skip
+  lastClaimStatus?: true | runtime.Types.Skip
+  lastClaimAt?: true | runtime.Types.Skip
   createdAt?: true | runtime.Types.Skip
   updatedAt?: true | runtime.Types.Skip
   _all?: true | runtime.Types.Skip
@@ -214,6 +226,8 @@ export type AccountGroupByOutputType = {
   refreshTokenExpiresAt: Date | null
   scope: string | null
   password: string | null
+  lastClaimStatus: string | null
+  lastClaimAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: AccountCountAggregateOutputType | null
@@ -252,6 +266,8 @@ export type AccountWhereInput = {
   refreshTokenExpiresAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   scope?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
   password?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput> | runtime.Types.Skip
@@ -270,6 +286,8 @@ export type AccountOrderByWithRelationInput = {
   refreshTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   scope?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   password?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  lastClaimStatus?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  lastClaimAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   createdAt?: Prisma.SortOrder | runtime.Types.Skip
   updatedAt?: Prisma.SortOrder | runtime.Types.Skip
   user?: Prisma.UserOrderByWithRelationInput | runtime.Types.Skip
@@ -292,6 +310,8 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<{
   refreshTokenExpiresAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   scope?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
   password?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput> | runtime.Types.Skip
@@ -310,6 +330,8 @@ export type AccountOrderByWithAggregationInput = {
   refreshTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   scope?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   password?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  lastClaimStatus?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
+  lastClaimAt?: Prisma.SortOrderInput | Prisma.SortOrder | runtime.Types.Skip
   createdAt?: Prisma.SortOrder | runtime.Types.Skip
   updatedAt?: Prisma.SortOrder | runtime.Types.Skip
   _count?: Prisma.AccountCountOrderByAggregateInput | runtime.Types.Skip
@@ -333,6 +355,8 @@ export type AccountScalarWhereWithAggregatesInput = {
   refreshTokenExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Account"> | Date | string | null | runtime.Types.Skip
   scope?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null | runtime.Types.Skip
   password?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Account"> | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string | runtime.Types.Skip
 }
@@ -349,6 +373,8 @@ export type AccountCreateInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
   user: Prisma.UserCreateNestedOneWithoutAccountsInput
@@ -367,6 +393,8 @@ export type AccountUncheckedCreateInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
 }
@@ -383,6 +411,8 @@ export type AccountUpdateInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   user?: Prisma.UserUpdateOneRequiredWithoutAccountsNestedInput | runtime.Types.Skip
@@ -401,6 +431,8 @@ export type AccountUncheckedUpdateInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -418,6 +450,8 @@ export type AccountCreateManyInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
 }
@@ -434,6 +468,8 @@ export type AccountUpdateManyMutationInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -451,6 +487,8 @@ export type AccountUncheckedUpdateManyInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -483,6 +521,8 @@ export type AccountCountOrderByAggregateInput = {
   refreshTokenExpiresAt?: Prisma.SortOrder | runtime.Types.Skip
   scope?: Prisma.SortOrder | runtime.Types.Skip
   password?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimStatus?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimAt?: Prisma.SortOrder | runtime.Types.Skip
   createdAt?: Prisma.SortOrder | runtime.Types.Skip
   updatedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
@@ -500,6 +540,8 @@ export type AccountMaxOrderByAggregateInput = {
   refreshTokenExpiresAt?: Prisma.SortOrder | runtime.Types.Skip
   scope?: Prisma.SortOrder | runtime.Types.Skip
   password?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimStatus?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimAt?: Prisma.SortOrder | runtime.Types.Skip
   createdAt?: Prisma.SortOrder | runtime.Types.Skip
   updatedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
@@ -517,6 +559,8 @@ export type AccountMinOrderByAggregateInput = {
   refreshTokenExpiresAt?: Prisma.SortOrder | runtime.Types.Skip
   scope?: Prisma.SortOrder | runtime.Types.Skip
   password?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimStatus?: Prisma.SortOrder | runtime.Types.Skip
+  lastClaimAt?: Prisma.SortOrder | runtime.Types.Skip
   createdAt?: Prisma.SortOrder | runtime.Types.Skip
   updatedAt?: Prisma.SortOrder | runtime.Types.Skip
 }
@@ -579,6 +623,8 @@ export type AccountCreateWithoutUserInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
 }
@@ -595,6 +641,8 @@ export type AccountUncheckedCreateWithoutUserInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
 }
@@ -640,6 +688,8 @@ export type AccountScalarWhereInput = {
   refreshTokenExpiresAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   scope?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
   password?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.StringNullableFilter<"Account"> | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string | runtime.Types.Skip
 }
@@ -656,6 +706,8 @@ export type AccountCreateManyUserInput = {
   refreshTokenExpiresAt?: Date | string | null | runtime.Types.Skip
   scope?: string | null | runtime.Types.Skip
   password?: string | null | runtime.Types.Skip
+  lastClaimStatus?: string | null | runtime.Types.Skip
+  lastClaimAt?: Date | string | null | runtime.Types.Skip
   createdAt?: Date | string | runtime.Types.Skip
   updatedAt?: Date | string | runtime.Types.Skip
 }
@@ -672,6 +724,8 @@ export type AccountUpdateWithoutUserInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -688,6 +742,8 @@ export type AccountUncheckedUpdateWithoutUserInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -704,6 +760,8 @@ export type AccountUncheckedUpdateManyWithoutUserInput = {
   refreshTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null | runtime.Types.Skip
+  lastClaimAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null | runtime.Types.Skip
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string | runtime.Types.Skip
 }
@@ -723,6 +781,8 @@ export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   refreshTokenExpiresAt?: boolean | runtime.Types.Skip
   scope?: boolean | runtime.Types.Skip
   password?: boolean | runtime.Types.Skip
+  lastClaimStatus?: boolean | runtime.Types.Skip
+  lastClaimAt?: boolean | runtime.Types.Skip
   createdAt?: boolean | runtime.Types.Skip
   updatedAt?: boolean | runtime.Types.Skip
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs> | runtime.Types.Skip
@@ -741,6 +801,8 @@ export type AccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   refreshTokenExpiresAt?: boolean | runtime.Types.Skip
   scope?: boolean | runtime.Types.Skip
   password?: boolean | runtime.Types.Skip
+  lastClaimStatus?: boolean | runtime.Types.Skip
+  lastClaimAt?: boolean | runtime.Types.Skip
   createdAt?: boolean | runtime.Types.Skip
   updatedAt?: boolean | runtime.Types.Skip
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs> | runtime.Types.Skip
@@ -759,6 +821,8 @@ export type AccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   refreshTokenExpiresAt?: boolean | runtime.Types.Skip
   scope?: boolean | runtime.Types.Skip
   password?: boolean | runtime.Types.Skip
+  lastClaimStatus?: boolean | runtime.Types.Skip
+  lastClaimAt?: boolean | runtime.Types.Skip
   createdAt?: boolean | runtime.Types.Skip
   updatedAt?: boolean | runtime.Types.Skip
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs> | runtime.Types.Skip
@@ -777,11 +841,13 @@ export type AccountSelectScalar = {
   refreshTokenExpiresAt?: boolean | runtime.Types.Skip
   scope?: boolean | runtime.Types.Skip
   password?: boolean | runtime.Types.Skip
+  lastClaimStatus?: boolean | runtime.Types.Skip
+  lastClaimAt?: boolean | runtime.Types.Skip
   createdAt?: boolean | runtime.Types.Skip
   updatedAt?: boolean | runtime.Types.Skip
 }
 
-export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "issuer" | "accountId" | "providerId" | "userId" | "accessToken" | "refreshToken" | "idToken" | "accessTokenExpiresAt" | "refreshTokenExpiresAt" | "scope" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["account"], runtime.Types.Skip>
+export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "issuer" | "accountId" | "providerId" | "userId" | "accessToken" | "refreshToken" | "idToken" | "accessTokenExpiresAt" | "refreshTokenExpiresAt" | "scope" | "password" | "lastClaimStatus" | "lastClaimAt" | "createdAt" | "updatedAt", ExtArgs["result"]["account"], runtime.Types.Skip>
 export type AccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs> | runtime.Types.Skip
 }
@@ -813,6 +879,12 @@ export type $AccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     refreshTokenExpiresAt: Date | null
     scope: string | null
     password: string | null
+    /**
+     * Outcome of the last claim attempt. `scope` above is only what one token response reported and has been
+     * seen to say `openid` for a token that reads characters fine, so an actual API answer is the record.
+     */
+    lastClaimStatus: string | null
+    lastClaimAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["account"]>
@@ -1251,6 +1323,8 @@ export interface AccountFieldRefs {
   readonly refreshTokenExpiresAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly scope: Prisma.FieldRef<"Account", 'String'>
   readonly password: Prisma.FieldRef<"Account", 'String'>
+  readonly lastClaimStatus: Prisma.FieldRef<"Account", 'String'>
+  readonly lastClaimAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Account", 'DateTime'>
 }

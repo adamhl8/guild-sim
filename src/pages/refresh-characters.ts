@@ -1,42 +1,13 @@
 import type { APIRoute } from "astro"
-import { isErr } from "ts-explicit-errors"
 
 import { auth, BATTLENET_PROVIDER_ID } from "#lib/auth.ts"
 import { prisma } from "#lib/db.ts"
-import { claimCharacters } from "#lib/roster/claim.ts"
+import { reclaim } from "#lib/roster/reclaim.ts"
 
 /**
- * Whether Battle.net answered. Blizzard issues no refresh token and its access tokens last a day, so most stored tokens
- * are dead and re-claiming in place would silently do nothing. Hence the round trip through the provider: the callback
- * mints a fresh token before this runs.
+ * Starts the round trip. Blizzard issues no refresh token and its access tokens last a day, so most stored tokens are
+ * dead and re-claiming in place would silently do nothing: the callback mints a fresh one before the GET below runs.
  */
-const reclaim = async (userId: string): Promise<boolean> => {
-  const account = await prisma.account.findFirst({
-    where: { userId, providerId: BATTLENET_PROVIDER_ID },
-    select: { id: true },
-  })
-  if (!account) return false
-
-  const token = await auth.api
-    .getAccessToken({ body: { accountId: account.id, userId } })
-    .catch((): undefined => undefined)
-  if (!token?.accessToken) return false
-
-  const claimed = await claimCharacters(userId, token.accessToken)
-  if (isErr(claimed)) {
-    console.error(`refresh claim failed -> ${claimed.messageChain}`)
-    return false
-  }
-
-  return true
-}
-
-const statusFor = (reached: boolean, claims: number): string => {
-  if (!reached) return "bnet"
-  return claims > 0 ? "ok" : "empty"
-}
-
-/** Starts the round trip. The sign-in hook claims on the way back, and the GET below reports what happened. */
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) return context.redirect("/", 303)
 
@@ -49,7 +20,7 @@ export const POST: APIRoute = async (context) => {
     headers: context.request.headers,
     returnHeaders: true,
   })
-  if (!response.url) return context.redirect("/no-roster?refresh=bnet", 303)
+  if (!response.url) return context.redirect("/no-roster?refresh=unreachable", 303)
 
   // The OAuth state rides in a cookie under either storeStateStrategy, and the callback rejects the round
   // trip without it.
@@ -67,8 +38,10 @@ export const GET: APIRoute = async (context) => {
   const userId = context.locals.user?.id
   if (!userId) return context.redirect("/")
 
-  const reached = !context.url.searchParams.has("failed") && (await reclaim(userId))
+  const status = context.url.searchParams.has("failed") ? "unreachable" : await reclaim(userId)
+  // Targeted on the claims rather than the status so a raider who already had characters is not bounced to
+  // /no-roster by a transient failure.
   const claims = await prisma.characterClaim.count({ where: { userId } })
 
-  return context.redirect(`${claims > 0 ? "/submit" : "/no-roster"}?refresh=${statusFor(reached, claims)}`)
+  return context.redirect(`${claims > 0 ? "/submit" : "/no-roster"}?refresh=${status}`)
 }

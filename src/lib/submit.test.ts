@@ -5,7 +5,7 @@ import path from "node:path"
 import process from "node:process"
 
 import type { Result } from "ts-explicit-errors"
-import { isErr } from "ts-explicit-errors"
+import { err, isErr } from "ts-explicit-errors"
 
 // A throwaway database. Set before any import that reads DATABASE_URL, which is why every import of
 // application code below is dynamic.
@@ -77,9 +77,34 @@ await mock.module("#lib/raidbots/character.ts", () => ({
   },
 }))
 
+interface ProfileStub {
+  status?: number
+  characters?: { id: number; realm: { id: number } }[]
+}
+
+/** Keyed by bearer token for the same reason `responses` is keyed by paste: these files run concurrently. */
+const profiles = new Map<string, ProfileStub>()
+
+const realHttp = await import("#lib/http.ts")
+
+// Only Blizzard's profile endpoint is stubbed; everything else falls through, so the raidbots paths above are
+// untouched. Returning the real `err(...).ctx({ status })` shape is the point: `claimFailureStatus` reads that status.
+await mock.module("#lib/http.ts", () => ({
+  ...realHttp,
+  requestJson: async (url: string, options: { headers?: Record<string, string> } = {}) => {
+    if (!url.includes("/profile/user/wow")) return realHttp.requestJson(url, options)
+    const stub = profiles.get((options.headers?.["authorization"] ?? "").replace("Bearer ", ""))
+    if (!stub) throw new Error("no stubbed profile for the given token")
+    if (stub.status !== undefined)
+      return err(`GET ${url} -> HTTP ${String(stub.status)}`, undefined).ctx({ status: stub.status })
+    return { wow_accounts: [{ characters: stub.characters ?? [] }] }
+  },
+}))
+
 const { prisma } = await import("#lib/db.ts")
 const { submitPaste } = await import("#lib/submit.ts")
 const { repointReissuedId } = await import("#lib/sync.ts")
+const { claimAndRecord } = await import("#lib/roster/claim.ts")
 
 /** Keeps `if (isErr(...))` out of the test bodies, which the lint rules disallow. */
 const errMessage = (result: unknown): string => {
@@ -388,5 +413,51 @@ describe("repointReissuedId", () => {
     await repointReissuedId(before)
 
     expect(await prisma.rosterCharacter.count({ where: { id: characterId } })).toBe(1)
+  })
+})
+
+describe("claimAndRecord", () => {
+  const linkAccount = async (userId: string, token: string): Promise<void> => {
+    await prisma.account.create({
+      data: { id: token, issuer: "local:oauth:battlenet", accountId: token, providerId: "battlenet", userId },
+    })
+  }
+
+  it("records the outcome so an officer does not have to read the logs", async () => {
+    const { userId, characterId } = await fixture()
+    const token = `tok-ok-${String(characterId)}`
+    await linkAccount(userId, token)
+    profiles.set(token, { characters: [{ id: characterId, realm: { id: 57 } }] })
+
+    expect(await claimAndRecord(userId, token)).toBe("ok")
+
+    const account = await prisma.account.findUniqueOrThrow({ where: { id: token } })
+    expect(account.lastClaimStatus).toBe("ok")
+    expect(account.lastClaimAt).toBeInstanceOf(Date)
+  })
+
+  it("records a refusal as denied", async () => {
+    const { userId, characterId } = await fixture()
+    const token = `tok-403-${String(characterId)}`
+    await linkAccount(userId, token)
+    profiles.set(token, { status: 403 })
+
+    expect(await claimAndRecord(userId, token)).toBe("denied")
+    expect((await prisma.account.findUniqueOrThrow({ where: { id: token } })).lastClaimStatus).toBe("denied")
+  })
+
+  /**
+   * The regression guard for the bug this path was rewritten to fix: Blizzard's token response can report a scope
+   * narrower than the grant, and reading it instead of asking pinned a working account to "no permission" forever.
+   */
+  it("claims on a live answer even when the stored scope says the permission is missing", async () => {
+    const { userId, characterId } = await fixture()
+    const token = `tok-scope-${String(characterId)}`
+    await linkAccount(userId, token)
+    await prisma.account.update({ where: { id: token }, data: { scope: "openid" } })
+    profiles.set(token, { characters: [{ id: characterId, realm: { id: 57 } }] })
+
+    expect(await claimAndRecord(userId, token)).toBe("ok")
+    expect(await prisma.characterClaim.count({ where: { userId, characterId } })).toBe(1)
   })
 })

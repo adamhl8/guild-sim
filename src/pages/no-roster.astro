@@ -1,29 +1,82 @@
 ---
 import Panel from "#components/Panel.astro"
 import Base from "#layouts/Base.astro"
-import { refreshAlert } from "#lib/alert.ts"
+import type { ClaimStatus } from "#lib/roster/claim.ts"
+import { isClaimStatus } from "#lib/roster/claim.ts"
+import { reclaim } from "#lib/roster/reclaim.ts"
 
 const { user, characters } = Astro.locals
 if (!user) return Astro.redirect("/")
 if (characters.length > 0) return Astro.redirect("/submit")
 
-const alert = refreshAlert(Astro.url.searchParams.get("refresh"))
+// The refresh button's own result wins: that round trip just happened and knows more than a fresh check would.
+// Otherwise check now, because the sign-in path arrives with no query param and this page used to blame the
+// roster for a lookup that never happened.
+const reported = Astro.url.searchParams.get("refresh")
+const status = isClaimStatus(reported) ? reported : await reclaim(user.id)
+// `characters` was read by the middleware before the check above wrote any claims, so this cannot fall through.
+if (status === "ok") return Astro.redirect("/submit")
+
+interface State {
+  title: string
+  body: string
+  note?: string
+}
+
+const STATES: Record<Exclude<ClaimStatus, "ok">, State> = {
+  denied: {
+    title: "Battle.net has not given permission",
+    body: "That Battle.net account has not given guild-sim permission to read its World of Warcraft characters, so we cannot tell which ones are yours.",
+  },
+  stale: {
+    title: "Your Battle.net sign-in has expired",
+    body: "Battle.net access lasts about a day and cannot be renewed in the background, so we could not check which characters are yours.",
+  },
+  unreachable: {
+    title: "Could not reach Battle.net",
+    body: "Battle.net did not answer, so we could not check which characters are yours. Nothing has changed.",
+    note: "Try again in a moment.",
+  },
+  empty: {
+    title: "You are not on the roster",
+    body: "None of the characters on that Battle.net account are tracked in wowaudit.",
+    note: "If you have just been added, ask an officer to re-sync the roster, then check again.",
+  },
+}
+
+const state = STATES[status]
 ---
 
-<Base title="Not on the roster" alert={alert}>
+<Base title={state.title}>
   <div class="mx-auto max-w-xl">
-    <!-- A panel rather than a second alert: this is the page's content, and Base already owns the
-      alert region directly above it. -->
+    <!-- A panel rather than an alert: this is the page's content, not an outcome reported on top of it. -->
     <Panel>
       <div class="p-6">
-        <h1 class="text-lg font-semibold">You are not on the roster</h1>
+        <h1 class="text-lg font-semibold">{state.title}</h1>
         <p class="mt-2 text-sm text-base-content/70">
-          You signed in as <strong class="text-base-content">{user.name}</strong>, but none of the
-          characters on that Battle.net account are tracked in wowaudit.
+          You signed in as <strong class="text-base-content">{user.name}</strong>. {state.body}
         </p>
-        <p class="mt-4 text-sm text-base-content/60">
-          If you have just been added, ask an officer to re-sync the roster, then check again.
-        </p>
+        {state.note && <p class="mt-4 text-sm text-base-content/60">{state.note}</p>}
+        {
+          status === "denied" && (
+            <ol class="mt-4 list-decimal space-y-1 pl-5 text-sm text-base-content/70">
+              <li>
+                Open{" "}
+                <strong class="text-base-content">
+                <a class="link" href="https://account.battle.net/connections" target="_blank" rel="noreferrer">
+                  account.battle.net/connections
+                </a></strong>
+              </li>
+              <li>
+                Scroll down and <strong class="text-base-content">remove guild-sim</strong> from your Authorized Applications.
+              </li>
+              <li>
+                Come back here, press <strong class="text-base-content">Refresh my characters</strong>, and <strong class="text-base-content">make sure the
+                "Your World of Warcraft profile" permission is checked.</strong>
+              </li>
+            </ol>
+          )
+        }
         <form method="POST" action="/refresh-characters" class="mt-6">
           <button class="btn btn-primary btn-sm" type="submit">Refresh my characters</button>
         </form>

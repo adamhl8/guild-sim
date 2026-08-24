@@ -14,7 +14,7 @@ import { absoluteTime, relativeTime } from "#lib/time.ts"
 const settings = await getSettings()
 const sources = await prisma.source.findMany({ orderBy: { name: "asc" } })
 
-const [queued, roster] = await Promise.all([
+const [queued, roster, needPermission] = await Promise.all([
   // Counted rather than derived from the slots below: a difficulty removed from the settings leaves its
   // queued jobs to finish, and they would otherwise be invisible while still uploading.
   prisma.simJob.count({ where: { status: { in: ["queued", "running"] } } }),
@@ -25,6 +25,9 @@ const [queued, roster] = await Promise.all([
     },
     orderBy: { name: "asc" },
   }),
+  // These accounts sign in fine and then read as unclaimed, because Blizzard refuses the character lookup. Counted
+  // from the recorded answer rather than the granted scope, which understates the real grant often enough to lie.
+  prisma.account.count({ where: { lastClaimStatus: "denied" } }),
 ])
 
 const difficulties = activeDifficulties(settings.difficulties)
@@ -72,6 +75,11 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
       <div class="stat-title">Claimed</div>
       <div class={stat}>{claimed}/{roster.length}</div>
       <div class="stat-desc">linked to a Battle.net account</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">Needs permission</div>
+      <div class={stat}>{needPermission}</div>
+      <div class="stat-desc">last check refused by Battle.net</div>
     </div>
     <div class="stat">
       <div class="stat-title">Slots done</div>
