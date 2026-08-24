@@ -1,3 +1,9 @@
+## [0.4.2](https://github.com/adamhl8/guild-sim/compare/0.4.1..0.4.2) - 2026-08-24
+
+### 🐛 Bug Fixes
+
+- login stuff ([fad5071](https://github.com/adamhl8/guild-sim/commit/fad50710e4fd820644290a2e865b4a25a2032886) by @adamhl8)
+
 ## [0.4.1](https://github.com/adamhl8/guild-sim/compare/0.4.0..0.4.1) - 2026-08-20
 
 ### 🐛 Bug Fixes
