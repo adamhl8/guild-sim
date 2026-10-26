@@ -1,7 +1,8 @@
+// Use node's `setTimeout` because `bask db-auth-schema` loads this file under node through `auth.ts`.
 import { setTimeout as sleep } from "node:timers/promises"
 
-import type { CtxError, Result } from "ts-explicit-errors"
-import { attempt, err, isErr } from "ts-explicit-errors"
+import type { Result } from "ts-explicit-errors"
+import { attempt, err, getContext, isErr } from "ts-explicit-errors"
 
 /** Raidbots' DDoS protection answers 502 to requests without a custom User-Agent, so this is not optional. */
 const USER_AGENT = "guild-sim/0.1 (+https://github.com/adamhl8/guild-sim)"
@@ -32,10 +33,10 @@ export const isOk = (response: HttpResponse): boolean => response.status >= 200 
  * Pulls the server's own explanation out of a failed {@link requestJson}. Both APIs return precise messages that the
  * status code alone hides.
  */
-export const serverMessage = (error: CtxError): string => {
-  const body = error.get<string>("body")
+export const serverMessage = (error: Error): string => {
+  const body = getContext<string>(error, "body")
   if (!body) return ""
-  // oxlint-disable-next-line typescript/no-unsafe-return -- error bodies are untyped json
+  // oxlint-disable-next-line typescript/no-unsafe-return - error bodies are untyped json
   const parsed = attempt((): { message?: unknown; error?: unknown } => JSON.parse(body))
   if (isErr(parsed)) return `: ${body.slice(0, 200)}`
   const detail = parsed.message ?? parsed.error
@@ -125,12 +126,14 @@ export const requestJson = async <T>(url: string, options: RequestOptions = {}):
     const detail = { status: response.status, body: response.body.slice(0, 400) }
     // Set only for quota rejections, so callers can treat the key's presence as the signal.
     const quota = quotaRetryAfterMs(response.body)
-    return err(`${options.method ?? "GET"} ${url} -> HTTP ${response.status}`, undefined).ctx(
+    return err(
+      `${options.method ?? "GET"} ${url} -> HTTP ${response.status}`,
+      undefined,
       quota === undefined ? detail : { ...detail, quotaRetryAfterMs: quota },
     )
   }
 
-  // oxlint-disable-next-line typescript/no-unsafe-return -- JSON is untyped by nature; T is the caller's contract
+  // oxlint-disable-next-line typescript/no-unsafe-return - JSON is untyped and T is the caller's contract
   const parsed = attempt((): T => JSON.parse(response.body))
   if (isErr(parsed)) return err(`could not parse json from ${url}`, parsed)
   return parsed

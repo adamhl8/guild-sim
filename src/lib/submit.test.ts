@@ -1,24 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it, mock } from "bun:test"
-import fs from "node:fs"
-import os from "node:os"
 import path from "node:path"
 import process from "node:process"
 
+import { createShell, makeTempDir } from "@adamhl8/configs/test"
 import type { Result } from "ts-explicit-errors"
-import { err, isErr } from "ts-explicit-errors"
+import { err, isErr, messageChain } from "ts-explicit-errors"
 
 // A throwaway database. Set before any import that reads DATABASE_URL, which is why every import of
 // application code below is dynamic.
-const dbDir = fs.mkdtempSync(path.join(os.tmpdir(), "guild-sim-test-"))
-const dbPath = path.join(dbDir, "test.db")
+const dbPath = path.join(await makeTempDir("guild-sim-test-"), "test.db")
 process.env["DATABASE_URL"] = `file:${dbPath}`
 
-const migrate = Bun.spawnSync(["bun", "prisma", "migrate", "deploy"], {
-  env: { ...process.env, DATABASE_URL: `file:${dbPath}` },
-  stdout: "pipe",
-  stderr: "pipe",
-})
-if (migrate.exitCode !== 0) throw new Error(`migrations failed: ${migrate.stderr.toString()}`)
+await createShell()`bun prisma migrate deploy`
 
 const LIVE_BUILD = "12.1.0.69299"
 const NOW = new Date("2026-08-17T12:00:00.000Z")
@@ -56,12 +49,12 @@ const realCharacter = await import("#lib/raidbots/character.ts")
 
 await mock.module("#lib/raidbots/session.ts", () => ({
   ...realSession,
-  // oxlint-disable-next-line typescript/require-await -- must match the real async signature
+  // oxlint-disable-next-line typescript/require-await - must match the real async signature
   getSession: async () => "raidsid=test",
 }))
 await mock.module("#lib/raidbots/character.ts", () => ({
   ...realCharacter,
-  // oxlint-disable-next-line typescript/require-await -- must match the real async signature
+  // oxlint-disable-next-line typescript/require-await - must match the real async signature
   loadSimcCharacter: async (_cookie: string, text: string) => {
     const loaded = responses.get(text)
     if (!loaded) throw new Error("no stubbed response for the given paste")
@@ -88,7 +81,7 @@ const profiles = new Map<string, ProfileStub>()
 const realHttp = await import("#lib/http.ts")
 
 // Only Blizzard's profile endpoint is stubbed; everything else falls through, so the raidbots paths above are
-// untouched. Returning the real `err(...).ctx({ status })` shape is the point: `claimFailureStatus` reads that status.
+// untouched. Returning the real `err(..., { status })` shape is the point: `claimFailureStatus` reads that status.
 await mock.module("#lib/http.ts", () => ({
   ...realHttp,
   requestJson: async (url: string, options: { headers?: Record<string, string> } = {}) => {
@@ -96,7 +89,7 @@ await mock.module("#lib/http.ts", () => ({
     const stub = profiles.get((options.headers?.["authorization"] ?? "").replace("Bearer ", ""))
     if (!stub) throw new Error("no stubbed profile for the given token")
     if (stub.status !== undefined)
-      return err(`GET ${url} -> HTTP ${String(stub.status)}`, undefined).ctx({ status: stub.status })
+      return err(`GET ${url} -> HTTP ${String(stub.status)}`, undefined, { status: stub.status })
     return { wow_accounts: [{ characters: stub.characters ?? [] }] }
   },
 }))
@@ -113,7 +106,7 @@ const errMessage = (result: unknown): string => {
 }
 
 const okResult = <T>(result: Result<T>): T => {
-  if (isErr(result)) throw new Error(result.messageChain)
+  if (isErr(result)) throw new Error(messageChain(result))
   return result
 }
 
@@ -190,7 +183,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect()
-  fs.rmSync(dbDir, { recursive: true, force: true })
 })
 
 // Two Flawless gems from the real list, so "different gem" means a choice a raider could actually make.
@@ -416,13 +408,13 @@ describe("repointReissuedId", () => {
   })
 })
 
-describe("claimAndRecord", () => {
-  const linkAccount = async (userId: string, token: string): Promise<void> => {
-    await prisma.account.create({
-      data: { id: token, issuer: "local:oauth:battlenet", accountId: token, providerId: "battlenet", userId },
-    })
-  }
+const linkAccount = async (userId: string, token: string): Promise<void> => {
+  await prisma.account.create({
+    data: { id: token, accountId: token, providerId: "battlenet", userId },
+  })
+}
 
+describe("claimAndRecord", () => {
   it("records the outcome so an officer does not have to read the logs", async () => {
     const { userId, characterId } = await fixture()
     const token = `tok-ok-${String(characterId)}`

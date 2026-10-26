@@ -1,12 +1,15 @@
 import { knipConfig } from "@adamhl8/configs"
+import bun from "bun"
+
+// `#astro-entry` is the node adapter's built entry, which only exists after `astro build`.
+// Ignore it only when it's missing, because knip hints that the ignore is redundant once it exists.
+const astroEntryBuilt = await bun.file("dist/server/entry.mjs").exists()
 
 const config = knipConfig({
-  // locals.ts is an ambient type augmentation: nothing imports it, but dropping it breaks Astro.locals.
-  entry: ["src/server.ts", "src/lib/locals.ts", "src/pages/**/*.{astro,ts}"],
-  project: ["!./src/generated/**/*"],
-  // The node adapter's built entry, which does not exist until after `astro build`. Required for a
-  // clean tree (CI lints before building); knip hints that it is redundant once dist/ exists locally.
-  ignoreUnresolved: ["#astro-entry"],
+  // `locals.ts` is an ambient type augmentation: nothing imports it, but dropping it breaks `Astro.locals`.
+  entry: ["src/server.ts", "src/lib/locals.ts"],
+  ignore: ["src/generated/**"],
+  ignoreUnresolved: astroEntryBuilt ? [] : ["#astro-entry"],
 })
 
 export default config

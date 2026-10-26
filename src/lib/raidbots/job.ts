@@ -1,5 +1,4 @@
-import { setTimeout as sleep } from "node:timers/promises"
-
+import { sleep } from "bun"
 import type { Result } from "ts-explicit-errors"
 import { err, isErr } from "ts-explicit-errors"
 
@@ -67,11 +66,11 @@ const waitForReport = async (simId: string): Promise<Result> => {
     if (report.error) {
       const detail = await simcErrorLine(simId)
       const { code, type } = report.error
-      return err(`sim ${simId} failed in simc (code ${code}, ${type})${detail}`, undefined).ctx({ simId })
+      return err(`sim ${simId} failed in simc (code ${code}, ${type})${detail}`, undefined, { simId })
     }
 
     const results = report.sim?.profilesets?.results ?? []
-    if (results.length === 0) return err(`sim ${simId} produced no droptimizer results`, undefined).ctx({ simId })
+    if (results.length === 0) return err(`sim ${simId} produced no droptimizer results`, undefined, { simId })
     return undefined
   }
 
@@ -95,7 +94,7 @@ export const waitForSim = async (options: WaitOptions): Promise<Result> => {
     if (progress.state === "complete") return waitForReport(simId)
     if (progress.state === "cancelled") return err(`sim ${simId} was cancelled`, undefined)
     if (progress.state === "failed" && (response.retriesRemaining ?? 0) <= 0)
-      return err(`sim ${simId} failed`, undefined).ctx({ simId })
+      return err(`sim ${simId} failed`, undefined, { simId })
 
     await sleep(pollIntervalMs)
   }

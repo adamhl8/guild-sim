@@ -50,10 +50,12 @@ const picker = "select w-full"
 const group = "grid gap-4 p-4 sm:grid-cols-2 sm:p-6"
 const stat = "stat-value font-mono text-2xl tabular-nums"
 
+const collator = new Intl.Collator()
+
 // Configured ranks are folded in so one that has since left the roster still shows, checked, rather than
 // disappearing from the form and being dropped by the next save.
 const rankOptions = [...new Set([...roster.map((character) => character.rank), ...settings.adminRanks])]
-  .toSorted((a, b) => a.localeCompare(b))
+  .toSorted(collator.compare)
   .map((rank) => ({ rank, count: roster.filter((character) => character.rank === rank).length }))
 ---
 
@@ -73,7 +75,9 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
     </div>
     <div class="stat">
       <div class="stat-title">Claimed</div>
-      <div class={stat}>{claimed}/{roster.length}</div>
+      <div class={stat}>
+        {claimed}/{roster.length}
+      </div>
       <div class="stat-desc">linked to a Battle.net account</div>
     </div>
     <div class="stat">
@@ -83,11 +87,14 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
     </div>
     <div class="stat">
       <div class="stat-title">Slots done</div>
-      <div class={stat}>{doneSlots}/{totalSlots}</div>
+      <div class={stat}>
+        {doneSlots}/{totalSlots}
+      </div>
       <progress
-        class="progress progress-primary mt-2 h-1 w-full"
+        class="progress mt-2 h-1 w-full progress-primary"
         value={doneSlots}
-        max={totalSlots > 0 ? totalSlots : 1}></progress>
+        max={totalSlots > 0 ? totalSlots : 1}
+      ></progress>
     </div>
     <div class="stat">
       <div class="stat-title">Live WoW build</div>
@@ -107,10 +114,14 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
           {healers > 0 && <span class="healer-note text-base-content/40">({healers} hidden)</span>}
         </label>
         <ActionForm action={actions.requeueAll}>
-          <button class="btn btn-sm" type="submit">Requeue every stored paste</button>
+          <button class="btn btn-sm" type="submit">
+            Requeue every stored paste
+          </button>
         </ActionForm>
         <ActionForm action={actions.syncNow}>
-          <button class="btn btn-ghost btn-sm" type="submit">Sync now</button>
+          <button class="btn btn-ghost btn-sm" type="submit">
+            Sync now
+          </button>
         </ActionForm>
       </Fragment>
 
@@ -124,54 +135,54 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
                 <th>Claimed by</th>
                 <th>Spec</th>
                 <th>Last paste</th>
-                {difficulties.map((difficulty) => <th class="text-center">{DIFFICULTY_LABELS[difficulty]}</th>)}
+                {difficulties.map((difficulty) => (
+                  <th class="text-center">{DIFFICULTY_LABELS[difficulty]}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {
-                rows.map(({ character, claim, latest, slots }) => (
-                  <tr data-role={character.role}>
-                    <td>
-                      <CharacterName name={character.name} realm={character.realm} wowClass={character.class} />
-                    </td>
-                    <td class="text-base-content/60">{character.rank}</td>
-                    <td class="whitespace-nowrap">
-                      {claim ? (
-                        <span class="text-base-content/60" title={`claimed ${absoluteTime(claim.claimedAt)}`}>
-                          {character.claims.map((entry) => entry.user.name).join(", ")}
-                        </span>
-                      ) : (
-                        <span class="badge badge-sm badge-soft badge-warning">unclaimed</span>
-                      )}
-                    </td>
-                    <td class="text-base-content/60">{latest?.spec ?? "-"}</td>
-                    <td class="whitespace-nowrap">
-                      {latest ? (
-                        <span class="text-base-content/60" title={absoluteTime(latest.createdAt)}>
-                          {relativeTime(latest.createdAt, now)}
-                        </span>
-                      ) : (
-                        <span class="text-base-content/40">never</span>
-                      )}
-                    </td>
-                    {character.unsupportedSpec ? (
-                      <td colspan={difficulties.length} class="text-center text-base-content/50">
-                        {character.unsupportedSpec} cannot be simmed
-                      </td>
+              {rows.map(({ character, claim, latest, slots }) => (
+                <tr data-role={character.role}>
+                  <td>
+                    <CharacterName name={character.name} realm={character.realm} wowClass={character.class} />
+                  </td>
+                  <td class="text-base-content/60">{character.rank}</td>
+                  <td class="whitespace-nowrap">
+                    {claim ? (
+                      <span class="text-base-content/60" title={`claimed ${absoluteTime(claim.claimedAt)}`}>
+                        {character.claims.map((entry) => entry.user.name).join(", ")}
+                      </span>
                     ) : (
-                      slots.map((slot) => (
-                        <td class="text-center">
-                          <Slot
-                            slot={slot}
-                            rerun={formatSlotKey(character.id, slot.difficulty)}
-                            character={`${character.name}-${character.realm}`}
-                          />
-                        </td>
-                      ))
+                      <span class="badge badge-soft badge-sm badge-warning">unclaimed</span>
                     )}
-                  </tr>
-                ))
-              }
+                  </td>
+                  <td class="text-base-content/60">{latest?.spec ?? "-"}</td>
+                  <td class="whitespace-nowrap">
+                    {latest ? (
+                      <span class="text-base-content/60" title={absoluteTime(latest.createdAt)}>
+                        {relativeTime(latest.createdAt, now)}
+                      </span>
+                    ) : (
+                      <span class="text-base-content/40">never</span>
+                    )}
+                  </td>
+                  {character.unsupportedSpec ? (
+                    <td colspan={difficulties.length} class="text-center text-base-content/50">
+                      {character.unsupportedSpec} cannot be simmed
+                    </td>
+                  ) : (
+                    slots.map((slot) => (
+                      <td class="text-center">
+                        <Slot
+                          slot={slot}
+                          rerun={formatSlotKey(character.id, slot.difficulty)}
+                          character={`${character.name}-${character.realm}`}
+                        />
+                      </td>
+                    ))
+                  )}
+                </tr>
+              ))}
             </tbody>
           </table>
         </ActionForm>
@@ -196,7 +207,12 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Wishlists</legend>
           <label class="label cursor-pointer justify-start gap-3">
-            <input type="checkbox" class="checkbox" name="replaceManualEdits" checked={settings.wowaudit.replaceManualEdits} />
+            <input
+              type="checkbox"
+              class="checkbox"
+              name="replaceManualEdits"
+              checked={settings.wowaudit.replaceManualEdits}
+            />
             <span>Replace manual wishlist edits</span>
           </label>
         </fieldset>
@@ -204,24 +220,24 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
         <fieldset class="fieldset sm:col-span-2">
           <legend class="fieldset-legend">Admin ranks</legend>
           <div class="flex flex-wrap gap-x-6 gap-y-2">
-            {
-              rankOptions.map(({ rank, count }) => (
-                <label class="label cursor-pointer justify-start gap-3">
-                  <input
-                    type="checkbox"
-                    class="checkbox"
-                    name="adminRanks"
-                    value={rank}
-                    checked={settings.adminRanks.includes(rank)}
-                  />
-                  <span>
-                    {rank} <span class="text-base-content/50">({count})</span>
-                  </span>
-                </label>
-              ))
-            }
+            {rankOptions.map(({ rank, count }) => (
+              <label class="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  class="checkbox"
+                  name="adminRanks"
+                  value={rank}
+                  checked={settings.adminRanks.includes(rank)}
+                />
+                <span>
+                  {rank} <span class="text-base-content/50">({count})</span>
+                </span>
+              </label>
+            ))}
           </div>
-          <p class="fieldset-label">Ranks that grant this dashboard. The count is how many roster characters hold it.</p>
+          <p class="fieldset-label">
+            Ranks that grant this dashboard. The count is how many roster characters hold it.
+          </p>
         </fieldset>
       </div>
     </Panel>
@@ -231,9 +247,13 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Source</legend>
           <select class={picker} name="source">
-            <option value="season" selected={settings.source === "season"}>season (current aggregate)</option>
+            <option value="season" selected={settings.source === "season"}>
+              season (current aggregate)
+            </option>
             {sources.map((source) => (
-              <option value={source.name} selected={settings.source === source.name}>{source.name}</option>
+              <option value={source.name} selected={settings.source === source.name}>
+                {source.name}
+              </option>
             ))}
           </select>
         </fieldset>
@@ -241,20 +261,18 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Difficulties</legend>
           <div class="flex flex-wrap gap-x-6 gap-y-2">
-            {
-              DIFFICULTIES.map((difficulty) => (
-                <label class="label cursor-pointer justify-start gap-3">
-                  <input
-                    type="checkbox"
-                    class="checkbox"
-                    name="difficulties"
-                    value={difficulty}
-                    checked={settings.difficulties.includes(difficulty)}
-                  />
-                  <span>{DIFFICULTY_LABELS[difficulty]}</span>
-                </label>
-              ))
-            }
+            {DIFFICULTIES.map((difficulty) => (
+              <label class="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  class="checkbox"
+                  name="difficulties"
+                  value={difficulty}
+                  checked={settings.difficulties.includes(difficulty)}
+                />
+                <span>{DIFFICULTY_LABELS[difficulty]}</span>
+              </label>
+            ))}
           </div>
           <p class="fieldset-label">One sim per difficulty, per paste</p>
         </fieldset>
@@ -263,7 +281,9 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
           <legend class="fieldset-legend">SimC version</legend>
           <select class={picker} name="simcVersion">
             {["weekly", "nightly", "latest"].map((version) => (
-              <option value={version} selected={settings.sim.simcVersion === version}>{version}</option>
+              <option value={version} selected={settings.sim.simcVersion === version}>
+                {version}
+              </option>
             ))}
           </select>
         </fieldset>
@@ -271,7 +291,9 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Iterations</legend>
           <input class={field} name="iterations" value={String(settings.sim.iterations)} required />
-          <p class="fieldset-label"><code class="rounded bg-base-300 px-1 font-mono">smart</code> or a whole number</p>
+          <p class="fieldset-label">
+            <code class="rounded bg-base-300 px-1 font-mono">smart</code> or a whole number
+          </p>
         </fieldset>
 
         <fieldset class="fieldset">
@@ -295,13 +317,27 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
       <div class={group}>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Submits per hour</legend>
-          <input class={field} type="number" name="submitsPerHour" value={settings.runner.submitsPerHour} min="1" required />
+          <input
+            class={field}
+            type="number"
+            name="submitsPerHour"
+            value={settings.runner.submitsPerHour}
+            min="1"
+            required
+          />
           <p class="fieldset-label">A local guard only; Raidbots enforces the real limit</p>
         </fieldset>
 
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Poll interval (ms)</legend>
-          <input class={field} type="number" name="pollIntervalMs" value={settings.runner.pollIntervalMs} min="1000" required />
+          <input
+            class={field}
+            type="number"
+            name="pollIntervalMs"
+            value={settings.runner.pollIntervalMs}
+            min="1000"
+            required
+          />
           <p class="fieldset-label">How often a running sim is checked for a result</p>
         </fieldset>
       </div>
@@ -313,7 +349,9 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
           <legend class="fieldset-legend">Build check</legend>
           <select class={picker} name="buildCheck">
             {BUILD_CHECKS.map((check) => (
-              <option value={check} selected={settings.buildCheck === check}>{check}</option>
+              <option value={check} selected={settings.buildCheck === check}>
+                {check}
+              </option>
             ))}
           </select>
           <p class="fieldset-label">exact rejects after every hotfix; patch ignores the build number</p>
@@ -326,7 +364,9 @@ const rankOptions = [...new Set([...roster.map((character) => character.rank), .
       </div>
     </Panel>
 
-    <button class="btn btn-primary mt-6" type="submit">Save settings</button>
+    <button class="btn mt-6 btn-primary" type="submit">
+      Save settings
+    </button>
   </ActionForm>
 </Base>
 

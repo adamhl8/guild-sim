@@ -1,5 +1,5 @@
-import type { CtxError, Result } from "ts-explicit-errors"
-import { err, isErr } from "ts-explicit-errors"
+import type { Result } from "ts-explicit-errors"
+import { err, getContext, isErr, messageChain } from "ts-explicit-errors"
 
 import { prisma } from "#lib/db.ts"
 import { requestJson } from "#lib/http.ts"
@@ -16,8 +16,8 @@ export const isClaimStatus = (value: string | null): value is ClaimStatus => val
  * 403 is Blizzard refusing a token carrying no `wow.profile`, which is what a raider who never granted the permission
  * looks like. 401 is a token that has aged out. Anything else is Blizzard not answering, the only one worth retrying.
  */
-export const claimFailureStatus = (error: CtxError): ClaimStatus => {
-  const status = error.get<number>("status")
+export const claimFailureStatus = (error: Error): ClaimStatus => {
+  const status = getContext<number>(error, "status")
   if (status === 403) return "denied"
   if (status === 401) return "stale"
   return "unreachable"
@@ -100,7 +100,7 @@ const outcomeOf = (claimed: Result<number>): ClaimStatus => {
  */
 export const claimAndRecord = async (userId: string, accessToken: string): Promise<ClaimStatus> => {
   const claimed = await claimCharacters(userId, accessToken)
-  if (isErr(claimed)) console.error(`claim failed -> ${claimed.messageChain}`)
+  if (isErr(claimed)) console.error(`claim failed -> ${messageChain(claimed)}`)
   const status = outcomeOf(claimed)
 
   // Keyed on the user rather than the provider: account linking is disabled (`auth.ts`), so there is exactly one row,

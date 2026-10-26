@@ -7,16 +7,14 @@ COPY package.json bun.lock bunfig.toml ./
 
 FROM base AS build
 
-COPY --from=ghcr.io/casey/just:latest /just /usr/local/bin/
-
 RUN bun install --ignore-scripts
 
 COPY prisma ./prisma
 COPY src ./src
-COPY astro.config.ts prisma.config.ts tsconfig.json justfile ./
+COPY astro.config.ts prisma.config.ts tsconfig.json bask.ts ./
 
 ENV ASTRO_BUILD=true
-RUN just build-site
+RUN bunx bask build-site
 
 FROM base
 

@@ -4,6 +4,8 @@ import { contentHash } from "#lib/simc.ts"
 
 const PASTE = 'warlock="Isaaclock"\nlevel=90\nhead=,id=266429\n'
 
+const SHA256_HEX = /^[\da-f]{64}$/v
+
 describe("contentHash", () => {
   it("is stable for the same bytes", () => {
     expect(contentHash(PASTE)).toBe(contentHash(PASTE))
@@ -25,6 +27,6 @@ describe("contentHash", () => {
   })
 
   it("produces a hex sha-256", () => {
-    expect(contentHash(PASTE)).toMatch(/^[\da-f]{64}$/v)
+    expect(contentHash(PASTE)).toMatch(SHA256_HEX)
   })
 })

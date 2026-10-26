@@ -1,4 +1,4 @@
-import { isErr } from "ts-explicit-errors"
+import { getContext, isErr, messageChain } from "ts-explicit-errors"
 
 import { env } from "#env.ts"
 import type { RosterCharacter, SimJob, Submission } from "#generated/prisma/client.ts"
@@ -26,9 +26,7 @@ type SubmissionWithCharacter = Submission & { character: RosterCharacter }
 const sleep = async (ms: number, signal: AbortSignal): Promise<boolean> => {
   if (signal.aborted) return false
 
-  /* oxlint-disable promise/avoid-new, promise/no-multiple-resolved --
-     a cancellable timer has no async/await form, and the two paths are mutually exclusive: aborting
-     clears the timer, firing removes the listener. */
+  // oxlint-disable-next-line promise/avoid-new - a cancellable timer has no async/await form
   return new Promise<boolean>((resolve) => {
     const abort = new AbortController()
 
@@ -46,7 +44,6 @@ const sleep = async (ms: number, signal: AbortSignal): Promise<boolean> => {
       { once: true, signal: abort.signal },
     )
   })
-  /* oxlint-enable promise/avoid-new, promise/no-multiple-resolved */
 }
 
 /** Hands the job back to the queue untouched, so a shutdown mid-wait costs nothing. */
@@ -75,7 +72,7 @@ const finish = async (job: SimJob, input: FinishInput): Promise<void> => {
 
   const finished = await waitForSim({ cookie, simId, pollIntervalMs: settings.runner.pollIntervalMs })
   if (isErr(finished)) {
-    await fail(job, finished.messageChain)
+    await fail(job, messageChain(finished))
     return
   }
 
@@ -89,7 +86,7 @@ const finish = async (job: SimJob, input: FinishInput): Promise<void> => {
     replaceManualEdits: settings.wowaudit.replaceManualEdits,
   })
   if (isErr(uploaded)) {
-    await fail(job, uploaded.messageChain)
+    await fail(job, messageChain(uploaded))
     return
   }
 
@@ -113,7 +110,7 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
 
   const cookie = await getSession({ email: env.RAIDBOTS_EMAIL, password: env.RAIDBOTS_PASSWORD })
   if (isErr(cookie)) {
-    await fail(job, `could not authenticate with raidbots: ${cookie.messageChain}`)
+    await fail(job, `could not authenticate with raidbots: ${messageChain(cookie)}`)
     return
   }
 
@@ -126,13 +123,13 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
 
   const character = await loadSimcCharacter(cookie, submission.simcText, settings.sim.simcVersion)
   if (isErr(character)) {
-    await fail(job, `raidbots could not load the paste: ${character.messageChain}`)
+    await fail(job, `raidbots could not load the paste: ${messageChain(character)}`)
     return
   }
 
   const clientVersion = await getClientVersion()
   if (isErr(clientVersion)) {
-    await fail(job, `could not read the raidbots client version: ${clientVersion.messageChain}`)
+    await fail(job, `could not read the raidbots client version: ${messageChain(clientVersion)}`)
     return
   }
 
@@ -143,7 +140,7 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
 
   const upgrade = await createUpgradeResolver().forInstance(job.sourceId, job.difficulty)
   if (isErr(upgrade)) {
-    await fail(job, `could not resolve the upgrade track: ${upgrade.messageChain}`)
+    await fail(job, `could not resolve the upgrade track: ${messageChain(upgrade)}`)
     return
   }
 
@@ -174,7 +171,7 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
 
   if (isErr(submitted)) {
     // Permanent for this spec, so record it rather than burning a submit on every future paste.
-    if (submitted.messageChain.includes("unsupported_spec")) {
+    if (messageChain(submitted).includes("unsupported_spec")) {
       await prisma.rosterCharacter.update({
         where: { id: submission.characterId },
         data: { unsupportedSpec: character.spec },
@@ -187,9 +184,9 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
     }
 
     // Raidbots is the authority on the hourly limit; wait exactly what it asks and retry once.
-    const retryAfterMs = submitted.get<number>("quotaRetryAfterMs")
+    const retryAfterMs = getContext<number>(submitted, "quotaRetryAfterMs")
     if (retryAfterMs === undefined || retryAfterMs <= 0) {
-      await fail(job, `submit rejected: ${submitted.messageChain}`)
+      await fail(job, `submit rejected: ${messageChain(submitted)}`)
       return
     }
 
@@ -199,7 +196,7 @@ const runJob = async (job: SimJob, signal: AbortSignal): Promise<void> => {
 
     submitted = await submitSim(submitInput)
     if (isErr(submitted)) {
-      await fail(job, `submit rejected after waiting out the quota: ${submitted.messageChain}`)
+      await fail(job, `submit rejected after waiting out the quota: ${messageChain(submitted)}`)
       return
     }
   }

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "bun:test"
 
-import type { CtxError } from "ts-explicit-errors"
 import { err } from "ts-explicit-errors"
 
 import { blizzardId, blizzardIdsFrom, claimFailureStatus } from "#lib/roster/claim.ts"
@@ -48,12 +47,13 @@ describe("blizzardIdsFrom", () => {
 })
 
 /** Shaped like the real thing: `claimCharacters` wraps the failure twice, so the status sits two causes down. */
-const claimError = (status?: number): CtxError => {
-  const request = err("GET https://us.api.blizzard.com/profile/user/wow -> HTTP", undefined)
-  const profile = err(
-    "could not read the battle.net wow profile",
-    status === undefined ? request : request.ctx({ status }),
+const claimError = (status?: number): Error => {
+  const request = err(
+    "GET https://us.api.blizzard.com/profile/user/wow -> HTTP",
+    undefined,
+    status === undefined ? undefined : { status },
   )
+  const profile = err("could not read the battle.net wow profile", request)
   return err("could not resolve characters for u1", profile)
 }
 

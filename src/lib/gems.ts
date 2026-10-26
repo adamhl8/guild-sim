@@ -21,6 +21,8 @@ export interface SelectableGem {
   color: string
 }
 
+const collator = new Intl.Collator()
+
 /**
  * The preferred-gem dropdown, derived from Raidbots' own enchantment data rather than a hardcoded list.
  *
@@ -59,7 +61,7 @@ export const selectableGems = (entries: EnchantmentEntry[]): SelectableGem[] => 
     }))
 
   return gems.toSorted((a, b) =>
-    a.color === b.color ? a.displayName.localeCompare(b.displayName) : a.color.localeCompare(b.color),
+    a.color === b.color ? collator.compare(a.displayName, b.displayName) : collator.compare(a.color, b.color),
   )
 }
 
@@ -68,7 +70,7 @@ export const groupGemsByColor = (gems: SelectableGem[]): { color: string; gems: 
   const groups = new Map<string, SelectableGem[]>()
   for (const gem of gems) groups.set(gem.color, [...(groups.get(gem.color) ?? []), gem])
 
-  return [...groups].map(([color, entries]) => ({ color, gems: entries }))
+  return Array.from(groups, ([color, entries]) => ({ color, gems: entries }))
 }
 
 export const listGems = async (): Promise<SelectableGem[]> => {

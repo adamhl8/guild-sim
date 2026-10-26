@@ -1,7 +1,7 @@
-import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
+import bun from "bun"
 import type { Result } from "ts-explicit-errors"
 import { attempt, err, isErr } from "ts-explicit-errors"
 
@@ -47,16 +47,13 @@ export const staticData = async <T>(file: string): Promise<Result<T>> => {
   if (isErr(hash)) return hash
 
   const cached = path.join(CACHE_DIR, hash, `${file}.json`)
-  // oxlint-disable-next-line typescript/no-unsafe-return -- cached json is untyped; T is the caller's contract
-  const onDisk = await attempt(async (): Promise<T> => Bun.file(cached).json())
+  // oxlint-disable-next-line typescript/no-unsafe-return - cached JSON is untyped and T is the caller's contract
+  const onDisk = await attempt(async (): Promise<T> => bun.file(cached).json())
   if (!isErr(onDisk)) return onDisk
 
   const fetched = await requestJson<T>(`${RAIDBOTS_BASE}/static/data/${hash}/${file}.json`)
   if (isErr(fetched)) return err(`could not fetch raidbots static data: ${file}`, fetched)
 
-  await attempt(async () => {
-    await fs.mkdir(path.dirname(cached), { recursive: true })
-    await Bun.write(cached, JSON.stringify(fetched))
-  })
+  await attempt(async () => bun.write(cached, JSON.stringify(fetched)))
   return fetched
 }

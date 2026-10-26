@@ -14,24 +14,23 @@ const { slot, rerun, character } = Astro.props
 
 const label = slot.status === "none" ? "not run" : slot.status
 const badge = ["badge badge-sm whitespace-nowrap", SLOT_CLASSES[slot.status]]
-const title = slot.error ?? (rerun ? `Rerun ${DIFFICULTY_LABELS[slot.difficulty]} for ${character ?? "this character"}` : label)
+const title =
+  slot.error ?? (rerun ? `Rerun ${DIFFICULTY_LABELS[slot.difficulty]} for ${character ?? "this character"}` : label)
 ---
 
-{
-  rerun ? (
-    // Not `disabled:pointer-events-none`: the title is the only place a failed slot's error is surfaced.
-    <button
-      type="submit"
-      name="slot"
-      value={rerun}
-      class:list={[...badge, "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"]}
-      title={title}
-    >
-      {label}
-    </button>
-  ) : (
-    <span class:list={badge} title={title}>
-      {label}
-    </span>
-  )
-}
+{rerun ? (
+  // Not `disabled:pointer-events-none`: the title is the only place a failed slot's error is surfaced.
+  <button
+    type="submit"
+    name="slot"
+    value={rerun}
+    class:list={[...badge, "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"]}
+    title={title}
+  >
+    {label}
+  </button>
+) : (
+  <span class:list={badge} title={title}>
+    {label}
+  </span>
+)}

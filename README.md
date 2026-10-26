@@ -66,7 +66,7 @@ TRUSTED_PROXIES=10.0.0.0/24      # optional, see below
 ```
 
 All of them are required in production; the app exits at boot naming any that are missing. In
-development they all have working defaults, so `just dev` runs with an empty `.env`.
+development they all have working defaults, so `bask dev` runs with an empty `.env`.
 
 > **Escape any `$` in your Raidbots password as `\$`.** Bun's `.env` parser expands `$NAME` even inside
 > single quotes, so an unescaped `$` silently truncates the password and Raidbots answers
@@ -83,8 +83,8 @@ Limits then apply more strictly than intended rather than not at all, so it is a
 security one.
 
 ```sh
-just db-migrate   # create the database
-just dev          # http://localhost:4321
+bask db-migrate   # create the database
+bask dev          # http://localhost:4321
 ```
 
 The first officer to sign in gets the dashboard automatically; see [Access](#access).
@@ -243,20 +243,20 @@ a non-empty result set before anything is uploaded.
 ## Development
 
 ```sh
-just dev              # dev server on 4321
-just lint             # oxlint, oxfmt, knip, tests
-just build            # lint + astro build
-just docker-run       # build and run the container locally on 4321
-just docker-down      # stop it and drop its database
-just db-migrate       # create a migration, then regenerate the client
-just db-auth-schema   # sync Better Auth's models into the schema after upgrading it
-just db-studio        # browse the database
-just release          # tag a release and publish the image
+bask dev              # dev server on 4321
+bask lint             # oxlint, oxfmt, knip, tests
+bask build            # lint + astro build
+bask docker-run       # build and run the container locally on 4321
+bask docker-down      # stop it and drop its database
+bask db-migrate       # create a migration, then regenerate the client
+bask db-auth-schema   # sync Better Auth's models into the schema after upgrading it
+bask db-studio        # browse the database
+bask release          # tag a release and publish the image
 ```
 
 The Prisma client is generated into `src/generated/` and committed, because the image runs the
 TypeScript sources directly. A schema change without a regenerate ships a client that does not know its
-own columns, so `just db-migrate` always does both.
+own columns, so `bask db-migrate` always does both.
 
 Tests are `bun test`: pure-function units for the staleness rules, quota maths, roster matching and
 payload shape, plus integration tests that run the submit flow against a throwaway SQLite database with

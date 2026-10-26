@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto"
+import { CryptoHasher } from "bun"
 
 /**
  * Identity of a paste, used to tell a genuine re-export from a duplicate submit.
@@ -7,4 +7,4 @@ import { createHash } from "node:crypto"
  * byte-identical too, so both dedupe. A real `/simc` re-run carries a fresh timestamp in its header and so counts as
  * new, which is the intent: that is a deliberate act by the raider.
  */
-export const contentHash = (text: string): string => createHash("sha256").update(text.trim()).digest("hex")
+export const contentHash = (text: string): string => new CryptoHasher("sha256").update(text.trim()).digest("hex")

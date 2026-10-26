@@ -1,14 +1,16 @@
+import { cron } from "bun"
+
 import { prisma } from "#lib/db.ts"
 import { runSync } from "#lib/sync.ts"
 import { startWorker } from "#worker/queue.ts"
 
 // The adapter's standalone entry binds the HTTP listener on import, so the server is already up by the
 // time anything below runs. Mapped in package.json `imports` because it is a build artifact.
-// oxlint-disable-next-line clean-modules/require-import-extensions -- resolves to .mjs, which only exists after a build
+// oxlint-disable-next-line clean-modules/require-import-extensions - resolves to .mjs, which only exists after a build
 import "#astro-entry"
 
 const worker = startWorker()
-const syncJob = Bun.cron("0 9 * * *", async () => {
+const syncJob = cron("0 9 * * *", async () => {
   await runSync()
 })
 

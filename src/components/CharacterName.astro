@@ -11,5 +11,6 @@ const { name, realm, wowClass } = Astro.props
 ---
 
 <span class="font-mono whitespace-nowrap">
-  <span class={classColorClass(wowClass)}>{name}</span><span class="text-base-content/40">-{realm}</span>
+  <span class={classColorClass(wowClass)}>{name}</span>
+  <span class="text-base-content/40">-{realm}</span>
 </span>

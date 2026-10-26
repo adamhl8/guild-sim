@@ -57,28 +57,32 @@ const state = STATES[status]
           You signed in as <strong class="text-base-content">{user.name}</strong>. {state.body}
         </p>
         {state.note && <p class="mt-4 text-sm text-base-content/60">{state.note}</p>}
-        {
-          status === "denied" && (
-            <ol class="mt-4 list-decimal space-y-1 pl-5 text-sm text-base-content/70">
-              <li>
-                Open{" "}
-                <strong class="text-base-content">
+        {status === "denied" && (
+          <ol class="mt-4 list-decimal space-y-1 pl-5 text-sm text-base-content/70">
+            <li>
+              Open{" "}
+              <strong class="text-base-content">
                 <a class="link" href="https://account.battle.net/connections" target="_blank" rel="noreferrer">
                   account.battle.net/connections
-                </a></strong>
-              </li>
-              <li>
-                Scroll down and <strong class="text-base-content">remove guild-sim</strong> from your Authorized Applications.
-              </li>
-              <li>
-                Come back here, press <strong class="text-base-content">Refresh my characters</strong>, and <strong class="text-base-content">make sure the
-                "Your World of Warcraft profile" permission is checked.</strong>
-              </li>
-            </ol>
-          )
-        }
+                </a>
+              </strong>
+            </li>
+            <li>
+              Scroll down and <strong class="text-base-content">remove guild-sim</strong> from your Authorized
+              Applications.
+            </li>
+            <li>
+              Come back here, press <strong class="text-base-content">Refresh my characters</strong>, and{" "}
+              <strong class="text-base-content">
+                make sure the "Your World of Warcraft profile" permission is checked.
+              </strong>
+            </li>
+          </ol>
+        )}
         <form method="POST" action="/refresh-characters" class="mt-6">
-          <button class="btn btn-primary btn-sm" type="submit">Refresh my characters</button>
+          <button class="btn btn-primary btn-sm" type="submit">
+            Refresh my characters
+          </button>
         </form>
       </div>
     </Panel>

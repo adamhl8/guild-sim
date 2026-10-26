@@ -13,9 +13,9 @@ export interface AppLocals {
 }
 
 declare global {
-  // oxlint-disable-next-line typescript/no-namespace -- Astro declares App as a global namespace
+  // oxlint-disable-next-line typescript/no-namespace - Astro declares App as a global namespace
   namespace App {
-    // oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type -- merging into Astro's Locals is the whole point
+    // oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type - merging into Astro's Locals is the whole point
     interface Locals extends AppLocals {}
   }
 }

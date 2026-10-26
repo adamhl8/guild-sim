@@ -11,7 +11,7 @@ type FormAction = (
 // `actions` is a Proxy that mints a callable for any key, so a string index is how it is meant to be addressed.
 // A hand-kept registry of the five names would type-check, but forgetting a sixth would silently drop that
 // form back to a native post -- the bug this file exists to prevent.
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the Proxy answers to any key
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion - the Proxy answers to any key
 const byName = actions as unknown as Record<string, FormAction | undefined>
 
 const alertBox = (): HTMLElement | null => document.querySelector<HTMLElement>("#alert")

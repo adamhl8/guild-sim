@@ -29,7 +29,7 @@ export const uploadWishlist = async (client: WowauditClient, upload: WishlistUpl
   }
 
   if (response.created !== true)
-    return err(`wowaudit rejected report ${upload.reportId} for ${upload.characterName}`, undefined).ctx({ response })
+    return err(`wowaudit rejected report ${upload.reportId} for ${upload.characterName}`, undefined, { response })
 
   return undefined
 }

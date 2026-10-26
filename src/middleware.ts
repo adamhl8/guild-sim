@@ -28,8 +28,8 @@ const logForwardedOnce = (request: Request, pathname: string): void => {
   const forwardedFor = request.headers.get("x-forwarded-for")
   const hops = forwardedFor?.split(",").length ?? 0
   console.info(
-    `first request: x-forwarded-for=${forwardedFor ?? "(absent)"} hops=${String(hops)} ` +
-      `proto=${request.headers.get("x-forwarded-proto") ?? "(absent)"} path=${pathname}`,
+    `first request: x-forwarded-for=${forwardedFor ?? "(absent)"} hops=${String(hops)} `
+      + `proto=${request.headers.get("x-forwarded-proto") ?? "(absent)"} path=${pathname}`,
   )
 }
 

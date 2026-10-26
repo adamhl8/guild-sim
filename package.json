@@ -10,10 +10,6 @@
     "warcraft",
     "wowaudit"
   ],
-  "homepage": "https://github.com/adamhl8/guild-sim",
-  "bugs": {
-    "url": "https://github.com/adamhl8/guild-sim/issues"
-  },
   "license": "MIT",
   "author": {
     "name": "Adam Langbert",
@@ -31,38 +27,45 @@
     "#astro-entry": "./dist/server/entry.mjs"
   },
   "scripts": {
-    "prepare": "just prepare"
+    "prepare": "bask prepare"
   },
   "dependencies": {
-    "@adamhl8/configs": "^2.3.2",
-    "@astrojs/node": "^11.1.2",
-    "@astrojs/react": "^6.0.2",
-    "@prisma/adapter-libsql": "^7.9.1",
-    "@prisma/client": "^7.9.1",
+    "@adamhl8/configs": "^3.4.1",
+    "@astrojs/node": "^11.1.9",
+    "@astrojs/react": "^7.1.1",
+    "@prisma/adapter-libsql": "^7.10.1",
+    "@prisma/client": "^7.10.1",
     "@tailwindcss/vite": "^4.3.3",
     "arkenv": "^0.12.3",
-    "arktype": "^2.2.3",
-    "astro": "^7.2.2",
-    "better-auth": "1.7.0-rc.6",
-    "daisyui": "^5.7.17",
-    "prisma": "^7.9.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "arktype": "^2.2.9",
+    "astro": "^7.4.2",
+    "better-auth": "1.7.14",
+    "daisyui": "^5.7.50",
+    "prisma": "^7.10.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "tailwindcss": "^4.3.3",
-    "ts-explicit-errors": "^4.1.3"
+    "ts-explicit-errors": "^5.0.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.2",
-    "@commitlint/config-conventional": "^21.2.2",
-    "@types/bun": "^1.3.14",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "knip": "^6.32.2",
+    "@adamhl8/bask": "^0.6.0",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@tailwindcss/language-server": "^0.16.0",
+    "@types/bun": "^1.4.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "knip": "^6.43.0",
     "markdown-toc": "^1.2.0",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "release-it": "^21.0.2",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "release-it": "^21.1.1",
+    "release-it-git-cliff": "^0.2.0",
+    "tailwint": "^1.1.16",
     "typescript": "^7.0.2"
+  },
+  "engines": {
+    "bun": ">=1.4"
   }
 }

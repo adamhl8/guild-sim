@@ -1,5 +1,5 @@
 import type { Result } from "ts-explicit-errors"
-import { attempt, err, isErr } from "ts-explicit-errors"
+import { attempt, err, isErr, messageChain } from "ts-explicit-errors"
 
 import { env } from "#env.ts"
 import { prisma } from "#lib/db.ts"
@@ -73,7 +73,7 @@ const syncRoster = async (): Promise<Result<number>> => {
     })
 
     if (isErr(written)) {
-      console.error(`sync: ${character.name}-${character.realm} failed -> ${written.messageChain}`)
+      console.error(`sync: ${character.name}-${character.realm} failed -> ${messageChain(written)}`)
       failed.push(`${character.name}-${character.realm}`)
     }
   }
@@ -162,25 +162,25 @@ export const runSync = async (): Promise<Result> => {
 
   const roster = await syncRoster()
   if (isErr(roster)) {
-    console.error(`sync: roster failed -> ${roster.messageChain}`)
+    console.error(`sync: roster failed -> ${messageChain(roster)}`)
     failures.push(roster.message)
   } else console.info(`sync: ${String(roster)} roster characters`)
 
   const sources = await syncSources()
   if (isErr(sources)) {
-    console.error(`sync: sources failed -> ${sources.messageChain}`)
+    console.error(`sync: sources failed -> ${messageChain(sources)}`)
     failures.push(sources.message)
   } else console.info(`sync: ${String(sources)} raid sources`)
 
   const gems = await syncGems()
   if (isErr(gems)) {
-    console.error(`sync: gems failed -> ${gems.messageChain}`)
+    console.error(`sync: gems failed -> ${messageChain(gems)}`)
     failures.push(gems.message)
   } else console.info(`sync: ${String(gems)} selectable gems`)
 
   const build = await syncBuild()
   if (isErr(build)) {
-    console.error(`sync: wow build failed -> ${build.messageChain}`)
+    console.error(`sync: wow build failed -> ${messageChain(build)}`)
     failures.push(build.message)
   }
 

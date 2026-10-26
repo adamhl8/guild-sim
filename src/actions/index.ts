@@ -22,8 +22,10 @@ const requireAdmin = (locals: App.Locals): void => {
 
 const plural = (count: number, noun: string): string => `${String(count)} ${noun}${count === 1 ? "" : "s"}`
 
+const POSITIVE_INTEGER = /^[1-9]\d*$/v
+
 /** Anything else is silently read back as "smart", so a typo would look saved without being it. */
-const isIterations = (value: string): boolean => value === "smart" || /^[1-9]\d*$/v.test(value)
+const isIterations = (value: string): boolean => value === "smart" || POSITIVE_INTEGER.test(value)
 
 /**
  * Nobody can reach this page again once no admin rank matches a rank someone holds, and undoing that means editing

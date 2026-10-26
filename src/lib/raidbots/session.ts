@@ -1,7 +1,7 @@
-import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
+import bun from "bun"
 import type { Result } from "ts-explicit-errors"
 import { attempt, err, isErr } from "ts-explicit-errors"
 
@@ -18,21 +18,20 @@ export interface Credentials {
 }
 
 const readCachedCookie = async (): Promise<string | undefined> => {
-  const cached = await attempt(async (): Promise<unknown> => Bun.file(CACHE_PATH).json())
+  const cached = await attempt(async (): Promise<unknown> => bun.file(CACHE_PATH).json())
   if (isErr(cached) || typeof cached !== "object" || cached === null || !("cookie" in cached)) return undefined
   return typeof cached.cookie === "string" ? cached.cookie : undefined
 }
 
 const writeCachedCookie = async (cookie: string): Promise<void> => {
-  await attempt(async () => {
-    await fs.mkdir(path.dirname(CACHE_PATH), { recursive: true })
-    await fs.writeFile(CACHE_PATH, JSON.stringify({ cookie }), { mode: 0o600 })
-  })
+  await attempt(async () => bun.write(CACHE_PATH, JSON.stringify({ cookie }), { mode: 0o600 }))
 }
+
+const RAIDSID_COOKIE = /(?<value>^raidsid=[^;]+)/v
 
 const extractCookie = (headers: Headers): string | undefined => {
   for (const entry of headers.getSetCookie()) {
-    const match = /(?<value>^raidsid=[^;]+)/v.exec(entry)
+    const match = RAIDSID_COOKIE.exec(entry)
     if (match?.groups?.["value"]) return match.groups["value"]
   }
   return undefined

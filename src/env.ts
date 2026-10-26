@@ -5,7 +5,7 @@ const BaseEnv = type({
   // `test` is included because `bun test` sets it, and env is imported transitively by most modules.
   NODE_ENV: "('production' | 'development' | 'test') = 'development'",
   /**
-   * Set by `just build-site`. `astro build` runs with NODE_ENV=production, so without this a build would demand runtime
+   * Set by `bask build-site`. `astro build` runs with NODE_ENV=production, so without this a build would demand runtime
    * credentials it has no use for.
    */
   ASTRO_BUILD: "boolean = false",

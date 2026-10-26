@@ -108,7 +108,7 @@ export const submitSim = async (input: SubmitInput): Promise<Result<SubmittedSim
     return err(`raidbots rejected the sim for ${input.character.name}${serverMessage(response)}`, response)
 
   if (response.error) return err(`raidbots error submitting ${input.character.name}: ${response.error}`, undefined)
-  if (!response.simId) return err(`raidbots returned no simId for ${input.character.name}`, undefined).ctx({ response })
+  if (!response.simId) return err(`raidbots returned no simId for ${input.character.name}`, undefined, { response })
 
   return { simId: response.simId, jobId: response.jobId }
 }

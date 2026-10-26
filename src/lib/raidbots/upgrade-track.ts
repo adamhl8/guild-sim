@@ -75,14 +75,42 @@ export const seasonNumberForInstance = (instances: Instance[], instanceId: numbe
   return undefined
 }
 
+const SEASON_SUFFIX = /\s*Season \d+$/v
+
 /** Season names are `<Expansion> Season <n>`, so the active season supplies the expansion prefix. */
 export const seasonByNumber = (seasons: Season[], active: Season, n: number): Season | undefined => {
-  const prefix = active.name.replace(/\s*Season \d+$/v, "")
+  const prefix = active.name.replace(SEASON_SUFFIX, "")
   return seasons.find((season) => season.name === `${prefix} Season ${n}` && (season.bonusListGroups?.length ?? 0) > 0)
 }
 
 export interface UpgradeResolver {
   forInstance: (instanceId: number, difficulty: Difficulty) => Promise<Result<UpgradeTrack>>
+}
+
+const resolveTrack = async (instanceId: number, difficulty: Difficulty): Promise<Result<UpgradeTrack>> => {
+  const instances = await staticData<Instance[]>("instances")
+  if (isErr(instances)) return instances
+  const seasonsRaw = await staticData<Season[] | { seasons?: Season[] }>("seasons")
+  if (isErr(seasonsRaw)) return seasonsRaw
+  const sets = await staticData<Record<string, UpgradeStep[]>>("bonus-upgrade-sets")
+  if (isErr(sets)) return sets
+
+  const seasons = Array.isArray(seasonsRaw) ? seasonsRaw : (seasonsRaw.seasons ?? [])
+  const active = seasons.find((season) => season.active)
+  if (!active) return err("raidbots reported no active season", undefined)
+
+  const n = seasonNumberForInstance(instances, instanceId)
+  const season = (n === undefined ? undefined : seasonByNumber(seasons, active, n)) ?? active
+  const track = TRACK_FOR[difficulty]
+  const step = topStepFor(season, sets, track)
+  if (!step) {
+    return err(`no ${track} upgrade track for season ${season.id} (instance ${instanceId})`, undefined, {
+      instanceId,
+      difficulty,
+    })
+  }
+
+  return { bonusId: step.bonusId, itemLevel: step.itemLevel, fullName: step.fullName, seasonId: season.id }
 }
 
 /**
@@ -93,38 +121,12 @@ export interface UpgradeResolver {
 export const createUpgradeResolver = (): UpgradeResolver => {
   const cache = new Map<string, UpgradeTrack>()
 
-  const resolve = async (instanceId: number, difficulty: Difficulty): Promise<Result<UpgradeTrack>> => {
-    const instances = await staticData<Instance[]>("instances")
-    if (isErr(instances)) return instances
-    const seasonsRaw = await staticData<Season[] | { seasons?: Season[] }>("seasons")
-    if (isErr(seasonsRaw)) return seasonsRaw
-    const sets = await staticData<Record<string, UpgradeStep[]>>("bonus-upgrade-sets")
-    if (isErr(sets)) return sets
-
-    const seasons = Array.isArray(seasonsRaw) ? seasonsRaw : (seasonsRaw.seasons ?? [])
-    const active = seasons.find((season) => season.active)
-    if (!active) return err("raidbots reported no active season", undefined)
-
-    const n = seasonNumberForInstance(instances, instanceId)
-    const season = (n === undefined ? undefined : seasonByNumber(seasons, active, n)) ?? active
-    const track = TRACK_FOR[difficulty]
-    const step = topStepFor(season, sets, track)
-    if (!step) {
-      return err(`no ${track} upgrade track for season ${season.id} (instance ${instanceId})`, undefined).ctx({
-        instanceId,
-        difficulty,
-      })
-    }
-
-    return { bonusId: step.bonusId, itemLevel: step.itemLevel, fullName: step.fullName, seasonId: season.id }
-  }
-
   return {
     forInstance: async (instanceId, difficulty) => {
       const key = `${String(instanceId)}:${difficulty}`
       const cached = cache.get(key)
       if (cached) return cached
-      const resolved = await resolve(instanceId, difficulty)
+      const resolved = await resolveTrack(instanceId, difficulty)
       if (isErr(resolved)) return resolved
       cache.set(key, resolved)
       return resolved
