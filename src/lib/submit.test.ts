@@ -1,17 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, mock } from "bun:test"
-import path from "node:path"
-import process from "node:process"
 
-import { createShell, makeTempDir } from "@adamhl8/configs/test"
 import type { Result } from "ts-explicit-errors"
 import { err, isErr, messageChain } from "ts-explicit-errors"
-
-// A throwaway database. Set before any import that reads DATABASE_URL, which is why every import of
-// application code below is dynamic.
-const dbPath = path.join(await makeTempDir("guild-sim-test-"), "test.db")
-process.env["DATABASE_URL"] = `file:${dbPath}`
-
-await createShell()`bun prisma migrate deploy`
 
 const LIVE_BUILD = "12.1.0.69299"
 const NOW = new Date("2026-08-17T12:00:00.000Z")
