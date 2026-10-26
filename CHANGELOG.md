@@ -1,3 +1,11 @@
+## [0.4.3](https://github.com/adamhl8/guild-sim/compare/0.4.2..v0.4.3) - 2026-10-26
+
+### ⚙️ Miscellaneous Tasks
+
+- fix test preload ([376d543](https://github.com/adamhl8/guild-sim/commit/376d5436b47a9f23fbd040e4cd9872c2df8a536c) by @adamhl8)
+
+- _(deps)_ update dependencies ([8e2398e](https://github.com/adamhl8/guild-sim/commit/8e2398ef0bfc59f8873ba0d3d173321ad548430a) by @adamhl8)
+
 ## [0.4.2](https://github.com/adamhl8/guild-sim/compare/0.4.1..0.4.2) - 2026-08-24
 
 ### 🐛 Bug Fixes
